@@ -1,6 +1,7 @@
 package org.ghostsinthelab.app.ringomote.history
 
 import android.content.Context
+import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,7 +33,7 @@ class SharedPreferencesConnectionHistory(context: Context) : ConnectionHistory {
     override fun markConnected() {
         if (_hasConnectedBefore.value) return
         _hasConnectedBefore.value = true
-        prefs.edit().putBoolean(KEY_CONNECTED_BEFORE, true).apply()
+        prefs.edit { putBoolean(KEY_CONNECTED_BEFORE, true) }
     }
 
     private companion object {

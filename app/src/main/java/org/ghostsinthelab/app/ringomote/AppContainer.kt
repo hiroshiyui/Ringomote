@@ -11,6 +11,8 @@ import org.ghostsinthelab.app.ringomote.bluetooth.HidTransport
 import org.ghostsinthelab.app.ringomote.history.ConnectionHistory
 import org.ghostsinthelab.app.ringomote.history.SharedPreferencesConnectionHistory
 import org.ghostsinthelab.app.ringomote.remote.RemoteSession
+import org.ghostsinthelab.app.ringomote.settings.AppearanceSettings
+import org.ghostsinthelab.app.ringomote.settings.SharedPreferencesAppearanceSettings
 
 /**
  * Manual dependency wiring: one place that decides which implementations the app uses.
@@ -24,6 +26,7 @@ class AppContainer(context: Context) {
     val transport: HidTransport by lazy { BleHidTransport(context) }
     val session: RemoteSession by lazy { RemoteSession(transport) }
     val connectionHistory: ConnectionHistory by lazy { SharedPreferencesConnectionHistory(context) }
+    val appearanceSettings: AppearanceSettings by lazy { SharedPreferencesAppearanceSettings(context) }
 
     /**
      * The one serial dispatcher for everything that talks to the transport: input, connect,

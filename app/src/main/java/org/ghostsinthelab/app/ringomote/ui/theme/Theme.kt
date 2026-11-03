@@ -1,58 +1,44 @@
 package org.ghostsinthelab.app.ringomote.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import org.ghostsinthelab.app.ringomote.settings.Appearance
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
+/** Whether this Android version can provide a wallpaper-based (dynamic) colour scheme. */
+val supportsDynamicColor: Boolean get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
-)
-
+/**
+ * Applies the colour scheme chosen by [appearance]: light or dark per [Appearance.isDark]
+ * (following the system when the mode is System), dynamic colours when asked for and available
+ * (Android 12+), otherwise [RingomoteLightColors] / [RingomoteDarkColors].
+ *
+ * Recomposes when the setting or the system dark mode changes; the activity does not need to
+ * restart. With `enableEdgeToEdge()` the system bars follow the Compose background.
+ */
 @Composable
 fun RingomoteTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    appearance: Appearance = Appearance(),
+    content: @Composable () -> Unit,
 ) {
+    val darkTheme = appearance.isDark(systemDark = isSystemInDarkTheme())
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        appearance.dynamicColor && supportsDynamicColor -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> RingomoteDarkColors
+        else -> RingomoteLightColors
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }

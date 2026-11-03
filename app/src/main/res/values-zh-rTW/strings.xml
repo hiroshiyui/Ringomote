@@ -58,12 +58,20 @@
     <string name="button_volume_up_description">調高音量</string>
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">調低音量</string>
-    <!-- Tabs and About -->
+    <!-- Tabs, Settings and About -->
+    <string name="tab_settings">設定</string>
+    <string name="settings_appearance_title">外觀</string>
+    <string name="settings_theme_label">主題</string>
+    <string name="settings_theme_system">跟隨系統</string>
+    <string name="settings_theme_light">淺色</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_dynamic_color_label">動態色彩</string>
+    <string name="settings_dynamic_color_description">從您的桌布取色。關閉時，Ringomote 會使用自己的珊瑚色配色。</string>
     <string name="tab_about">關於</string>
     <string name="about_version">版本 %1$s（%2$d）</string>
     <string name="about_tagline">將您的手機當作 Apple TV 遙控器使用，與 Siri Remote（第 1 代）相容。</string>
     <string name="about_privacy_title">隱私</string>
-    <string name="about_privacy_body">Ringomote 沒有網路權限，也不收集任何資料。按鍵操作只會透過藍牙直接傳送到您的 Apple TV。本程式只在您的手機上儲存一項設定：是否曾經連線過。</string>
+    <string name="about_privacy_body">Ringomote 沒有網際網路權限，也不會收集任何資料。按鍵操作只會透過藍牙直接傳送到您的 Apple TV。本程式只會儲存您的外觀設定，以及是否曾經連線過。</string>
     <string name="about_license_title">授權</string>
     <string name="about_license_body">Ringomote 是自由軟體，以 GNU 通用公共授權第 3 版或其後版本釋出。您可以依該授權條款使用、研究、分享與修改本程式。</string>
     <string name="about_license_link">閱讀授權條款</string>

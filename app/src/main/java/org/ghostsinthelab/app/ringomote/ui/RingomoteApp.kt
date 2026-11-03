@@ -11,6 +11,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import org.ghostsinthelab.app.ringomote.R
 import org.ghostsinthelab.app.ringomote.ui.about.AboutScreen
+import org.ghostsinthelab.app.ringomote.ui.settings.SettingsScreen
+import org.ghostsinthelab.app.ringomote.settings.AppearanceSettings
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -36,7 +38,8 @@ import org.ghostsinthelab.app.ringomote.ui.remote.RemoteViewModel
 /**
  * Root of the UI: wires [RemoteViewModel] to the screens.
  *
- * Two tabs: the remote and [AboutScreen]. About is always reachable; on the remote tab, until
+ * Three tabs: the remote, [SettingsScreen] and [AboutScreen]. Settings and About are always
+ * reachable; on the remote tab, until
  * every permission in [BluetoothPermissions.runtime] is granted it shows
  * [PermissionScreen]; afterwards it starts the transport and shows the [ConnectionPanel] above
  * the [RemoteScreen]. Permissions are re-checked on every resume, since the user may grant or
@@ -48,6 +51,7 @@ import org.ghostsinthelab.app.ringomote.ui.remote.RemoteViewModel
  */
 @Composable
 fun RingomoteApp(
+    appearanceSettings: AppearanceSettings,
     modifier: Modifier = Modifier,
     vm: RemoteViewModel = viewModel(factory = RemoteViewModel.Factory),
 ) {
@@ -84,6 +88,15 @@ fun RingomoteApp(
     ) { innerPadding ->
         val content = Modifier.padding(innerPadding)
         when {
+            tab == AppTab.Settings -> {
+                val appearance by appearanceSettings.appearance.collectAsStateWithLifecycle()
+                SettingsScreen(
+                    appearance = appearance,
+                    onModeChange = appearanceSettings::setMode,
+                    onDynamicColorChange = appearanceSettings::setDynamicColor,
+                    modifier = content,
+                )
+            }
             tab == AppTab.About -> AboutScreen(modifier = content)
             granted -> RemoteHome(vm = vm, modifier = content)
             else -> PermissionScreen(onGranted = { granted = true }, modifier = content)
@@ -98,6 +111,7 @@ fun RingomoteApp(
  */
 private enum class AppTab(@StringRes val label: Int) {
     Remote(R.string.app_name),
+    Settings(R.string.tab_settings),
     About(R.string.tab_about),
 }
 

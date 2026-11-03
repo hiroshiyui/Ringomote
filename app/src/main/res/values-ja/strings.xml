@@ -58,12 +58,20 @@
     <string name="button_volume_up_description">音量を上げる</string>
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">音量を下げる</string>
-    <!-- Tabs and About -->
+    <!-- Tabs, Settings and About -->
+    <string name="tab_settings">設定</string>
+    <string name="settings_appearance_title">外観</string>
+    <string name="settings_theme_label">テーマ</string>
+    <string name="settings_theme_system">システムに従う</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+    <string name="settings_dynamic_color_label">ダイナミックカラー</string>
+    <string name="settings_dynamic_color_description">壁紙から色を取り込みます。オフにすると、Ringomote 独自のコーラル色の配色を使います。</string>
     <string name="tab_about">このアプリについて</string>
     <string name="about_version">バージョン %1$s（%2$d）</string>
     <string name="about_tagline">スマートフォンを Apple TV のリモコンとして使えます。Siri Remote（第 1 世代）互換です。</string>
     <string name="about_privacy_title">プライバシー</string>
-    <string name="about_privacy_body">Ringomote にはインターネットの権限がなく、データを収集しません。ボタン操作は Bluetooth で Apple TV に直接送られるだけです。スマートフォンに保存する設定は、過去に接続したことがあるかどうかの 1 つだけです。</string>
+    <string name="about_privacy_body">Ringomote にはインターネットの権限がなく、データを収集することもありません。ボタン操作は Bluetooth で直接 Apple TV にだけ送られます。このアプリが保存するのは、外観の設定と、以前に接続したことがあるかどうかだけです。</string>
     <string name="about_license_title">ライセンス</string>
     <string name="about_license_body">Ringomote はフリーソフトウェアで、GNU 一般公衆利用許諾書 バージョン 3 またはそれ以降のもとで公開されています。このライセンスの条件に従って、使用、研究、共有、改変ができます。</string>
     <string name="about_license_link">ライセンス全文を読む</string>

@@ -8,9 +8,9 @@ An Android app that turns your phone into a remote for Apple TV, compatible with
 
 ## Status 開發狀態
 
-Ringomote is in early development. The project has been set up, but remote control is not implemented yet, so the app cannot control an Apple TV today.
+Ringomote is in early development. The first version of the remote is implemented, but it has not been tested with a real Apple TV yet, so pairing and some buttons may not work.
 
-Ringomote 仍在早期開發階段。專案已建立，但遙控功能尚未實作，目前還無法操控 Apple TV。
+Ringomote 仍在早期開發階段。遙控器的第一版已經實作，但尚未以實際的 Apple TV 測試，因此配對與部分按鍵可能無法正常運作。
 
 ## How it works 運作方式
 
@@ -32,9 +32,17 @@ The planned controls follow the Siri Remote (1st generation): the touch surface 
 
 ## Pairing 配對
 
-Pairing instructions will be added once remote control is implemented. Pairing is expected to start from the Apple TV's Bluetooth settings (Settings > Remotes and Devices > Bluetooth), with Ringomote open on the phone.
+1. Open Ringomote and allow the Bluetooth permissions it asks for.
+2. Tap **Make discoverable**, then on the Apple TV open **Settings > Remotes and Devices > Bluetooth** and pick your phone.
+3. If the phone and the Apple TV are already paired, tap **Connect** next to the Apple TV in Ringomote instead.
 
-遙控功能實作完成後，將補上配對說明。預計的方式是在手機上開啟 Ringomote，再從 Apple TV 的藍牙設定（設定 > 遙控器與裝置 > 藍牙）開始配對。
+These steps have not been verified on a real Apple TV yet.
+
+1. 開啟 Ringomote，並允許它要求的藍牙權限。
+2. 點選「讓其他裝置可以找到」，再到 Apple TV 開啟「設定 > 遙控器與裝置 > 藍牙」，選擇您的手機。
+3. 若手機與 Apple TV 已經配對過，請改在 Ringomote 中點選 Apple TV 旁的「連線」。
+
+以上步驟尚未以實際的 Apple TV 驗證。
 
 ## Building 建置
 

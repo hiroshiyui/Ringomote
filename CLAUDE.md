@@ -6,12 +6,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Ringomote is an Android app that makes the phone act as an Apple TV remote, compatible with the 1st-generation Siri Remote, so the Apple TV can be controlled directly from the phone (no Wi-Fi/companion-protocol bridge; the phone itself is the remote).
 
-The codebase is currently the Android Studio "Empty Compose Activity" template. No remote/Bluetooth code exists yet.
+## Architecture
 
-Things to keep in mind when implementing the remote:
-- The 1st-gen Siri Remote talks to the Apple TV over Bluetooth Low Energy (HID over GATT). The phone needs to act as a BLE peripheral exposing an HID service (`BluetoothGattServer` + `BluetoothLeAdvertiser`), or alternatively as a classic Bluetooth HID device via `BluetoothHidDevice` (API 28+), which tvOS accepts like a Bluetooth keyboard. Choose deliberately and document the choice here once made.
-- `minSdk` is 28, so `BluetoothHidDevice` is always available. Android 12+ (API 31) needs the runtime permissions `BLUETOOTH_CONNECT` / `BLUETOOTH_ADVERTISE`, while older versions use the legacy `BLUETOOTH` / `BLUETOOTH_ADMIN` permissions; gate these with `Build.VERSION.SDK_INT` checks.
-- Bluetooth HID peripheral behavior cannot be verified on the emulator; it needs a physical device paired to a real Apple TV.
+Layers, with dependencies pointing downward only (`ui → remote → hid ← bluetooth`):
+
+- `hid/` — pure Kotlin, no Android imports. The HID report descriptor (`HidReportDescriptor`, annotated byte by byte), report encoders (`HidReports`), usage constants, and the `HidReportSink` interface. Two input reports: ID 1 keyboard (8 bytes, 6-key array) and ID 2 consumer control (one 16-bit usage). Changing the descriptor means changing the encoders and the descriptor-parsing tests together.
+- `remote/` — pure Kotlin. `RemoteControl` (the Siri Remote controls), `HidKeyMap` (control → HID usage; arrows/Enter/Escape on the keyboard page, Home/Play-Pause/Volume on the consumer page), and `RemoteSession`, which tracks held controls and turns press/release into reports. Invariant: every press is eventually released; `releaseAll()` runs when input stops (app stopped, disconnect, ViewModel cleared) so the Apple TV never sees a stuck key.
+- `bluetooth/` — Android-specific. `HidTransport` interface (state as `StateFlow<TransportState>`, start/stop, connect/disconnect, also a `HidReportSink`) and `BluetoothHidDeviceTransport`, the only class that touches `android.bluetooth`. `BluetoothPermissions` centralises the API-31 permission split.
+- `ui/` — Compose. `RemoteViewModel` serialises all input on a single-thread dispatcher (report order matters, binder calls stay off the main thread); screens depend only on the ViewModel and state types.
+- `AppContainer` (created by `RingomoteApplication`) is manual DI: process-lifetime transport and session. Swap implementations there.
+
+Transport decision: classic Bluetooth HID via `BluetoothHidDevice` (official API since 28, accepted by tvOS like a Bluetooth keyboard), not BLE HID over GATT. It stays behind `HidTransport` so a BLE implementation could be added without touching `remote/` or `ui/`. Only one app per phone can be registered as a HID device; the Apple TV sees the phone's Bluetooth name. The touch surface is emulated with discrete arrow keys; Siri voice input is not reproduced.
+
+Unverified on hardware (check on a real Apple TV before relying on it): AC Home (0x223) for the TV/Home button, Escape for Menu, and whether pairing works best from the Apple TV side (phone discoverable) or the phone side (`connect` to a bonded device). Bluetooth behaviour cannot be tested on the emulator.
+
+- Android 12+ (API 31) needs the runtime permissions `BLUETOOTH_CONNECT` / `BLUETOOTH_ADVERTISE`; Android 9–11 use install-time `BLUETOOTH` / `BLUETOOTH_ADMIN` (`maxSdkVersion="30"`).
 
 ## Build & test commands
 
@@ -23,9 +32,9 @@ Things to keep in mind when implementing the remote:
 ./gradlew connectedDebugAndroidTest     # instrumented tests on a device (app/src/androidTest)
 
 # single test class / method
-./gradlew testDebugUnitTest --tests "org.ghostsinthelab.app.ringomote.ExampleUnitTest"
-./gradlew testDebugUnitTest --tests "org.ghostsinthelab.app.ringomote.ExampleUnitTest.addition_isCorrect"
-./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.ghostsinthelab.app.ringomote.ExampleInstrumentedTest
+./gradlew testDebugUnitTest --tests "org.ghostsinthelab.app.ringomote.remote.RemoteSessionTest"
+./gradlew testDebugUnitTest --tests "org.ghostsinthelab.app.ringomote.remote.RemoteSessionTest.<method>"
+./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=<fully.qualified.TestClass>
 ```
 
 ## Build setup notes

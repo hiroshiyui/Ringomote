@@ -6,7 +6,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import org.ghostsinthelab.app.ringomote.bluetooth.BluetoothHidDeviceTransport
+import org.ghostsinthelab.app.ringomote.bluetooth.BleHidTransport
 import org.ghostsinthelab.app.ringomote.bluetooth.HidTransport
 import org.ghostsinthelab.app.ringomote.history.ConnectionHistory
 import org.ghostsinthelab.app.ringomote.history.SharedPreferencesConnectionHistory
@@ -17,10 +17,11 @@ import org.ghostsinthelab.app.ringomote.remote.RemoteSession
  *
  * Objects live as long as the process, because only one HID device registration exists per
  * phone and the session's held-key state must outlive any single screen. Swap implementations
- * here (e.g. a BLE transport) without touching the UI.
+ * here (the classic-HID [org.ghostsinthelab.app.ringomote.bluetooth.BluetoothHidDeviceTransport] is
+ * kept as an alternative) without touching the UI.
  */
 class AppContainer(context: Context) {
-    val transport: HidTransport by lazy { BluetoothHidDeviceTransport(context) }
+    val transport: HidTransport by lazy { BleHidTransport(context) }
     val session: RemoteSession by lazy { RemoteSession(transport) }
     val connectionHistory: ConnectionHistory by lazy { SharedPreferencesConnectionHistory(context) }
 

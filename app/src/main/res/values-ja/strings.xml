@@ -10,12 +10,12 @@
 
     <!-- Connection panel -->
     <string name="state_stopped">Bluetooth を起動しています…</string>
-    <string name="state_unsupported">このスマートフォンは Bluetooth 入力デバイスとして動作できないため、Apple TV を操作できません。</string>
+    <string name="state_unsupported">このスマートフォンは Bluetooth Low Energy の入力デバイスとして動作できないため、Apple TV を操作できません。</string>
     <string name="state_permission_required">Ringomote には Bluetooth の権限が必要です。</string>
     <string name="state_bluetooth_off">Bluetooth がオフになっています。</string>
     <string name="state_registering">リモコンを準備しています…</string>
-    <string name="state_registration_failed">Ringomote を Bluetooth リモコンとして登録できませんでした。ほかのアプリが Bluetooth 入力デバイスを使用している可能性があります。そのアプリを終了してから、もう一度お試しください。</string>
-    <string name="state_ready">接続されていません。Apple TV 側でペアリングするか、下のペアリング済みデバイスに接続してください。</string>
+    <string name="state_registration_failed">Ringomote は Bluetooth リモコンとしてのアドバタイズを開始できませんでした。ほかのアプリがスマートフォンの Bluetooth アドバタイズを使い切っている可能性があります。そのアプリを終了してから、もう一度お試しください。</string>
+    <string name="state_ready">接続されていません。Apple TV の Bluetooth 設定でこのスマートフォンを選ぶか、下のペアリング済みデバイスに接続してください。</string>
     <string name="state_connecting">%1$s に接続しています…</string>
     <string name="state_connected">%1$s に接続しました。</string>
     <string name="state_short_stopped">起動中…</string>
@@ -30,8 +30,7 @@
     <string name="state_expanded">展開</string>
     <string name="state_collapsed">折りたたみ</string>
     <string name="action_turn_on_bluetooth">Bluetooth をオンにする</string>
-    <string name="action_make_discoverable">検出可能にする</string>
-    <string name="pairing_hint">Apple TV で「設定 &gt; リモコンとデバイス &gt; Bluetooth」を開いてください。</string>
+    <string name="pairing_hint">Apple TV で「設定 &gt; リモコンとデバイス &gt; Bluetooth」を開き、このスマートフォンを選んでください。スマートフォンでペアリング要求を承認したら、通知シェードを開いて Bluetooth のペアリング通知をタップし、6 桁のコードを確認してください。</string>
     <string name="paired_devices_title">ペアリング済みのデバイス</string>
     <string name="paired_devices_empty">ペアリング済みのデバイスはまだありません。</string>
     <string name="action_connect">接続</string>

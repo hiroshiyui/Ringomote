@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.annotation.DrawableRes
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -44,9 +43,6 @@ import org.ghostsinthelab.app.ringomote.bluetooth.HostDevice
 import org.ghostsinthelab.app.ringomote.bluetooth.TransportState
 import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
 
-/** How long the phone stays discoverable after "Make discoverable", in seconds. */
-private const val DISCOVERABLE_SECONDS = 120
-
 /**
  * The connection header: one compact status row, with the longer explanations behind a
  * Details toggle that is collapsed by default, so the remote below keeps most of the screen.
@@ -58,16 +54,16 @@ private const val DISCOVERABLE_SECONDS = 120
  * - [TransportState.RegistrationFailed]: retry via [onRetry].
  *
  * Details, for the states that have any ([hasDetails]), hold the full explanation and, when
- * [TransportState.Ready], the pairing steps: make the phone discoverable for pairing from the
- * Apple TV, or connect to one of [pairedDevices]. Neither the icon's shape nor its colour is the
+ * [TransportState.Ready], the pairing steps: the phone is already advertising, so pick it on
+ * the Apple TV and confirm the two pairing prompts, or connect to one of [pairedDevices]. Neither the icon's shape nor its colour is the
  * only signal; the label always says the same in words, so the icon is decorative to TalkBack.
  *
  * Details start expanded when [expandDetailsByDefault] is true (first use, before any Apple TV
  * was connected), so the pairing steps are visible without a tap; otherwise they start
  * collapsed. Once the user toggles them, their choice wins over the default.
  *
- * The two system dialogs are the only place the UI touches `android.bluetooth`; their results
- * are not needed because the transport observes the adapter state itself. Launch failures
+ * The "turn on Bluetooth" system dialog is the only place the UI touches `android.bluetooth`;
+ * its result is not needed because the transport observes the adapter state itself. Launch failures
  * (no such screen, or a missing permission) are reported with a toast instead of crashing.
  */
 @Composable
@@ -142,16 +138,6 @@ fun ConnectionPanel(
         if (showDetails) {
             Text(text = state.describe(), style = MaterialTheme.typography.bodyMedium)
             if (state == TransportState.Ready) {
-                Button(
-                    onClick = {
-                        launchSystemScreen(
-                            Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).putExtra(
-                                BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,
-                                DISCOVERABLE_SECONDS,
-                            ),
-                        )
-                    },
-                ) { Text(stringResource(R.string.action_make_discoverable)) }
                 Text(
                     text = stringResource(R.string.pairing_hint),
                     style = MaterialTheme.typography.bodyMedium,

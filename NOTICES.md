@@ -35,14 +35,6 @@ These are used only to build or test the app and are not included in the distrib
 | AndroidX Test (JUnit ext, Espresso), Compose UI Test / Tooling | Apache License 2.0 |
 | JUnit 4 | [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html) |
 
-## Artwork 圖像
-
-### Android robot Android 機器人
-
-The current launcher icon (`app/src/main/res/drawable/ic_launcher_foreground.xml` and the `mipmap-*` images) is the Android Studio project template icon. The Android robot is reproduced or modified from work created and shared by Google and used according to terms described in the [Creative Commons 3.0 Attribution License](https://creativecommons.org/licenses/by/3.0/).
-
-目前的啟動圖示（`app/src/main/res/drawable/ic_launcher_foreground.xml` 與各 `mipmap-*` 圖檔）為 Android Studio 專案範本圖示。Android 機器人係重製或修改自 Google 創作並分享的作品，依[創用 CC 姓名標示 3.0 授權條款](https://creativecommons.org/licenses/by/3.0/)使用。
-
 ## Trademarks 商標
 
 - Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc., registered in the U.S. and other countries.

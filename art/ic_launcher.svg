@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Ringomote app icon. Master artwork for the adaptive icon in
+     app/src/main/res/drawable/ic_launcher_{background,foreground}.xml.
+     Coordinates use the 108 x 108 adaptive-icon canvas; the visible safe zone
+     is the 66-unit circle at the centre. Keep both in sync. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="9 9 90 90">
+  <defs>
+    <clipPath id="mask"><rect x="9" y="9" width="90" height="90" rx="22"/></clipPath>
+  </defs>
+  <g clip-path="url(#mask)">
+    <!-- background -->
+    <rect x="0" y="0" width="108" height="108" fill="#FF9C8F"/>
+    <!-- leaf and stem -->
+    <path d="M54,28.5 L54,24" fill="none" stroke="#7A5230" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M54,25 C56,20 61.5,19 64,21 C62,25 58,26.2 54,25 Z" fill="#6BCB77"/>
+    <!-- remote body -->
+    <rect x="39" y="28" width="30" height="56" rx="13" fill="#FFF8EE" stroke="#4A4458" stroke-width="1.4"/>
+    <!-- touch surface with face -->
+    <rect x="42" y="31" width="24" height="24" rx="10" fill="#4A4458"/>
+    <ellipse cx="49" cy="41" rx="2.2" ry="2.8" fill="#FFFFFF"/>
+    <ellipse cx="59" cy="41" rx="2.2" ry="2.8" fill="#FFFFFF"/>
+    <ellipse cx="46.3" cy="46.6" rx="2.2" ry="1.4" fill="#FF9AA8"/>
+    <ellipse cx="61.7" cy="46.6" rx="2.2" ry="1.4" fill="#FF9AA8"/>
+    <path d="M51.2,46.2 Q54,49.4 56.8,46.2" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
+    <!-- buttons -->
+    <circle cx="48.5" cy="63" r="3.6" fill="#4A4458"/>
+    <circle cx="59.5" cy="63" r="3.6" fill="#4A4458"/>
+    <circle cx="48.5" cy="74" r="3.6" fill="#4A4458"/>
+    <rect x="55.9" y="68.5" width="7.2" height="11" rx="3.6" fill="#4A4458"/>
+  </g>
+</svg>

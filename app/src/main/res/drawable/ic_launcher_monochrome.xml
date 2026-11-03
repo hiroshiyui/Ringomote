@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from art/ic_launcher.svg; keep in sync. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Themed-icon silhouette: only alpha is used, so the face is cut out of
+         the touch surface with evenOdd instead of drawn in another colour. -->
+    <path
+        android:pathData="M54,28.5L54,24"
+        android:strokeColor="#FF000000"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.6" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M54,25C56,20 61.5,19 64,21C62,25 58,26.2 54,25z" />
+    <path
+        android:pathData="M52,28h4a13,13 0 0,1 13,13v30a13,13 0 0,1 -13,13h-4a13,13 0 0,1 -13,-13v-30a13,13 0 0,1 13,-13z"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="2" />
+    <path
+        android:fillColor="#FF000000"
+        android:fillType="evenOdd"
+        android:pathData="M52,31h4a10,10 0 0,1 10,10v4a10,10 0 0,1 -10,10h-4a10,10 0 0,1 -10,-10v-4a10,10 0 0,1 10,-10zM46.8,41a2.2,2.8 0 1,0 4.4,0a2.2,2.8 0 1,0 -4.4,0zM56.8,41a2.2,2.8 0 1,0 4.4,0a2.2,2.8 0 1,0 -4.4,0zM51.2,46.2Q54,50.4 56.8,46.2Q54,48.6 51.2,46.2z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M44.9,63a3.6,3.6 0 1,0 7.2,0a3.6,3.6 0 1,0 -7.2,0zM55.9,63a3.6,3.6 0 1,0 7.2,0a3.6,3.6 0 1,0 -7.2,0zM44.9,74a3.6,3.6 0 1,0 7.2,0a3.6,3.6 0 1,0 -7.2,0zM55.9,72.1a3.6,3.6 0 0,1 7.2,0v3.8a3.6,3.6 0 0,1 -7.2,0z" />
+</vector>

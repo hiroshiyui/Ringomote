@@ -16,11 +16,31 @@ Ringomote 仍在早期開發階段。與實際的 Apple TV 配對，以及所有
 
 The phone talks to the Apple TV directly over Bluetooth Low Energy, presenting itself as a Bluetooth input device (a HID over GATT keyboard), just as the physical remote does. No Wi-Fi network, Apple account or bridge device is involved.
 
-The planned controls follow the Siri Remote (1st generation): the touch surface (swipe and click), Menu, TV/Home, Play/Pause, and Volume up/down. Siri voice input is not planned at this stage.
+In more detail:
+
+1. **Advertising.** While Ringomote is open, the phone advertises the standard Bluetooth HID service, so the Apple TV lists it under Settings > Remotes and Devices > Bluetooth, next to keyboards and game controllers. (Classic Bluetooth would not work here: Android reports the phone's device class as "phone", which tvOS filters out, and an app cannot change that.)
+2. **Pairing.** The Apple TV connects, reads the phone's HID report descriptor (the document that says "I am a keyboard with these keys and media controls"), and the two devices pair with an encrypted, bonded link. From then on the Apple TV reconnects by itself.
+3. **Controls.** Every control becomes a standard HID key press, followed by a release, sent as a notification over the link:
+   - Touch surface: swipes become the arrow keys, a tap becomes Enter (Select).
+   - Menu: Escape, which tvOS treats as "back".
+   - TV: the consumer-control "Home" usage.
+   - Play/Pause, Volume up and Volume down: the matching consumer-control usages, as on a media keyboard.
+
+tvOS already knows how to drive its interface from a Bluetooth keyboard, so the phone needs no companion app or special protocol on the Apple TV side. Siri voice input is not reproduced, and holding the TV button does not open Control Center, because those are not keyboard actions.
 
 手機透過藍牙低功耗直接與 Apple TV 連線，像實體遙控器一樣以藍牙輸入裝置（HID over GATT 鍵盤）的身分出現，不需經過 Wi-Fi 網路、Apple 帳號或其他橋接裝置。
 
-預計提供的操作對應 Siri Remote（第 1 代）：觸控表面（滑動與按壓）、Menu、TV／主畫面、播放／暫停，以及音量加／減。目前沒有支援 Siri 語音輸入的規劃。
+詳細一點來說：
+
+1. **廣播。** Ringomote 開啟時，手機會廣播標準的藍牙 HID 服務，因此 Apple TV 會在「設定 > 遙控器與裝置 > 藍牙」中，把它和鍵盤、遊戲控制器列在一起。（傳統藍牙在這裡行不通：Android 將手機的裝置類別回報為「電話」，tvOS 會把它濾掉，而應用程式無法更改這一點。）
+2. **配對。** Apple TV 連線後，會讀取手機的 HID 報告描述元（一份說明「我是一個鍵盤，有這些按鍵與媒體控制」的文件），然後雙方建立加密且已配對的連線。之後 Apple TV 會自動重新連線。
+3. **操作。** 每個操作都會變成標準的 HID 按鍵按下與放開，以通知的形式透過連線送出：
+   - 觸控表面：滑動對應方向鍵，輕觸對應 Enter（選取）。
+   - Menu：Escape，tvOS 將它視為「返回」。
+   - TV：消費性控制中的「主畫面」用途。
+   - 播放／暫停、音量加與音量減：對應的消費性控制用途，和多媒體鍵盤相同。
+
+tvOS 本來就知道如何用藍牙鍵盤操作介面，所以 Apple TV 那一端不需要任何配套程式或特殊協定。Siri 語音輸入沒有重現，長按 TV 鍵也無法開啟控制中心，因為這些都不是鍵盤能做的動作。
 
 ## Requirements 使用需求
 

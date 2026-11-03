@@ -15,12 +15,14 @@ import org.ghostsinthelab.app.ringomote.bluetooth.HidTransport
 import org.ghostsinthelab.app.ringomote.bluetooth.HostDevice
 import org.ghostsinthelab.app.ringomote.bluetooth.TransportState
 import org.ghostsinthelab.app.ringomote.hid.HidReport
+import org.ghostsinthelab.app.ringomote.history.ConnectionHistory
 import org.ghostsinthelab.app.ringomote.hid.HidReports
 import org.ghostsinthelab.app.ringomote.hid.KeyboardUsage
 import org.ghostsinthelab.app.ringomote.remote.RemoteControl
 import org.ghostsinthelab.app.ringomote.remote.RemoteSession
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -52,7 +54,9 @@ class RemoteViewModelTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun newViewModel() = RemoteViewModel(transport, session, dispatcher, scope)
+    private val history = FakeHistory()
+
+    private fun newViewModel() = RemoteViewModel(transport, session, history, dispatcher, scope)
 
     /** Clears [vm] the way the framework does when its screen is finished. */
     private fun clear(vm: RemoteViewModel) = ViewModelStore().run {
@@ -150,6 +154,30 @@ class RemoteViewModelTest {
         assertEquals(1, transport.reports.size)
         advanceTimeBy(2)
         assertEquals(listOf(upDown, allUp), transport.reports)
+    }
+
+    /** The first Connected state is recorded, so later launches start with details collapsed. */
+    @Test
+    fun connectingMarksHistory() = scope.runTest {
+        val vm = newViewModel()
+        runCurrent()
+        assertFalse(vm.hasConnectedBefore.value)
+        transport.state.value = TransportState.Ready
+        runCurrent()
+        assertFalse(vm.hasConnectedBefore.value)
+
+        transport.state.value = TransportState.Connected(tv)
+        runCurrent()
+        assertTrue(vm.hasConnectedBefore.value)
+        transport.state.value = TransportState.Ready
+        runCurrent()
+        assertTrue("history never resets", vm.hasConnectedBefore.value)
+    }
+
+    /** In-memory [ConnectionHistory]. */
+    private class FakeHistory : ConnectionHistory {
+        override val hasConnectedBefore = MutableStateFlow(false)
+        override fun markConnected() { hasConnectedBefore.value = true }
     }
 
     /** Records lifecycle calls and reports; reports succeed only while Connected. */

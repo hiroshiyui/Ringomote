@@ -68,6 +68,7 @@ fun RingomoteApp(
 private fun RemoteHome(vm: RemoteViewModel, modifier: Modifier = Modifier) {
     val state by vm.transportState.collectAsStateWithLifecycle()
     val pairedDevices by vm.pairedDevices.collectAsStateWithLifecycle()
+    val hasConnectedBefore by vm.hasConnectedBefore.collectAsStateWithLifecycle()
 
     // The bonded list is empty while Bluetooth is off; reload it once the link is usable.
     val ready = state is TransportState.Ready
@@ -84,6 +85,7 @@ private fun RemoteHome(vm: RemoteViewModel, modifier: Modifier = Modifier) {
             ConnectionPanel(
                 state = state,
                 pairedDevices = pairedDevices,
+                expandDetailsByDefault = !hasConnectedBefore,
                 onConnect = vm::connect,
                 onDisconnect = vm::disconnect,
                 onRetry = vm::start,

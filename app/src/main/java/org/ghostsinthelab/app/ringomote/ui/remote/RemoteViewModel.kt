@@ -19,6 +19,7 @@ import org.ghostsinthelab.app.ringomote.RingomoteApplication
 import org.ghostsinthelab.app.ringomote.bluetooth.HidTransport
 import org.ghostsinthelab.app.ringomote.bluetooth.HostDevice
 import org.ghostsinthelab.app.ringomote.bluetooth.TransportState
+import org.ghostsinthelab.app.ringomote.history.ConnectionHistory
 import org.ghostsinthelab.app.ringomote.remote.RemoteControl
 import org.ghostsinthelab.app.ringomote.remote.RemoteSession
 
@@ -34,6 +35,9 @@ import org.ghostsinthelab.app.ringomote.remote.RemoteSession
  * that was down when the Apple TV disconnected does not block the same button after
  * reconnecting.
  *
+ * The first successful connection is recorded in [connectionHistory]; until then
+ * [hasConnectedBefore] is false and the UI opens the pairing details by default.
+ *
  * The ViewModel starts the transport on request ([start], after permissions are granted) and
  * stops it in [onCleared], i.e. when the user leaves the app for good, releasing held keys
  * first. That teardown runs in [applicationScope] because [viewModelScope] is already
@@ -42,6 +46,7 @@ import org.ghostsinthelab.app.ringomote.remote.RemoteSession
 class RemoteViewModel(
     private val transport: HidTransport,
     private val session: RemoteSession,
+    private val connectionHistory: ConnectionHistory,
     private val serialDispatcher: CoroutineDispatcher,
     private val applicationScope: CoroutineScope,
 ) : ViewModel() {
@@ -49,12 +54,20 @@ class RemoteViewModel(
     /** The Bluetooth link state. */
     val transportState: StateFlow<TransportState> = transport.state
 
+    /** Whether a host was ever connected; false means first use, so show pairing help. */
+    val hasConnectedBefore: StateFlow<Boolean> = connectionHistory.hasConnectedBefore
+
     private val _pairedDevices = MutableStateFlow<List<HostDevice>>(emptyList())
 
     /** Paired devices the user can connect to; refresh with [refreshPairedDevices]. */
     val pairedDevices: StateFlow<List<HostDevice>> = _pairedDevices.asStateFlow()
 
     init {
+        viewModelScope.launch(serialDispatcher) {
+            transport.state
+                .filter { it is TransportState.Connected }
+                .collect { connectionHistory.markConnected() }
+        }
         viewModelScope.launch(serialDispatcher) {
             transport.state
                 .map { it is TransportState.Connected }
@@ -126,6 +139,7 @@ class RemoteViewModel(
                 RemoteViewModel(
                     container.transport,
                     container.session,
+                    container.connectionHistory,
                     container.serialDispatcher,
                     container.applicationScope,
                 )

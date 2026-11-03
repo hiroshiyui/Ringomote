@@ -63,6 +63,10 @@ private const val DISCOVERABLE_SECONDS = 120
  * Apple TV, or connect to one of [pairedDevices]. The dot's colour is never the only signal; the
  * label always says the same in words.
  *
+ * Details start expanded when [expandDetailsByDefault] is true (first use, before any Apple TV
+ * was connected), so the pairing steps are visible without a tap; otherwise they start
+ * collapsed. Once the user toggles them, their choice wins over the default.
+ *
  * The two system dialogs are the only place the UI touches `android.bluetooth`; their results
  * are not needed because the transport observes the adapter state itself. Launch failures
  * (no such screen, or a missing permission) are reported with a toast instead of crashing.
@@ -75,9 +79,12 @@ fun ConnectionPanel(
     onDisconnect: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    expandDetailsByDefault: Boolean = false,
 ) {
     val launchSystemScreen = rememberSystemScreenLauncher()
-    var expanded by rememberSaveable { mutableStateOf(false) }
+    // null until the user toggles; then their choice overrides the default.
+    var userExpanded by rememberSaveable { mutableStateOf<Boolean?>(null) }
+    val expanded = userExpanded ?: expandDetailsByDefault
     val showDetails = expanded && state.hasDetails()
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -120,7 +127,7 @@ fun ConnectionPanel(
                 val expandedLabel = stringResource(R.string.state_expanded)
                 val collapsedLabel = stringResource(R.string.state_collapsed)
                 TextButton(
-                    onClick = { expanded = !expanded },
+                    onClick = { userExpanded = !expanded },
                     modifier = Modifier.semantics {
                         stateDescription = if (showDetails) expandedLabel else collapsedLabel
                     },

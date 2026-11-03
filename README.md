@@ -33,14 +33,14 @@ The planned controls follow the Siri Remote (1st generation): the touch surface 
 ## Pairing 配對
 
 1. Open Ringomote and allow the Bluetooth permissions it asks for.
-2. Tap **Details**, then **Make discoverable**. On the Apple TV, open **Settings > Remotes and Devices > Bluetooth** and pick your phone.
-3. If the phone and the Apple TV are already paired, tap **Details**, then **Connect** next to the Apple TV, instead.
+2. Tap **Make discoverable** (the pairing details open by themselves until the first connection; otherwise tap **Details** first). On the Apple TV, open **Settings > Remotes and Devices > Bluetooth** and pick your phone.
+3. If the phone and the Apple TV are already paired, tap **Connect** next to the Apple TV under **Details** instead.
 
 These steps have not been verified on a real Apple TV yet.
 
 1. 開啟 Ringomote，並允許它要求的藍牙權限。
-2. 點選「詳細資訊」，再點選「讓其他裝置可以找到」，然後到 Apple TV 開啟「設定 > 遙控器與裝置 > 藍牙」，選擇您的手機。
-3. 若手機與 Apple TV 已經配對過，請改為點選「詳細資訊」，再點選 Apple TV 旁的「連線」。
+2. 點選「讓其他裝置可以找到」（首次連線前，配對說明會自動展開；否則請先點選「詳細資訊」），然後到 Apple TV 開啟「設定 > 遙控器與裝置 > 藍牙」，選擇您的手機。
+3. 若手機與 Apple TV 已經配對過，請改為在「詳細資訊」中點選 Apple TV 旁的「連線」。
 
 以上步驟尚未以實際的 Apple TV 驗證。
 

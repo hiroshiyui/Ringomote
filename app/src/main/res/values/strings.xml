@@ -1,3 +1,52 @@
 <resources>
     <string name="app_name">Ringomote</string>
+
+    <!-- Permission gate -->
+    <string name="permission_title">Bluetooth access needed</string>
+    <string name="permission_rationale">Ringomote acts as a Bluetooth remote for your Apple TV. To do that, it needs permission to connect to and be found by nearby devices. Nothing leaves your phone except the button presses sent to your Apple TV.</string>
+    <string name="permission_grant">Allow Bluetooth access</string>
+    <string name="permission_denied">Permission was not granted. If the system no longer asks, allow “Nearby devices” in the app settings.</string>
+    <string name="permission_open_settings">Open app settings</string>
+
+    <!-- Connection panel -->
+    <string name="state_stopped">Starting Bluetooth…</string>
+    <string name="state_unsupported">This phone cannot act as a Bluetooth input device, so it cannot control an Apple TV.</string>
+    <string name="state_permission_required">Ringomote needs Bluetooth permission.</string>
+    <string name="state_bluetooth_off">Bluetooth is off.</string>
+    <string name="state_registering">Preparing the remote…</string>
+    <string name="state_registration_failed">Ringomote could not register as a Bluetooth remote. Another app may be using the Bluetooth input device. Close that app and try again.</string>
+    <string name="state_ready">Not connected. Pair from the Apple TV, or connect to a paired device below.</string>
+    <string name="state_connecting">Connecting to %1$s…</string>
+    <string name="state_connected">Connected to %1$s.</string>
+    <string name="action_turn_on_bluetooth">Turn on Bluetooth</string>
+    <string name="action_make_discoverable">Make discoverable</string>
+    <string name="pairing_hint">On the Apple TV, open Settings &gt; Remotes and Devices &gt; Bluetooth.</string>
+    <string name="paired_devices_title">Paired devices</string>
+    <string name="paired_devices_empty">No paired devices yet.</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_connect_to">Connect to %1$s</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_retry">Retry</string>
+    <string name="error_no_system_screen">This phone has no screen for that Bluetooth setting.</string>
+
+    <!-- Remote -->
+    <string name="remote_disabled_hint">Connect to an Apple TV to use the remote.</string>
+    <string name="touch_surface_label">Swipe to move\nTap to select</string>
+    <string name="touch_surface_description">Touch surface. Swipe to move, tap to select.</string>
+    <string name="action_select">Select</string>
+    <string name="action_hold">Hold</string>
+    <string name="action_swipe_up">Swipe up</string>
+    <string name="action_swipe_down">Swipe down</string>
+    <string name="action_swipe_left">Swipe left</string>
+    <string name="action_swipe_right">Swipe right</string>
+    <string name="button_menu_label">MENU</string>
+    <string name="button_menu_description">Menu, go back</string>
+    <string name="button_home_label">TV</string>
+    <string name="button_home_description">Home</string>
+    <string name="button_play_pause_label">Play / Pause</string>
+    <string name="button_play_pause_description">Play or pause</string>
+    <string name="button_volume_up_label">+</string>
+    <string name="button_volume_up_description">Volume up</string>
+    <string name="button_volume_down_label">−</string>
+    <string name="button_volume_down_description">Volume down</string>
 </resources>

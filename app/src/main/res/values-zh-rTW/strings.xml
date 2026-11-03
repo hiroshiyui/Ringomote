@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">Ringomote</string>
+
+    <!-- Permission gate -->
+    <string name="permission_title">需要藍牙權限</string>
+    <string name="permission_rationale">Ringomote 會將您的手機當作 Apple TV 的藍牙遙控器。為此，它需要連線到附近裝置及讓附近裝置找到它的權限。除了傳送到您 Apple TV 的按鍵之外，不會有任何資料離開您的手機。</string>
+    <string name="permission_grant">允許藍牙存取</string>
+    <string name="permission_denied">尚未取得權限。若系統不再詢問，請您在應用程式設定中允許「鄰近裝置」。</string>
+    <string name="permission_open_settings">開啟應用程式設定</string>
+
+    <!-- Connection panel -->
+    <string name="state_stopped">正在啟動藍牙…</string>
+    <string name="state_unsupported">這支手機無法作為藍牙輸入裝置，因此無法控制 Apple TV。</string>
+    <string name="state_permission_required">Ringomote 需要藍牙權限。</string>
+    <string name="state_bluetooth_off">藍牙已關閉。</string>
+    <string name="state_registering">正在準備遙控器…</string>
+    <string name="state_registration_failed">Ringomote 無法註冊為藍牙遙控器。可能有其他應用程式正在使用藍牙輸入裝置，請您關閉該應用程式後再試一次。</string>
+    <string name="state_ready">尚未連線。請您從 Apple TV 進行配對，或在下方連線到已配對的裝置。</string>
+    <string name="state_connecting">正在連線到 %1$s…</string>
+    <string name="state_connected">已連線到 %1$s。</string>
+    <string name="action_turn_on_bluetooth">開啟藍牙</string>
+    <string name="action_make_discoverable">讓其他裝置可以找到</string>
+    <string name="pairing_hint">請您在 Apple TV 上開啟「設定 &gt; 遙控器與裝置 &gt; 藍牙」。</string>
+    <string name="paired_devices_title">已配對的裝置</string>
+    <string name="paired_devices_empty">尚無已配對的裝置。</string>
+    <string name="action_connect">連線</string>
+    <string name="action_connect_to">連線到 %1$s</string>
+    <string name="action_disconnect">中斷連線</string>
+    <string name="action_retry">重試</string>
+    <string name="error_no_system_screen">這支手機沒有這項藍牙設定的畫面。</string>
+
+    <!-- Remote -->
+    <string name="remote_disabled_hint">請您先連線到 Apple TV 才能使用遙控器。</string>
+    <string name="touch_surface_label">滑動以移動\n輕觸以選取</string>
+    <string name="touch_surface_description">觸控表面。滑動以移動，輕觸以選取。</string>
+    <string name="action_select">選取</string>
+    <string name="action_hold">長按</string>
+    <string name="action_swipe_up">向上滑動</string>
+    <string name="action_swipe_down">向下滑動</string>
+    <string name="action_swipe_left">向左滑動</string>
+    <string name="action_swipe_right">向右滑動</string>
+    <string name="button_menu_label">MENU</string>
+    <string name="button_menu_description">選單，返回</string>
+    <string name="button_home_label">TV</string>
+    <string name="button_home_description">主畫面</string>
+    <string name="button_play_pause_label">播放／暫停</string>
+    <string name="button_play_pause_description">播放或暫停</string>
+    <string name="button_volume_up_label">+</string>
+    <string name="button_volume_up_description">調高音量</string>
+    <string name="button_volume_down_label">−</string>
+    <string name="button_volume_down_description">調低音量</string>
+</resources>

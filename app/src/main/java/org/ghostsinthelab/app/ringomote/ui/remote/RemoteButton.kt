@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.heightIn
@@ -170,13 +171,16 @@ fun RemoteButton(
                 }
             },
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-        ) {
-            if (icon != null) Icon(painter = icon, contentDescription = null, modifier = Modifier.size(20.dp))
-            Text(text = label, style = labelStyle, textAlign = TextAlign.Center)
+        // The Box centres the content when the button is wider than it (the minimum width).
+        Box(contentAlignment = Alignment.Center) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            ) {
+                if (icon != null) Icon(painter = icon, contentDescription = null, modifier = Modifier.size(20.dp))
+                Text(text = label, style = labelStyle, textAlign = TextAlign.Center)
+            }
         }
     }
 }

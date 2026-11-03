@@ -130,10 +130,14 @@ private fun PairedDeviceList(devices: List<HostDevice>, onConnect: (HostDevice) 
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2,
                 )
-                OutlinedButton(
-                    onClick = { onConnect(device) },
-                    modifier = Modifier.semantics { contentDescription = connectTo },
-                ) { Text(stringResource(R.string.action_connect)) }
+                // The description goes on the label, not the button, so TalkBack reads the
+                // merged button once ("Connect to <name>") instead of description plus label.
+                OutlinedButton(onClick = { onConnect(device) }) {
+                    Text(
+                        text = stringResource(R.string.action_connect),
+                        modifier = Modifier.semantics { contentDescription = connectTo },
+                    )
+                }
             }
         }
     }

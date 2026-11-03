@@ -32,7 +32,7 @@
     <!-- Remote -->
     <string name="remote_disabled_hint">請您先連線到 Apple TV 才能使用遙控器。</string>
     <string name="touch_surface_label">滑動以移動\n輕觸以選取</string>
-    <string name="touch_surface_description">觸控表面。滑動以移動，輕觸以選取。</string>
+    <string name="touch_surface_description">觸控表面</string>
     <string name="action_select">選取</string>
     <string name="action_hold">長按</string>
     <string name="action_swipe_up">向上滑動</string>

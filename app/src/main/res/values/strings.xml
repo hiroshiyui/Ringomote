@@ -32,7 +32,7 @@
     <!-- Remote -->
     <string name="remote_disabled_hint">Connect to an Apple TV to use the remote.</string>
     <string name="touch_surface_label">Swipe to move\nTap to select</string>
-    <string name="touch_surface_description">Touch surface. Swipe to move, tap to select.</string>
+    <string name="touch_surface_description">Touch surface</string>
     <string name="action_select">Select</string>
     <string name="action_hold">Hold</string>
     <string name="action_swipe_up">Swipe up</string>

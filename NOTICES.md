@@ -33,6 +33,7 @@ These are used only to build or test the app and are not included in the distrib
 |---|---|
 | Gradle (including the wrapper in `gradle/wrapper/`), Android Gradle Plugin, Kotlin Compose compiler plugin | Apache License 2.0 |
 | AndroidX Test (JUnit ext, Espresso), Compose UI Test / Tooling | Apache License 2.0 |
+| kotlinx-coroutines-test | Apache License 2.0 |
 | JUnit 4 | [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html) |
 
 ## Trademarks 商標

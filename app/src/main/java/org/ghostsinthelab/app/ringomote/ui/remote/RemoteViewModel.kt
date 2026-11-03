@@ -5,11 +5,15 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.ghostsinthelab.app.ringomote.RingomoteApplication
 import org.ghostsinthelab.app.ringomote.bluetooth.HidTransport
@@ -21,19 +25,26 @@ import org.ghostsinthelab.app.ringomote.remote.RemoteSession
 /**
  * State and actions for the remote screen.
  *
- * All input goes through one serial dispatcher, so reports reach the host in the order the
- * user produced them and binder calls stay off the main thread.
+ * Everything that talks to the transport runs on [serialDispatcher], shared app-wide (see
+ * [org.ghostsinthelab.app.ringomote.AppContainer.serialDispatcher]): reports reach the host in
+ * the order the user produced them, binder calls stay off the main thread, and start/stop
+ * requests from successive screens cannot overtake each other.
+ *
+ * Whenever the link leaves [TransportState.Connected], held controls are released, so a finger
+ * that was down when the Apple TV disconnected does not block the same button after
+ * reconnecting.
  *
  * The ViewModel starts the transport on request ([start], after permissions are granted) and
  * stops it in [onCleared], i.e. when the user leaves the app for good, releasing held keys
- * first.
+ * first. That teardown runs in [applicationScope] because [viewModelScope] is already
+ * cancelled by then.
  */
 class RemoteViewModel(
     private val transport: HidTransport,
     private val session: RemoteSession,
+    private val serialDispatcher: CoroutineDispatcher,
+    private val applicationScope: CoroutineScope,
 ) : ViewModel() {
-
-    private val inputDispatcher = Dispatchers.Default.limitedParallelism(1)
 
     /** The Bluetooth link state. */
     val transportState: StateFlow<TransportState> = transport.state
@@ -43,60 +54,65 @@ class RemoteViewModel(
     /** Paired devices the user can connect to; refresh with [refreshPairedDevices]. */
     val pairedDevices: StateFlow<List<HostDevice>> = _pairedDevices.asStateFlow()
 
+    init {
+        viewModelScope.launch(serialDispatcher) {
+            transport.state
+                .map { it is TransportState.Connected }
+                .distinctUntilChanged()
+                .filter { connected -> !connected }
+                .collect { session.releaseAll() }
+        }
+    }
+
     /** Starts (or retries) the transport, e.g. after permissions were granted. */
-    fun start() {
+    fun start() = serial {
         transport.start()
-        refreshPairedDevices()
+        _pairedDevices.value = transport.bondedDevices()
     }
 
     /** Re-reads the phone's paired devices into [pairedDevices]; empty without permission. */
-    fun refreshPairedDevices() {
-        _pairedDevices.value = transport.bondedDevices()
-    }
+    fun refreshPairedDevices() = serial { _pairedDevices.value = transport.bondedDevices() }
 
     /**
      * Asks the transport to connect to [device]. The outcome arrives through [transportState]
      * (Connecting, then Connected or back to Ready).
      */
-    fun connect(device: HostDevice) {
-        viewModelScope.launch(inputDispatcher) { transport.connect(device.address) }
-    }
+    fun connect(device: HostDevice) = serial { transport.connect(device.address) }
 
     /** Releases held controls first, so nothing stays pressed on the host, then disconnects. */
-    fun disconnect() {
-        viewModelScope.launch(inputDispatcher) {
-            session.releaseAll()
-            transport.disconnect()
-        }
+    fun disconnect() = serial {
+        session.releaseAll()
+        transport.disconnect()
     }
 
     /** Finger down on [control]: held until [release]. */
-    fun press(control: RemoteControl) = input { session.press(control) }
+    fun press(control: RemoteControl) = serial { session.press(control) }
 
     /** Finger up on [control]. */
-    fun release(control: RemoteControl) = input { session.release(control) }
+    fun release(control: RemoteControl) = serial { session.release(control) }
 
     /** A single click, e.g. a swipe step or an accessibility click. */
-    fun tap(control: RemoteControl) = input { session.tap(control) }
+    fun tap(control: RemoteControl) = serial { session.tap(control) }
 
     /** A long press without a finger to time it (accessibility long-click). */
-    fun hold(control: RemoteControl) = input {
+    fun hold(control: RemoteControl) = serial {
         session.press(control)
         delay(LONG_PRESS_MILLIS)
         session.release(control)
     }
 
     /** Releases every held control; call when the screen stops receiving input. */
-    fun releaseAll() = input { session.releaseAll() }
+    fun releaseAll() = serial { session.releaseAll() }
 
-    private fun input(block: suspend () -> Unit) {
-        viewModelScope.launch(inputDispatcher) { block() }
+    private fun serial(block: suspend () -> Unit) {
+        viewModelScope.launch(serialDispatcher) { block() }
     }
 
     override fun onCleared() {
-        // viewModelScope is already cancelled here, so release synchronously.
-        session.releaseAll()
-        transport.stop()
+        applicationScope.launch(serialDispatcher) {
+            session.releaseAll()
+            transport.stop()
+        }
     }
 
     companion object {
@@ -106,8 +122,13 @@ class RemoteViewModel(
         /** Builds the ViewModel from the app's [org.ghostsinthelab.app.ringomote.AppContainer]. */
         val Factory = viewModelFactory {
             initializer {
-                val app = this[APPLICATION_KEY] as RingomoteApplication
-                RemoteViewModel(app.container.transport, app.container.session)
+                val container = (this[APPLICATION_KEY] as RingomoteApplication).container
+                RemoteViewModel(
+                    container.transport,
+                    container.session,
+                    container.serialDispatcher,
+                    container.applicationScope,
+                )
             }
         }
     }

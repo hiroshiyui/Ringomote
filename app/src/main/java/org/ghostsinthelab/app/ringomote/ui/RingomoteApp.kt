@@ -1,11 +1,7 @@
 package org.ghostsinthelab.app.ringomote.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -77,26 +73,21 @@ private fun RemoteHome(vm: RemoteViewModel, modifier: Modifier = Modifier) {
     val ready = state is TransportState.Ready
     LaunchedEffect(ready) { if (ready) vm.refreshPairedDevices() }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
-        ConnectionPanel(
-            state = state,
-            pairedDevices = pairedDevices,
-            onConnect = vm::connect,
-            onDisconnect = vm::disconnect,
-            onRetry = vm::start,
-        )
-        RemoteScreen(
-            enabled = state is TransportState.Connected,
-            onPress = vm::press,
-            onRelease = vm::release,
-            onTap = vm::tap,
-            onHold = vm::hold,
-        )
-    }
+    RemoteScreen(
+        enabled = state is TransportState.Connected,
+        onPress = vm::press,
+        onRelease = vm::release,
+        onTap = vm::tap,
+        onHold = vm::hold,
+        modifier = modifier.padding(16.dp),
+        header = {
+            ConnectionPanel(
+                state = state,
+                pairedDevices = pairedDevices,
+                onConnect = vm::connect,
+                onDisconnect = vm::disconnect,
+                onRetry = vm::start,
+            )
+        },
+    )
 }

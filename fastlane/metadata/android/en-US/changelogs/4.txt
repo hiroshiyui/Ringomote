@@ -1,0 +1,8 @@
+Hello, it's me, Ringomote, with a fresh coat of paint!
+
+* A new Settings tab lets you pick a light or dark theme, or follow the system, and turn dynamic (wallpaper) colour on or off.
+* When dynamic colour is off, I wear my own coral palette, taken from my icon.
+* Menu, TV and Play/Pause now carry small icons beside their labels.
+* The first tab is called Remote, and labels stay tidy at large font sizes.
+
+As before, I can't do Siri voice input, and holding TV doesn't open Control Center.

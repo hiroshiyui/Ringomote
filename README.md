@@ -53,6 +53,12 @@ Android 模擬器無法作為藍牙輸入裝置，因此測試遙控功能需要
 
 ## Trademarks 商標
 
-Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc., registered in the U.S. and other countries. Ringomote is an independent project and is not affiliated with, sponsored or endorsed by Apple Inc. These names are used only to describe compatibility.
+Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc., registered in the U.S. and other countries. Android is a trademark of Google LLC. The Bluetooth® word mark and logos are registered trademarks owned by Bluetooth SIG, Inc. Ringomote is an independent project and is not affiliated with, sponsored or endorsed by any of them. These names are used only to describe compatibility and the technologies the app uses.
 
-Apple、Apple TV、Siri 與 Siri Remote 為 Apple Inc. 在美國及其他國家註冊的商標。Ringomote 為獨立專案，與 Apple Inc. 並無關聯，亦未獲其贊助或認可；上述名稱僅用於說明相容性。
+Apple、Apple TV、Siri 與 Siri Remote 為 Apple Inc. 在美國及其他國家註冊的商標。Android 為 Google LLC 的商標。Bluetooth® 文字商標與標誌為 Bluetooth SIG, Inc. 所有的註冊商標。Ringomote 為獨立專案，與上述公司並無關聯，亦未獲其贊助或認可；這些名稱僅用於說明相容性及本程式使用的技術。
+
+## Third-party notices 第三方聲明
+
+Ringomote uses open-source libraries, mostly under the Apache License 2.0, and its current launcher icon is the Android robot (CC BY 3.0). See [NOTICES.md](NOTICES.md) for the full list.
+
+Ringomote 使用多項開放原始碼函式庫（大多以 Apache License 2.0 授權），目前的啟動圖示為 Android 機器人（CC BY 3.0）。完整清單請見 [NOTICES.md](NOTICES.md)。

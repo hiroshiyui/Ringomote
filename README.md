@@ -1,3 +1,5 @@
+<p align="center"><img src="fastlane/metadata/android/en-US/images/icon.png" alt="Ringomote icon" width="128"></p>
+
 # Ringomote
 
 An Android app that turns your phone into a remote for Apple TV, compatible with the Siri Remote (1st generation).

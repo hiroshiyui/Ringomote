@@ -5,12 +5,15 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
@@ -59,7 +63,8 @@ import org.ghostsinthelab.app.ringomote.remote.RemoteControl
  * Accessibility services do not produce pointer events; they use the semantics actions instead:
  * click calls [onTap] and long click calls [onHold] (a timed hold done by the caller), so
  * press-and-hold does not depend on the user's timing. [contentDescription] names what the
- * button does on the TV; [label] is the short visible text.
+ * button does on the TV; [label] is the short visible text, and [icon], if given, is drawn
+ * beside it as decoration only (no content description: the button already has a name).
  *
  * Keyboards and D-pads: the button takes focus (shown by an outline) and Enter, Space or the
  * D-pad centre act like a finger: key down presses, key up releases. Losing focus, being
@@ -81,6 +86,7 @@ fun RemoteButton(
     modifier: Modifier = Modifier,
     shape: Shape = CircleShape,
     labelStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    icon: Painter? = null,
 ) {
     val haptic = LocalHapticFeedback.current
     val holdLabel = stringResource(R.string.action_hold)
@@ -164,13 +170,13 @@ fun RemoteButton(
                 }
             },
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                text = label,
-                style = labelStyle,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-            )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+        ) {
+            if (icon != null) Icon(painter = icon, contentDescription = null, modifier = Modifier.size(20.dp))
+            Text(text = label, style = labelStyle, textAlign = TextAlign.Center)
         }
     }
 }

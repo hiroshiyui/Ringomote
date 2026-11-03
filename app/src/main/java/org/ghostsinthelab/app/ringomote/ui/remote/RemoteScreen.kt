@@ -1,5 +1,6 @@
 package org.ghostsinthelab.app.ringomote.ui.remote
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -138,6 +140,7 @@ private fun RemoteButtons(
         @StringRes label: Int,
         @StringRes description: Int,
         labelStyle: TextStyle = MaterialTheme.typography.titleMedium,
+        @DrawableRes icon: Int? = null,
     ) = RemoteButton(
         control = control,
         label = stringResource(label),
@@ -148,6 +151,7 @@ private fun RemoteButtons(
         onTap = onTap,
         onHold = onHold,
         labelStyle = labelStyle,
+        icon = icon?.let { painterResource(it) },
     )
 
     // "+" and "−" are single thin glyphs; draw them large and bold so they stay visible.
@@ -158,13 +162,24 @@ private fun RemoteButtons(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-            ControlButton(RemoteControl.Menu, R.string.button_menu_label, R.string.button_menu_description)
-            ControlButton(RemoteControl.Home, R.string.button_home_label, R.string.button_home_description)
+            ControlButton(
+                RemoteControl.Menu,
+                R.string.button_menu_label,
+                R.string.button_menu_description,
+                icon = R.drawable.ic_menu,
+            )
+            ControlButton(
+                RemoteControl.Home,
+                R.string.button_home_label,
+                R.string.button_home_description,
+                icon = R.drawable.ic_tv,
+            )
         }
         ControlButton(
             RemoteControl.PlayPause,
             R.string.button_play_pause_label,
             R.string.button_play_pause_description,
+            icon = R.drawable.ic_play_pause,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
             ControlButton(

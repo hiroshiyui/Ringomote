@@ -40,9 +40,9 @@ These are used only to build or test the app and are not included in the distrib
 
 ### Material Icons
 
-The Bluetooth status icons (`app/src/main/res/drawable/ic_bluetooth*.xml`) use path data from Google's [Material Icons](https://github.com/google/material-design-icons), licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+The Bluetooth status icons (`app/src/main/res/drawable/ic_bluetooth*.xml`) and the Menu and TV button icons (`ic_menu.xml`, `ic_tv.xml`) use path data from Google's [Material Icons](https://github.com/google/material-design-icons), licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
-藍牙狀態圖示（`app/src/main/res/drawable/ic_bluetooth*.xml`）使用 Google [Material Icons](https://github.com/google/material-design-icons) 的路徑資料，以 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) 授權。
+藍牙狀態圖示（`app/src/main/res/drawable/ic_bluetooth*.xml`）與 Menu、TV 按鍵圖示（`ic_menu.xml`、`ic_tv.xml`）使用 Google [Material Icons](https://github.com/google/material-design-icons) 的路徑資料，以 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) 授權。
 
 ## Trademarks 商標
 

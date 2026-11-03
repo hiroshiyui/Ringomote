@@ -62,3 +62,9 @@ Apple、Apple TV、Siri 與 Siri Remote 為 Apple Inc. 在美國及其他國家�
 Ringomote uses open-source libraries, mostly under the Apache License 2.0, and its current launcher icon is the Android robot (CC BY 3.0). See [NOTICES.md](NOTICES.md) for the full list.
 
 Ringomote 使用多項開放原始碼函式庫（大多以 Apache License 2.0 授權），目前的啟動圖示為 Android 機器人（CC BY 3.0）。完整清單請見 [NOTICES.md](NOTICES.md)。
+
+## License 授權
+
+Ringomote is free software, released under the [GNU General Public License, version 3 or later](LICENSE). Third-party components keep their own licenses, as listed in [NOTICES.md](NOTICES.md).
+
+Ringomote 是自由軟體，以 [GNU 通用公共授權第 3 版或其後版本](LICENSE)釋出。第三方元件則各依其原本的授權條款，詳見 [NOTICES.md](NOTICES.md)。

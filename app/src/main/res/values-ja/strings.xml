@@ -59,6 +59,7 @@
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">音量を下げる</string>
     <!-- Tabs, Settings and About -->
+    <string name="tab_remote">リモコン</string>
     <string name="tab_settings">設定</string>
     <string name="settings_appearance_title">外観</string>
     <string name="settings_theme_label">テーマ</string>

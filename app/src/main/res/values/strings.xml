@@ -59,6 +59,7 @@
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">Volume down</string>
     <!-- Tabs, Settings and About -->
+    <string name="tab_remote">Remote</string>
     <string name="tab_settings">Settings</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_theme_label">Theme</string>

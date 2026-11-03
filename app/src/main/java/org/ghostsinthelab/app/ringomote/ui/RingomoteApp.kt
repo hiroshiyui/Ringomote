@@ -9,6 +9,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import org.ghostsinthelab.app.ringomote.R
 import org.ghostsinthelab.app.ringomote.ui.about.AboutScreen
 import org.ghostsinthelab.app.ringomote.ui.settings.SettingsScreen
@@ -80,7 +81,8 @@ fun RingomoteApp(
                     Tab(
                         selected = tab == entry,
                         onClick = { tab = entry },
-                        text = { Text(stringResource(entry.label)) },
+                        // One line: at 2.0x a wrapped label breaks mid-word and crowds the row.
+                        text = { Text(stringResource(entry.label), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     )
                 }
             }
@@ -110,7 +112,7 @@ fun RingomoteApp(
  * Bluetooth link itself stays up, so switching back is instant.
  */
 private enum class AppTab(@StringRes val label: Int) {
-    Remote(R.string.app_name),
+    Remote(R.string.tab_remote),
     Settings(R.string.tab_settings),
     About(R.string.tab_about),
 }

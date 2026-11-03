@@ -6,24 +6,22 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.annotation.DrawableRes
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -31,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
@@ -52,7 +51,7 @@ private const val DISCOVERABLE_SECONDS = 120
  * The connection header: one compact status row, with the longer explanations behind a
  * Details toggle that is collapsed by default, so the remote below keeps most of the screen.
  *
- * The row always shows a status dot and a short status label (a polite live region, so TalkBack
+ * The row always shows a Bluetooth status icon and a short status label (a polite live region, so TalkBack
  * announces every change), plus the one action the state needs right away:
  * - [TransportState.BluetoothOff]: turn Bluetooth on.
  * - [TransportState.Connecting] / [TransportState.Connected]: disconnect.
@@ -60,8 +59,8 @@ private const val DISCOVERABLE_SECONDS = 120
  *
  * Details, for the states that have any ([hasDetails]), hold the full explanation and, when
  * [TransportState.Ready], the pairing steps: make the phone discoverable for pairing from the
- * Apple TV, or connect to one of [pairedDevices]. The dot's colour is never the only signal; the
- * label always says the same in words.
+ * Apple TV, or connect to one of [pairedDevices]. Neither the icon's shape nor its colour is the
+ * only signal; the label always says the same in words, so the icon is decorative to TalkBack.
  *
  * Details start expanded when [expandDetailsByDefault] is true (first use, before any Apple TV
  * was connected), so the pairing steps are visible without a tap; otherwise they start
@@ -93,11 +92,12 @@ fun ConnectionPanel(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Box(
-                Modifier
-                    .size(10.dp)
-                    .clip(CircleShape)
-                    .background(state.indicatorColor()),
+            // Decorative: the label next to it says the same in words.
+            Icon(
+                painter = painterResource(state.indicatorIcon()),
+                contentDescription = null,
+                tint = state.indicatorColor(),
+                modifier = Modifier.size(24.dp),
             )
             Text(
                 text = state.describeShort(),
@@ -169,13 +169,27 @@ private fun TransportState.hasDetails(): Boolean = when (this) {
     else -> false
 }
 
-/** Status dot colour: primary when connected, error when blocked, neutral otherwise. */
+/**
+ * Status icon: Bluetooth-connected when connected, Bluetooth-searching while a link is being set
+ * up, Bluetooth-disabled when blocked, and the plain Bluetooth symbol when ready to pair.
+ */
+@DrawableRes
+private fun TransportState.indicatorIcon(): Int = when (this) {
+    is TransportState.Connected -> R.drawable.ic_bluetooth_connected
+    is TransportState.Connecting, TransportState.Registering, TransportState.Stopped ->
+        R.drawable.ic_bluetooth_searching
+    TransportState.Ready -> R.drawable.ic_bluetooth
+    TransportState.BluetoothOff, TransportState.RegistrationFailed,
+    TransportState.Unsupported, TransportState.PermissionRequired -> R.drawable.ic_bluetooth_disabled
+}
+
+/** Status icon colour: primary when connected, error when blocked, neutral otherwise. */
 @Composable
 private fun TransportState.indicatorColor(): Color = when (this) {
     is TransportState.Connected -> MaterialTheme.colorScheme.primary
     TransportState.BluetoothOff, TransportState.RegistrationFailed,
     TransportState.Unsupported, TransportState.PermissionRequired -> MaterialTheme.colorScheme.error
-    else -> MaterialTheme.colorScheme.outline
+    else -> MaterialTheme.colorScheme.onSurfaceVariant
 }
 
 /** Paired hosts, each with a Connect button whose spoken name includes the device name. */

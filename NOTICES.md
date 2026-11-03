@@ -36,6 +36,14 @@ These are used only to build or test the app and are not included in the distrib
 | kotlinx-coroutines-test | Apache License 2.0 |
 | JUnit 4 | [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html) |
 
+## Artwork 圖像
+
+### Material Icons
+
+The Bluetooth status icons (`app/src/main/res/drawable/ic_bluetooth*.xml`) use path data from Google's [Material Icons](https://github.com/google/material-design-icons), licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+藍牙狀態圖示（`app/src/main/res/drawable/ic_bluetooth*.xml`）使用 Google [Material Icons](https://github.com/google/material-design-icons) 的路徑資料，以 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) 授權。
+
 ## Trademarks 商標
 
 - Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc., registered in the U.S. and other countries.

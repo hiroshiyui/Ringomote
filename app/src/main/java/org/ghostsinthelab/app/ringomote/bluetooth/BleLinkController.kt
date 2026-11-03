@@ -66,6 +66,9 @@ interface BlePeripheralPort {
  *   over from a clean state; events from the old server are ignored once it is gone.
  * - Advertising is stopped while a host is connected (tvOS keeps one link; a second host
  *   would steal it) and resumed when the host leaves.
+ * - A bonded host may connect the instant the server exists, before its services are added
+ *   (seen on hardware: 3 ms after the app restarted). Such a host is kept and shown as
+ *   Connecting until [onServicesAdded], then as Connected; advertising is not started for it.
  * - A connection the phone asked for ([connect]) is pending until the host reports
  *   connected; if the host disconnects or the user cancels before that, the link goes back
  *   to Ready, so a failed phone-side connect cannot leave the UI stuck on Connecting.
@@ -176,7 +179,7 @@ class BleLinkController(private val port: BlePeripheralPort) {
     /** A host connected to the server. */
     @Synchronized
     fun onHostConnected(address: String) {
-        if (!started || server != Server.Open || !port.isBluetoothOn()) return
+        if (!started || server == Server.None || !port.isBluetoothOn()) return
         if (host != null && host != address) {
             port.disconnect(address) // One host at a time.
             return
@@ -188,7 +191,7 @@ class BleLinkController(private val port: BlePeripheralPort) {
             port.stopAdvertising()
             advertising = false
         }
-        showHost()
+        if (server == Server.Open) showHost() // else: Registering until the services exist
     }
 
     /** The host wrote the input report's client configuration (notifications on). */
@@ -206,7 +209,7 @@ class BleLinkController(private val port: BlePeripheralPort) {
         else if (host != address) return
         host = null
         subscribed = false
-        if (!started || server != Server.Open) return
+        if (!started || server == Server.None) return
         advance()
     }
 

@@ -226,6 +226,34 @@ class BleLinkControllerTest {
         assertEquals(TransportState.Registering, controller.state.value) // advertising again
     }
 
+    /** A bonded host that connects before the services are added (seen on hardware) is kept. */
+    @Test
+    fun hostConnectingBeforeServicesAddedIsKept() {
+        port.bonded += tv
+        controller.start()
+        controller.onHostConnected(tv)
+        assertEquals(TransportState.Registering, controller.state.value)
+
+        controller.onServicesAdded()
+        assertEquals(TransportState.Connected(port.hostDevice(tv)), controller.state.value)
+        assertEquals(tv, controller.connectedHost)
+        assertEquals(0, port.startAdvertisingCalls)
+
+        controller.onHostDisconnected(tv)
+        assertEquals(1, port.startAdvertisingCalls)
+    }
+
+    /** An early host that leaves before the services are added is forgotten, and advertising starts. */
+    @Test
+    fun earlyHostLeavingBeforeServicesAdded() {
+        controller.start()
+        controller.onHostConnected(tv)
+        controller.onHostDisconnected(tv)
+        assertNull(controller.connectedHost)
+        controller.onServicesAdded()
+        assertEquals(1, port.startAdvertisingCalls)
+    }
+
     /** A refused connect request leaves the state alone. */
     @Test
     fun refusedConnectKeepsState() {

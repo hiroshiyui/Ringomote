@@ -92,7 +92,9 @@ class BleHidTransport(context: Context) : HidTransport {
 
         override fun connect(address: String): Boolean {
             val device = remoteDevice(address) ?: return false
-            return server?.connect(device, false) == true
+            // autoConnect: let the stack bring the bonded host back when it is reachable, instead
+            // of dialling it directly, which the Apple TV closes after a second.
+            return server?.connect(device, true) == true
         }
 
         override fun disconnect(address: String) {
@@ -212,6 +214,8 @@ class BleHidTransport(context: Context) : HidTransport {
         }
 
         override fun onConnectionStateChange(device: BluetoothDevice, status: Int, newState: Int) {
+            // No address: the status (HCI reason) and state are enough to diagnose link drops.
+            Log.i(TAG, "Host connection state=$newState status=$status")
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> controller.onHostConnected(device.address)
                 BluetoothProfile.STATE_DISCONNECTED -> controller.onHostDisconnected(device.address)

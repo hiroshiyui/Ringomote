@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">Ringomote</string>
+
+    <!-- Permission gate -->
+    <string name="permission_title">Bluetooth へのアクセスが必要です</string>
+    <string name="permission_rationale">Ringomote は、お使いのスマートフォンを Apple TV の Bluetooth リモコンとして使えるようにします。そのため、付近のデバイスへの接続と、付近のデバイスから見つけてもらうための権限が必要です。Apple TV に送るボタン操作以外のデータが、スマートフォンの外に送られることはありません。</string>
+    <string name="permission_grant">Bluetooth へのアクセスを許可</string>
+    <string name="permission_denied">権限が許可されませんでした。確認画面が表示されなくなった場合は、アプリの設定で「付近のデバイス」を許可してください。</string>
+    <string name="permission_open_settings">アプリの設定を開く</string>
+
+    <!-- Connection panel -->
+    <string name="state_stopped">Bluetooth を起動しています…</string>
+    <string name="state_unsupported">このスマートフォンは Bluetooth 入力デバイスとして動作できないため、Apple TV を操作できません。</string>
+    <string name="state_permission_required">Ringomote には Bluetooth の権限が必要です。</string>
+    <string name="state_bluetooth_off">Bluetooth がオフになっています。</string>
+    <string name="state_registering">リモコンを準備しています…</string>
+    <string name="state_registration_failed">Ringomote を Bluetooth リモコンとして登録できませんでした。ほかのアプリが Bluetooth 入力デバイスを使用している可能性があります。そのアプリを終了してから、もう一度お試しください。</string>
+    <string name="state_ready">接続されていません。Apple TV 側でペアリングするか、下のペアリング済みデバイスに接続してください。</string>
+    <string name="state_connecting">%1$s に接続しています…</string>
+    <string name="state_connected">%1$s に接続しました。</string>
+    <string name="state_short_stopped">起動中…</string>
+    <string name="state_short_unsupported">非対応</string>
+    <string name="state_short_permission_required">権限が必要です</string>
+    <string name="state_short_bluetooth_off">Bluetooth オフ</string>
+    <string name="state_short_registering">準備中…</string>
+    <string name="state_short_registration_failed">登録に失敗しました</string>
+    <string name="state_short_ready">未接続</string>
+    <string name="action_show_details">詳細</string>
+    <string name="action_hide_details">閉じる</string>
+    <string name="state_expanded">展開</string>
+    <string name="state_collapsed">折りたたみ</string>
+    <string name="action_turn_on_bluetooth">Bluetooth をオンにする</string>
+    <string name="action_make_discoverable">検出可能にする</string>
+    <string name="pairing_hint">Apple TV で「設定 &gt; リモコンとデバイス &gt; Bluetooth」を開いてください。</string>
+    <string name="paired_devices_title">ペアリング済みのデバイス</string>
+    <string name="paired_devices_empty">ペアリング済みのデバイスはまだありません。</string>
+    <string name="action_connect">接続</string>
+    <string name="action_connect_to">%1$s に接続</string>
+    <string name="action_disconnect">接続を解除</string>
+    <string name="action_retry">再試行</string>
+    <string name="error_no_system_screen">このスマートフォンには、その Bluetooth 設定の画面がありません。</string>
+
+    <!-- Remote -->
+    <string name="touch_surface_label">スワイプで移動\nタップで選択</string>
+    <string name="touch_surface_description">タッチサーフェス</string>
+    <string name="action_select">選択</string>
+    <string name="action_hold">長押し</string>
+    <string name="action_swipe_up">上にスワイプ</string>
+    <string name="action_swipe_down">下にスワイプ</string>
+    <string name="action_swipe_left">左にスワイプ</string>
+    <string name="action_swipe_right">右にスワイプ</string>
+    <string name="button_menu_label">MENU</string>
+    <string name="button_menu_description">メニュー、戻る</string>
+    <string name="button_home_label">TV</string>
+    <string name="button_home_description">ホーム</string>
+    <string name="button_play_pause_label">再生／一時停止</string>
+    <string name="button_play_pause_description">再生または一時停止</string>
+    <string name="button_volume_up_label">+</string>
+    <string name="button_volume_up_description">音量を上げる</string>
+    <string name="button_volume_down_label">−</string>
+    <string name="button_volume_down_description">音量を下げる</string>
+</resources>

@@ -59,4 +59,20 @@
     <string name="button_volume_up_description">Volume up</string>
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">Volume down</string>
+    <!-- Tabs and About -->
+    <string name="tab_about">About</string>
+    <string name="about_version">Version %1$s (%2$d)</string>
+    <string name="about_tagline">Use your phone as a remote for Apple TV, compatible with the Siri Remote (1st generation).</string>
+    <string name="about_copyright" translatable="false">Copyright © 2026 Hui-Hong You</string>
+    <string name="about_privacy_title">Privacy</string>
+    <string name="about_privacy_body">Ringomote has no internet permission and collects no data. Button presses go only to your Apple TV, directly over Bluetooth. The app stores one setting on your phone: whether it has connected before.</string>
+    <string name="about_license_title">License</string>
+    <string name="about_license_body">Ringomote is free software, released under the GNU General Public License, version 3 or later. You may use, study, share and change it under the terms of that license.</string>
+    <string name="about_license_link">Read the license</string>
+    <string name="about_source_link">Source code on GitHub</string>
+    <string name="about_oss_title">Open-source software</string>
+    <string name="about_oss_body">Ringomote is built with AndroidX, Jetpack Compose, Material 3, Kotlin and kotlinx.coroutines, all under the Apache License 2.0. Its Bluetooth status icons use Google’s Material Icons (Apache License 2.0).</string>
+    <string name="about_notices_link">All third-party notices</string>
+    <string name="about_trademarks_title">Trademarks</string>
+    <string name="about_trademarks_body">Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc., registered in the U.S. and other countries. Android is a trademark of Google LLC. The Bluetooth® word mark and logos are registered trademarks owned by Bluetooth SIG, Inc. Ringomote is an independent project and is not affiliated with, sponsored or endorsed by any of them; these names are used only to describe compatibility and the technologies the app uses.</string>
 </resources>

@@ -1,5 +1,16 @@
 package org.ghostsinthelab.app.ringomote.ui
 
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.res.stringResource
+import org.ghostsinthelab.app.ringomote.R
+import org.ghostsinthelab.app.ringomote.ui.about.AboutScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -25,7 +36,8 @@ import org.ghostsinthelab.app.ringomote.ui.remote.RemoteViewModel
 /**
  * Root of the UI: wires [RemoteViewModel] to the screens.
  *
- * Until every permission in [BluetoothPermissions.runtime] is granted it shows
+ * Two tabs: the remote and [AboutScreen]. About is always reachable; on the remote tab, until
+ * every permission in [BluetoothPermissions.runtime] is granted it shows
  * [PermissionScreen]; afterwards it starts the transport and shows the [ConnectionPanel] above
  * the [RemoteScreen]. Permissions are re-checked on every resume, since the user may grant or
  * revoke them in the system settings while the app is in the background.
@@ -51,16 +63,42 @@ fun RingomoteApp(
     // start() is idempotent, so it is safe on entry, after a grant and after recreation.
     LaunchedEffect(granted) { if (granted) vm.start() }
 
-    Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
-        if (granted) {
-            RemoteHome(vm = vm, modifier = Modifier.padding(innerPadding))
-        } else {
-            PermissionScreen(
-                onGranted = { granted = true },
-                modifier = Modifier.padding(innerPadding),
-            )
+    var tab by rememberSaveable { mutableStateOf(AppTab.Remote) }
+
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            PrimaryTabRow(
+                selectedTabIndex = tab.ordinal,
+                modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
+            ) {
+                AppTab.entries.forEach { entry ->
+                    Tab(
+                        selected = tab == entry,
+                        onClick = { tab = entry },
+                        text = { Text(stringResource(entry.label)) },
+                    )
+                }
+            }
+        },
+    ) { innerPadding ->
+        val content = Modifier.padding(innerPadding)
+        when {
+            tab == AppTab.About -> AboutScreen(modifier = content)
+            granted -> RemoteHome(vm = vm, modifier = content)
+            else -> PermissionScreen(onGranted = { granted = true }, modifier = content)
         }
     }
+}
+
+/**
+ * The top-level tabs. Leaving the Remote tab removes the remote from the screen, which releases
+ * any key still held (see [org.ghostsinthelab.app.ringomote.ui.remote.RemoteButton]); the
+ * Bluetooth link itself stays up, so switching back is instant.
+ */
+private enum class AppTab(@StringRes val label: Int) {
+    Remote(R.string.app_name),
+    About(R.string.tab_about),
 }
 
 /** The connection panel and the remote, shown once permissions are granted. */

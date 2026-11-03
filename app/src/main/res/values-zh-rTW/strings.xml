@@ -59,4 +59,19 @@
     <string name="button_volume_up_description">調高音量</string>
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">調低音量</string>
+    <!-- Tabs and About -->
+    <string name="tab_about">關於</string>
+    <string name="about_version">版本 %1$s（%2$d）</string>
+    <string name="about_tagline">將您的手機當作 Apple TV 遙控器使用，與 Siri Remote（第 1 代）相容。</string>
+    <string name="about_privacy_title">隱私</string>
+    <string name="about_privacy_body">Ringomote 沒有網路權限，也不收集任何資料。按鍵操作只會透過藍牙直接傳送到您的 Apple TV。本程式只在您的手機上儲存一項設定：是否曾經連線過。</string>
+    <string name="about_license_title">授權</string>
+    <string name="about_license_body">Ringomote 是自由軟體，以 GNU 通用公共授權第 3 版或其後版本釋出。您可以依該授權條款使用、研究、分享與修改本程式。</string>
+    <string name="about_license_link">閱讀授權條款</string>
+    <string name="about_source_link">GitHub 上的原始碼</string>
+    <string name="about_oss_title">開放原始碼軟體</string>
+    <string name="about_oss_body">Ringomote 使用 AndroidX、Jetpack Compose、Material 3、Kotlin 與 kotlinx.coroutines 建置，皆以 Apache License 2.0 授權。藍牙狀態圖示使用 Google 的 Material Icons（Apache License 2.0）。</string>
+    <string name="about_notices_link">完整第三方聲明</string>
+    <string name="about_trademarks_title">商標</string>
+    <string name="about_trademarks_body">Apple、Apple TV、Siri 與 Siri Remote 為 Apple Inc. 在美國及其他國家註冊的商標。Android 為 Google LLC 的商標。Bluetooth® 文字商標與標誌為 Bluetooth SIG, Inc. 所有的註冊商標。Ringomote 為獨立專案，與上述公司並無關聯，亦未獲其贊助或認可；這些名稱僅用於說明相容性及本程式使用的技術。</string>
 </resources>

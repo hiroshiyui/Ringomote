@@ -3,7 +3,10 @@ package org.ghostsinthelab.app.ringomote.ui.settings
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -69,13 +72,16 @@ fun SettingsScreen(
                 text = stringResource(R.string.settings_theme_label),
                 style = MaterialTheme.typography.bodyMedium,
             )
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            // IntrinsicSize.Min: a label that wraps at large font scales (「跟隨系統」 at 2.0×)
+            // makes every segment as tall as the tallest, instead of a staircase.
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
                 ThemeMode.entries.forEachIndexed { index, mode ->
                     SegmentedButton(
                         selected = appearance.mode == mode,
                         onClick = { onModeChange(mode) },
                         shape = SegmentedButtonDefaults.itemShape(index = index, count = ThemeMode.entries.size),
                         label = { Text(stringResource(mode.label)) },
+                        modifier = Modifier.fillMaxHeight(),
                     )
                 }
             }

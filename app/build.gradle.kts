@@ -36,6 +36,11 @@ android {
     }
 }
 
+// APKs come out as ringomote_v<versionName>-<buildType>.apk, the names used for releases.
+base {
+    archivesName = "ringomote_v${android.defaultConfig.versionName}"
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

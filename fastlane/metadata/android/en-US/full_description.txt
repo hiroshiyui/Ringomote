@@ -1,0 +1,17 @@
+Hello, it's me, Ringomote.
+
+I turn your phone into a remote for Apple TV, compatible with the Siri Remote (1st generation). I talk to the Apple TV directly over Bluetooth Low Energy, presenting myself as a Bluetooth input device, just as the physical remote does. No Wi-Fi network, Apple account, bridge device or internet access is involved, and I collect no data.
+
+What I offer:
+
+* A touch surface: swipe to move the highlight, tap to select.
+* Menu, TV (Home), Play/Pause, and Volume up/down buttons.
+* Pairing from the Apple TV's own Bluetooth settings, with the steps shown on screen.
+* TalkBack support, keyboard and D-pad control, and layouts that survive large fonts.
+* English, 台灣漢語 and 日本語.
+
+What I can't do: Siri voice input, and holding the TV button does not open Control Center, because tvOS treats a keyboard's Home key as a tap.
+
+Requirements: a phone running Android 9 or later with Bluetooth Low Energy, and an Apple TV that works with the Siri Remote (1st generation) or Bluetooth input devices.
+
+Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc. Ringomote is an independent project and is not affiliated with, sponsored or endorsed by Apple Inc.; these names are used only to describe compatibility.

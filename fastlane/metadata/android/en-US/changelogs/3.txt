@@ -1,0 +1,8 @@
+Hello, it's me, Ringomote, in my first release that has met a real Apple TV!
+
+* I now talk to the Apple TV over Bluetooth Low Energy, so it finds me in its Bluetooth settings and pairs with me.
+* Touch surface, Menu, TV, Play/Pause and Volume all work on the Apple TV.
+* The pairing steps, including the second prompt hidden in the notification shade, are shown on screen.
+* TalkBack, keyboards and big fonts are welcome.
+
+I can't do Siri voice input, and holding TV doesn't open Control Center.

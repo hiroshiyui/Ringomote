@@ -18,6 +18,17 @@
     <string name="state_ready">尚未連線。請您從 Apple TV 進行配對，或在下方連線到已配對的裝置。</string>
     <string name="state_connecting">正在連線到 %1$s…</string>
     <string name="state_connected">已連線到 %1$s。</string>
+    <string name="state_short_stopped">正在啟動…</string>
+    <string name="state_short_unsupported">不支援</string>
+    <string name="state_short_permission_required">需要權限</string>
+    <string name="state_short_bluetooth_off">藍牙已關閉</string>
+    <string name="state_short_registering">準備中…</string>
+    <string name="state_short_registration_failed">註冊失敗</string>
+    <string name="state_short_ready">尚未連線</string>
+    <string name="action_show_details">詳細資訊</string>
+    <string name="action_hide_details">隱藏</string>
+    <string name="state_expanded">已展開</string>
+    <string name="state_collapsed">已收合</string>
     <string name="action_turn_on_bluetooth">開啟藍牙</string>
     <string name="action_make_discoverable">讓其他裝置可以找到</string>
     <string name="pairing_hint">請您在 Apple TV 上開啟「設定 &gt; 遙控器與裝置 &gt; 藍牙」。</string>
@@ -30,7 +41,6 @@
     <string name="error_no_system_screen">這支手機沒有這項藍牙設定的畫面。</string>
 
     <!-- Remote -->
-    <string name="remote_disabled_hint">請您先連線到 Apple TV 才能使用遙控器。</string>
     <string name="touch_surface_label">滑動以移動\n輕觸以選取</string>
     <string name="touch_surface_description">觸控表面</string>
     <string name="action_select">選取</string>

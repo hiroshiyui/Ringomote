@@ -15,14 +15,12 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ghostsinthelab.app.ringomote.R
@@ -42,13 +40,14 @@ private const val HEADER_MAX_FRACTION = 0.4f
  * sized to the screen instead of scrolled:
  * - Portrait: the [header] takes at most [HEADER_MAX_FRACTION] of the height and scrolls
  *   inside that, the buttons take what they need at the current font scale, and the touch
- *   surface is the largest square that fits in what is left.
+ *   surface is the largest square that fits in what is left; the remote is centred in the
+ *   space below the header.
  * - Landscape: header and buttons scroll in a column on the start side; the touch surface is a
  *   square as tall as the screen on the end side.
  *
  * Stateless: [enabled] (true only while connected) and the input callbacks come from the
  * caller, normally [RemoteViewModel]. When disabled, every control is dimmed and announced as
- * disabled, and a hint above the remote says why.
+ * disabled; the [header]'s status row says why, so the remote carries no hint text of its own.
  */
 @Composable
 fun RemoteScreen(
@@ -88,7 +87,6 @@ fun RemoteScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     header()
-                    if (!enabled) DisabledHint()
                     Buttons()
                 }
                 Surface(Modifier.fillMaxHeight().aspectRatio(1f, matchHeightConstraintsFirst = true))
@@ -106,14 +104,20 @@ fun RemoteScreen(
                         .heightIn(max = headerMaxHeight)
                         .verticalScroll(rememberScrollState()),
                 ) { header() }
-                if (!enabled) DisabledHint()
-                Surface(
-                    Modifier
-                        .weight(1f, fill = false)
-                        .widthIn(max = 480.dp)
-                        .aspectRatio(1f, matchHeightConstraintsFirst = true),
-                )
-                Buttons()
+                // The remote itself, centred in the space the header leaves.
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+                ) {
+                    Surface(
+                        Modifier
+                            .weight(1f, fill = false)
+                            .widthIn(max = 480.dp)
+                            .aspectRatio(1f, matchHeightConstraintsFirst = true),
+                    )
+                    Buttons()
+                }
             }
         }
     }
@@ -177,17 +181,6 @@ private fun RemoteButtons(
             )
         }
     }
-}
-
-/** Explains why the remote is dimmed. */
-@Composable
-private fun DisabledHint() {
-    Text(
-        text = stringResource(R.string.remote_disabled_hint),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.Center,
-    )
 }
 
 @Preview(showBackground = true, widthDp = 400, heightDp = 860)

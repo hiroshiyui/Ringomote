@@ -18,6 +18,17 @@
     <string name="state_ready">Not connected. Pair from the Apple TV, or connect to a paired device below.</string>
     <string name="state_connecting">Connecting to %1$s…</string>
     <string name="state_connected">Connected to %1$s.</string>
+    <string name="state_short_stopped">Starting…</string>
+    <string name="state_short_unsupported">Not supported</string>
+    <string name="state_short_permission_required">Permission needed</string>
+    <string name="state_short_bluetooth_off">Bluetooth off</string>
+    <string name="state_short_registering">Preparing…</string>
+    <string name="state_short_registration_failed">Registration failed</string>
+    <string name="state_short_ready">Not connected</string>
+    <string name="action_show_details">Details</string>
+    <string name="action_hide_details">Hide</string>
+    <string name="state_expanded">Expanded</string>
+    <string name="state_collapsed">Collapsed</string>
     <string name="action_turn_on_bluetooth">Turn on Bluetooth</string>
     <string name="action_make_discoverable">Make discoverable</string>
     <string name="pairing_hint">On the Apple TV, open Settings &gt; Remotes and Devices &gt; Bluetooth.</string>
@@ -30,7 +41,6 @@
     <string name="error_no_system_screen">This phone has no screen for that Bluetooth setting.</string>
 
     <!-- Remote -->
-    <string name="remote_disabled_hint">Connect to an Apple TV to use the remote.</string>
     <string name="touch_surface_label">Swipe to move\nTap to select</string>
     <string name="touch_surface_description">Touch surface</string>
     <string name="action_select">Select</string>

@@ -6,6 +6,19 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,15 +49,19 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
 private const val DISCOVERABLE_SECONDS = 120
 
 /**
- * Shows the Bluetooth link [state] as text and the actions that move it forward.
+ * The connection header: one compact status row, with the longer explanations behind a
+ * Details toggle that is collapsed by default, so the remote below keeps most of the screen.
  *
- * The status text is a polite live region, so TalkBack announces every change (connecting,
- * connected, Bluetooth turned off) without the user having to look for it. Actions per state:
- * - [TransportState.BluetoothOff]: ask the system to turn Bluetooth on.
- * - [TransportState.Ready]: make the phone discoverable for pairing from the Apple TV, and
- *   connect to one of [pairedDevices].
+ * The row always shows a status dot and a short status label (a polite live region, so TalkBack
+ * announces every change), plus the one action the state needs right away:
+ * - [TransportState.BluetoothOff]: turn Bluetooth on.
  * - [TransportState.Connecting] / [TransportState.Connected]: disconnect.
  * - [TransportState.RegistrationFailed]: retry via [onRetry].
+ *
+ * Details, for the states that have any ([hasDetails]), hold the full explanation and, when
+ * [TransportState.Ready], the pairing steps: make the phone discoverable for pairing from the
+ * Apple TV, or connect to one of [pairedDevices]. The dot's colour is never the only signal; the
+ * label always says the same in words.
  *
  * The two system dialogs are the only place the UI touches `android.bluetooth`; their results
  * are not needed because the transport observes the adapter state itself. Launch failures
@@ -60,19 +77,64 @@ fun ConnectionPanel(
     modifier: Modifier = Modifier,
 ) {
     val launchSystemScreen = rememberSystemScreenLauncher()
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val showDetails = expanded && state.hasDetails()
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(
-            text = state.describe(),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-        )
-        when (state) {
-            TransportState.BluetoothOff -> Button(
-                onClick = { launchSystemScreen(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)) },
-            ) { Text(stringResource(R.string.action_turn_on_bluetooth)) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(
+                Modifier
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(state.indicatorColor()),
+            )
+            Text(
+                text = state.describeShort(),
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .weight(1f)
+                    .semantics { liveRegion = LiveRegionMode.Polite },
+            )
+            when (state) {
+                TransportState.BluetoothOff -> FilledTonalButton(
+                    onClick = { launchSystemScreen(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)) },
+                ) { Text(stringResource(R.string.action_turn_on_bluetooth)) }
 
-            TransportState.Ready -> {
+                is TransportState.Connecting, is TransportState.Connected -> OutlinedButton(
+                    onClick = onDisconnect,
+                ) { Text(stringResource(R.string.action_disconnect)) }
+
+                TransportState.RegistrationFailed -> FilledTonalButton(onClick = onRetry) {
+                    Text(stringResource(R.string.action_retry))
+                }
+
+                else -> Unit
+            }
+            if (state.hasDetails()) {
+                val expandedLabel = stringResource(R.string.state_expanded)
+                val collapsedLabel = stringResource(R.string.state_collapsed)
+                TextButton(
+                    onClick = { expanded = !expanded },
+                    modifier = Modifier.semantics {
+                        stateDescription = if (showDetails) expandedLabel else collapsedLabel
+                    },
+                ) {
+                    Text(
+                        stringResource(if (showDetails) R.string.action_hide_details else R.string.action_show_details),
+                    )
+                }
+            }
+        }
+
+        if (showDetails) {
+            Text(text = state.describe(), style = MaterialTheme.typography.bodyMedium)
+            if (state == TransportState.Ready) {
                 Button(
                     onClick = {
                         launchSystemScreen(
@@ -89,19 +151,24 @@ fun ConnectionPanel(
                 )
                 PairedDeviceList(devices = pairedDevices, onConnect = onConnect)
             }
-
-            is TransportState.Connecting, is TransportState.Connected -> OutlinedButton(
-                onClick = onDisconnect,
-            ) { Text(stringResource(R.string.action_disconnect)) }
-
-            TransportState.RegistrationFailed -> Button(onClick = onRetry) {
-                Text(stringResource(R.string.action_retry))
-            }
-
-            TransportState.Stopped, TransportState.Unsupported,
-            TransportState.PermissionRequired, TransportState.Registering -> Unit
         }
     }
+}
+
+/** Whether [ConnectionPanel] has more to say about this state than the status row. */
+private fun TransportState.hasDetails(): Boolean = when (this) {
+    TransportState.Ready, TransportState.RegistrationFailed,
+    TransportState.Unsupported, TransportState.PermissionRequired -> true
+    else -> false
+}
+
+/** Status dot colour: primary when connected, error when blocked, neutral otherwise. */
+@Composable
+private fun TransportState.indicatorColor(): Color = when (this) {
+    is TransportState.Connected -> MaterialTheme.colorScheme.primary
+    TransportState.BluetoothOff, TransportState.RegistrationFailed,
+    TransportState.Unsupported, TransportState.PermissionRequired -> MaterialTheme.colorScheme.error
+    else -> MaterialTheme.colorScheme.outline
 }
 
 /** Paired hosts, each with a Connect button whose spoken name includes the device name. */
@@ -167,6 +234,21 @@ private fun rememberSystemScreenLauncher(): (Intent) -> Unit {
 /** The device name, or its address when Android does not know the name. */
 private fun HostDevice.displayName(): String = name?.takeIf { it.isNotBlank() } ?: address
 
+/** The short status label shown in the collapsed row. */
+@Composable
+private fun TransportState.describeShort(): String = when (this) {
+    TransportState.Stopped -> stringResource(R.string.state_short_stopped)
+    TransportState.Unsupported -> stringResource(R.string.state_short_unsupported)
+    TransportState.PermissionRequired -> stringResource(R.string.state_short_permission_required)
+    TransportState.BluetoothOff -> stringResource(R.string.state_short_bluetooth_off)
+    TransportState.Registering -> stringResource(R.string.state_short_registering)
+    TransportState.RegistrationFailed -> stringResource(R.string.state_short_registration_failed)
+    TransportState.Ready -> stringResource(R.string.state_short_ready)
+    is TransportState.Connecting -> stringResource(R.string.state_connecting, device.displayName())
+    is TransportState.Connected -> stringResource(R.string.state_connected, device.displayName())
+}
+
+/** The full explanation shown under Details. */
 @Composable
 private fun TransportState.describe(): String = when (this) {
     TransportState.Stopped -> stringResource(R.string.state_stopped)

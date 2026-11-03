@@ -191,6 +191,41 @@ class BleLinkControllerTest {
         assertEquals(TransportState.Connecting(port.hostDevice(tv)), controller.state.value)
     }
 
+    /** A phone-side connect that the host drops before connecting returns to Ready (seen on hardware). */
+    @Test
+    fun pendingConnectDroppedReturnsToReady() {
+        startAdvertising()
+        assertTrue(controller.connect(tv))
+        assertEquals(TransportState.Connecting(port.hostDevice(tv)), controller.state.value)
+
+        controller.onHostDisconnected(tv)
+        assertEquals(TransportState.Ready, controller.state.value)
+        assertNull(controller.connectedHost)
+    }
+
+    /** Disconnect while a phone-side connect is pending cancels it and returns to Ready. */
+    @Test
+    fun disconnectCancelsPendingConnect() {
+        startAdvertising()
+        controller.connect(tv)
+        assertTrue(controller.disconnect())
+        assertEquals(listOf(tv), port.disconnects)
+        assertEquals(TransportState.Ready, controller.state.value)
+        assertFalse(controller.disconnect())
+    }
+
+    /** A pending connect that succeeds is forgotten once the host connects. */
+    @Test
+    fun pendingConnectSucceeds() {
+        port.bonded += tv
+        startAdvertising()
+        controller.connect(tv)
+        controller.onHostConnected(tv)
+        assertEquals(TransportState.Connected(port.hostDevice(tv)), controller.state.value)
+        controller.onHostDisconnected(tv)
+        assertEquals(TransportState.Registering, controller.state.value) // advertising again
+    }
+
     /** A refused connect request leaves the state alone. */
     @Test
     fun refusedConnectKeepsState() {

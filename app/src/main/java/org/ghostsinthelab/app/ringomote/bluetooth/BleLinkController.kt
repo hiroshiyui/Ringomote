@@ -66,6 +66,9 @@ interface BlePeripheralPort {
  *   over from a clean state; events from the old server are ignored once it is gone.
  * - Advertising is stopped while a host is connected (tvOS keeps one link; a second host
  *   would steal it) and resumed when the host leaves.
+ * - A connection the phone asked for ([connect]) is pending until the host reports
+ *   connected; if the host disconnects or the user cancels before that, the link goes back
+ *   to Ready, so a failed phone-side connect cannot leave the UI stuck on Connecting.
  * - The state never becomes [TransportState.Ready] or [TransportState.Connected] while
  *   Bluetooth is off, whatever order the platform delivers events in.
  *
@@ -86,6 +89,9 @@ class BleLinkController(private val port: BlePeripheralPort) {
     private var advertising = false
     private var host: String? = null
     private var subscribed = false
+
+    /** A host the phone asked to connect to and has not heard back from yet. */
+    private var pendingConnect: String? = null
 
     /** Address of the host subscribed to input reports, or null while reports cannot be sent. */
     @get:Synchronized
@@ -116,15 +122,21 @@ class BleLinkController(private val port: BlePeripheralPort) {
     fun connect(address: String): Boolean {
         if (!started || server != Server.Open || !port.hasPermission()) return false
         if (!port.connect(address)) return false
-        if (host == null) _state.value = TransportState.Connecting(port.hostDevice(address))
+        if (host == null) {
+            pendingConnect = address
+            _state.value = TransportState.Connecting(port.hostDevice(address))
+        }
         return true
     }
 
-    /** Disconnects the current host; false if there is none. */
+    /** Disconnects the current host, or cancels a pending connect; false if there is neither. */
     @Synchronized
     fun disconnect(): Boolean {
-        val address = host ?: return false
-        port.disconnect(address)
+        host?.let { port.disconnect(it); return true }
+        val pending = pendingConnect ?: return false
+        port.disconnect(pending)
+        pendingConnect = null
+        if (started && server == Server.Open) advance()
         return true
     }
 
@@ -170,6 +182,7 @@ class BleLinkController(private val port: BlePeripheralPort) {
             return
         }
         host = address
+        pendingConnect = null
         subscribed = port.isBonded(address)
         if (advertising) {
             port.stopAdvertising()
@@ -189,7 +202,8 @@ class BleLinkController(private val port: BlePeripheralPort) {
     /** The host at [address] disconnected. */
     @Synchronized
     fun onHostDisconnected(address: String) {
-        if (host != address) return
+        if (pendingConnect == address) pendingConnect = null
+        else if (host != address) return
         host = null
         subscribed = false
         if (!started || server != Server.Open) return
@@ -249,5 +263,6 @@ class BleLinkController(private val port: BlePeripheralPort) {
         advertising = false
         host = null
         subscribed = false
+        pendingConnect = null
     }
 }

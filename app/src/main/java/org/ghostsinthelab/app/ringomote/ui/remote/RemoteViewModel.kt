@@ -130,7 +130,8 @@ class RemoteViewModel(
 
     companion object {
         /** How long an accessibility long-click holds a control; tvOS long presses need ~1 s. */
-        const val LONG_PRESS_MILLIS = 1_200L
+        /** Long enough for tvOS to treat Home as a hold (Control Center); verified at 1.5 s. */
+        const val LONG_PRESS_MILLIS = 1_500L
 
         /** Builds the ViewModel from the app's [org.ghostsinthelab.app.ringomote.AppContainer]. */
         val Factory = viewModelFactory {

@@ -43,4 +43,11 @@ object ConsumerUsage {
     const val VOLUME_INCREMENT = 0x00E9
     const val VOLUME_DECREMENT = 0x00EA
     const val AC_HOME = 0x0223
+
+    /**
+     * "Data On Screen": the usage the 2nd-generation Siri Remote sends for its TV button.
+     * tvOS applies its own press-and-hold rule to it: a tap goes Home, a hold (about 1.5 s)
+     * opens Control Center. Verified on a real Apple TV on 2026-11-03.
+     */
+    const val DATA_ON_SCREEN = 0x0060
 }

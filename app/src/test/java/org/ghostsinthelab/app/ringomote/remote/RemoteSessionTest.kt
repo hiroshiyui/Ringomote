@@ -139,7 +139,7 @@ class RemoteSessionTest {
         assertEquals(listOf(kb(KeyboardUsage.ESCAPE), kb()), sink.sent)
         sink.sent.clear()
         assertTrue(session.tap(RemoteControl.Home))
-        assertEquals(listOf(consumer(ConsumerUsage.AC_HOME), consumer(0)), sink.sent)
+        assertEquals(listOf(consumer(ConsumerUsage.DATA_ON_SCREEN), consumer(0)), sink.sent)
         assertTrue(session.held().isEmpty())
     }
 

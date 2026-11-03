@@ -8,9 +8,9 @@ An Android app that turns your phone into a remote for Apple TV, compatible with
 
 ## Status 開發狀態
 
-Ringomote is in early development. Pairing with a real Apple TV and every control (touch surface, Menu, TV/Home, Play/Pause, Volume) have been verified on hardware. Known limitation: holding the TV button does not open Control Center as it does on the Siri Remote, because tvOS treats a keyboard's Home key as a tap only.
+Ringomote is in early development. Pairing with a real Apple TV and every control (touch surface, Menu, TV/Home, Play/Pause, Volume) have been verified on hardware, including holding the TV button to open Control Center.
 
-Ringomote 仍在早期開發階段。與實際的 Apple TV 配對，以及所有操作（觸控表面、Menu、TV／主畫面、播放／暫停、音量）都已在實機上驗證可行。已知限制：長按 TV 鍵無法像 Siri Remote 一樣開啟控制中心，因為 tvOS 只把鍵盤的主畫面鍵當作點按處理。
+Ringomote 仍在早期開發階段。與實際的 Apple TV 配對，以及所有操作（觸控表面、Menu、TV／主畫面、播放／暫停、音量）都已在實機上驗證可行，包括長按 TV 鍵開啟控制中心。
 
 ## How it works 運作方式
 
@@ -23,10 +23,10 @@ In more detail:
 3. **Controls.** Every control becomes a standard HID key press, followed by a release, sent as a notification over the link:
    - Touch surface: swipes become the arrow keys, a tap becomes Enter (Select).
    - Menu: Escape, which tvOS treats as "back".
-   - TV: the consumer-control "Home" usage.
+   - TV: the same consumer-control usage the Siri Remote's TV button sends ("Data On Screen"), so tvOS treats a tap as Home and a hold as Control Center.
    - Play/Pause, Volume up and Volume down: the matching consumer-control usages, as on a media keyboard.
 
-tvOS already knows how to drive its interface from a Bluetooth keyboard, so the phone needs no companion app or special protocol on the Apple TV side. Siri voice input is not reproduced, and holding the TV button does not open Control Center, because those are not keyboard actions.
+tvOS already knows how to drive its interface from a Bluetooth keyboard, so the phone needs no companion app or special protocol on the Apple TV side. Siri voice input is not reproduced, because the Siri Remote streams voice over its own protocol.
 
 手機透過藍牙低功耗直接與 Apple TV 連線，像實體遙控器一樣以藍牙輸入裝置（HID over GATT 鍵盤）的身分出現，不需經過 Wi-Fi 網路、Apple 帳號或其他橋接裝置。
 
@@ -37,10 +37,10 @@ tvOS already knows how to drive its interface from a Bluetooth keyboard, so the 
 3. **操作。** 每個操作都會變成標準的 HID 按鍵按下與放開，以通知的形式透過連線送出：
    - 觸控表面：滑動對應方向鍵，輕觸對應 Enter（選取）。
    - Menu：Escape，tvOS 將它視為「返回」。
-   - TV：消費性控制中的「主畫面」用途。
+   - TV：與 Siri Remote 的 TV 鍵相同的消費性控制用途（「Data On Screen」），因此 tvOS 會把點按視為主畫面、長按視為控制中心。
    - 播放／暫停、音量加與音量減：對應的消費性控制用途，和多媒體鍵盤相同。
 
-tvOS 本來就知道如何用藍牙鍵盤操作介面，所以 Apple TV 那一端不需要任何配套程式或特殊協定。Siri 語音輸入沒有重現，長按 TV 鍵也無法開啟控制中心，因為這些都不是鍵盤能做的動作。
+tvOS 本來就知道如何用藍牙鍵盤操作介面，所以 Apple TV 那一端不需要任何配套程式或特殊協定。Siri 語音輸入沒有重現，因為 Siri Remote 是用自己的協定傳送語音的。
 
 ## Requirements 使用需求
 

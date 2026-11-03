@@ -25,7 +25,7 @@ class HidKeyMapTest {
         RemoteControl.PlayPause to HidUsage.Consumer(0xCD), // Play/Pause
         RemoteControl.VolumeUp to HidUsage.Consumer(0xE9), // Volume Increment
         RemoteControl.VolumeDown to HidUsage.Consumer(0xEA), // Volume Decrement
-        RemoteControl.Home to HidUsage.Consumer(0x223), // AC Home
+        RemoteControl.Home to HidUsage.Consumer(0x60), // Data On Screen (Siri Remote TV button)
     )
 
     /** Every RemoteControl has a mapping, and the expectation table above covers all of them. */

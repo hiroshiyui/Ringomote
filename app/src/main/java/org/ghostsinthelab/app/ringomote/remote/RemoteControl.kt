@@ -18,8 +18,9 @@ enum class RemoteControl {
  * Maps each [RemoteControl] to the HID usage tvOS understands for it.
  *
  * Arrows, Enter and Escape follow how tvOS handles a Bluetooth keyboard (Escape acts as
- * Menu/Back). Home and media keys use the Consumer page.
- * TODO: confirm Home (AC Home) on a real Apple TV; fall back to Consumer Menu if needed.
+ * Menu/Back). Home and media keys use the Consumer page. Home is not AC Home (0x223) but
+ * Data On Screen (0x60), the 2nd-generation Siri Remote's TV button: tvOS treats a tap of it
+ * as Home and a hold as Control Center, which AC Home never does. All verified on hardware.
  */
 object HidKeyMap {
     fun usageFor(control: RemoteControl): HidUsage = when (control) {
@@ -29,7 +30,7 @@ object HidKeyMap {
         RemoteControl.Right -> HidUsage.Key(KeyboardUsage.RIGHT_ARROW)
         RemoteControl.Select -> HidUsage.Key(KeyboardUsage.ENTER)
         RemoteControl.Menu -> HidUsage.Key(KeyboardUsage.ESCAPE)
-        RemoteControl.Home -> HidUsage.Consumer(ConsumerUsage.AC_HOME)
+        RemoteControl.Home -> HidUsage.Consumer(ConsumerUsage.DATA_ON_SCREEN)
         RemoteControl.PlayPause -> HidUsage.Consumer(ConsumerUsage.PLAY_PAUSE)
         RemoteControl.VolumeUp -> HidUsage.Consumer(ConsumerUsage.VOLUME_INCREMENT)
         RemoteControl.VolumeDown -> HidUsage.Consumer(ConsumerUsage.VOLUME_DECREMENT)

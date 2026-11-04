@@ -100,12 +100,13 @@ fun RingomoteApp(
                     appearance = appearance,
                     onModeChange = appearanceSettings::setMode,
                     onDynamicColorChange = appearanceSettings::setDynamicColor,
+                    onLayoutChange = appearanceSettings::setLayout,
                     onOpenBluetoothSettings = { launchSystemScreen(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) },
                     modifier = content,
                 )
             }
             tab == AppTab.About -> AboutScreen(modifier = content)
-            granted -> RemoteHome(vm = vm, modifier = content)
+            granted -> RemoteHome(vm = vm, appearanceSettings = appearanceSettings, modifier = content)
             else -> PermissionScreen(onGranted = { granted = true }, modifier = content)
         }
     }
@@ -124,8 +125,9 @@ private enum class AppTab(@StringRes val label: Int) {
 
 /** The connection panel and the remote, shown once permissions are granted. */
 @Composable
-private fun RemoteHome(vm: RemoteViewModel, modifier: Modifier = Modifier) {
+private fun RemoteHome(vm: RemoteViewModel, appearanceSettings: AppearanceSettings, modifier: Modifier = Modifier) {
     val state by vm.transportState.collectAsStateWithLifecycle()
+    val appearance by appearanceSettings.appearance.collectAsStateWithLifecycle()
     val pairedDevices by vm.pairedDevices.collectAsStateWithLifecycle()
     val hasConnectedBefore by vm.hasConnectedBefore.collectAsStateWithLifecycle()
 
@@ -140,6 +142,7 @@ private fun RemoteHome(vm: RemoteViewModel, modifier: Modifier = Modifier) {
         onTap = vm::tap,
         onHold = vm::hold,
         modifier = modifier.padding(16.dp),
+        layout = appearance.layout,
         header = {
             ConnectionPanel(
                 state = state,

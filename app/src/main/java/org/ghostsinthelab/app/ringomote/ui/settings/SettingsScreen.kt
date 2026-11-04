@@ -32,12 +32,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ghostsinthelab.app.ringomote.R
 import org.ghostsinthelab.app.ringomote.settings.Appearance
+import org.ghostsinthelab.app.ringomote.settings.RemoteLayout
 import org.ghostsinthelab.app.ringomote.settings.ThemeMode
 import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
 import org.ghostsinthelab.app.ringomote.ui.theme.supportsDynamicColor
 
 /**
- * The Settings tab: appearance, and a shortcut to the phone's Bluetooth settings.
+ * The Settings tab: appearance, the remote's layout, and a shortcut to the phone's Bluetooth
+ * settings.
  *
  * Theme mode is a single-choice segmented row (System / Light / Dark); dynamic colour is a
  * switch whose whole row toggles, with [Role.Switch] semantics so TalkBack reads it as one
@@ -54,6 +56,7 @@ fun SettingsScreen(
     appearance: Appearance,
     onModeChange: (ThemeMode) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
+    onLayoutChange: (RemoteLayout) -> Unit,
     onOpenBluetoothSettings: () -> Unit,
     modifier: Modifier = Modifier,
     showDynamicColor: Boolean = supportsDynamicColor,
@@ -120,6 +123,26 @@ fun SettingsScreen(
                 }
             }
             Text(
+                text = stringResource(R.string.settings_layout_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.semantics { heading() }.padding(top = 16.dp),
+            )
+            Text(
+                text = stringResource(R.string.settings_layout_description),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                RemoteLayout.entries.forEachIndexed { index, layout ->
+                    SegmentedButton(
+                        selected = appearance.layout == layout,
+                        onClick = { onLayoutChange(layout) },
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = RemoteLayout.entries.size),
+                        label = { Text(stringResource(layout.label)) },
+                        modifier = Modifier.fillMaxHeight(),
+                    )
+                }
+            }
+            Text(
                 text = stringResource(R.string.settings_bluetooth_title),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.semantics { heading() }.padding(top = 16.dp),
@@ -134,6 +157,13 @@ fun SettingsScreen(
         }
     }
 }
+
+@get:StringRes
+private val RemoteLayout.label: Int
+    get() = when (this) {
+        RemoteLayout.Compact -> R.string.settings_layout_compact
+        RemoteLayout.Spread -> R.string.settings_layout_spread
+    }
 
 @get:StringRes
 private val ThemeMode.label: Int
@@ -151,6 +181,7 @@ private fun SettingsScreenPreview() {
             appearance = Appearance(),
             onModeChange = {},
             onDynamicColorChange = {},
+            onLayoutChange = {},
             onOpenBluetoothSettings = {},
             showDynamicColor = true,
         )

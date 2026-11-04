@@ -68,6 +68,10 @@
     <string name="settings_theme_dark">深色</string>
     <string name="settings_dynamic_color_label">動態色彩</string>
     <string name="settings_dynamic_color_description">從您的桌布取色。關閉時，Ringomote 會使用自己的珊瑚色配色。</string>
+    <string name="settings_layout_title">版面</string>
+    <string name="settings_layout_description">遙控器如何佔用畫面。</string>
+    <string name="settings_layout_compact">緊湊</string>
+    <string name="settings_layout_spread">延伸至邊緣</string>
     <string name="settings_bluetooth_title">藍牙</string>
     <string name="settings_bluetooth_description">與 Apple TV 的配對在 Apple TV 上進行。若要從這支手機移除已配對的 Apple TV，請您開啟手機的藍牙設定，在那裡清除它。</string>
     <string name="settings_bluetooth_open">開啟藍牙設定</string>

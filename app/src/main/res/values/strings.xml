@@ -68,6 +68,10 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_dynamic_color_label">Dynamic colour</string>
     <string name="settings_dynamic_color_description">Take the colours from your wallpaper. When off, Ringomote uses its own coral palette.</string>
+    <string name="settings_layout_title">Layout</string>
+    <string name="settings_layout_description">How the remote fills the screen.</string>
+    <string name="settings_layout_compact">Compact</string>
+    <string name="settings_layout_spread">Spread out</string>
     <string name="settings_bluetooth_title">Bluetooth</string>
     <string name="settings_bluetooth_description">Pairing with an Apple TV happens on the TV. To remove a paired Apple TV from this phone, open the phone’s Bluetooth settings and forget it there.</string>
     <string name="settings_bluetooth_open">Open Bluetooth settings</string>

@@ -68,6 +68,10 @@
     <string name="settings_theme_dark">ダーク</string>
     <string name="settings_dynamic_color_label">ダイナミックカラー</string>
     <string name="settings_dynamic_color_description">壁紙から色を取り込みます。オフにすると、Ringomote 独自のコーラル色の配色を使います。</string>
+    <string name="settings_layout_title">レイアウト</string>
+    <string name="settings_layout_description">リモコンを画面にどう配置するか。</string>
+    <string name="settings_layout_compact">コンパクト</string>
+    <string name="settings_layout_spread">画面いっぱい</string>
     <string name="settings_bluetooth_title">Bluetooth</string>
     <string name="settings_bluetooth_description">Apple TV とのペアリングは Apple TV 側で行います。ペアリング済みの Apple TV をこのスマートフォンから削除するには、スマートフォンの Bluetooth 設定を開いて、そこで削除してください。</string>
     <string name="settings_bluetooth_open">Bluetooth 設定を開く</string>

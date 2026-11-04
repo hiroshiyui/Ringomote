@@ -22,11 +22,12 @@ class AppearanceTest {
         assertTrue(Appearance(ThemeMode.Dark).isDark(systemDark = false))
     }
 
-    /** Defaults: follow the system, with dynamic colour on. */
+    /** Defaults: follow the system, with dynamic colour on and the compact layout. */
     @Test
     fun defaultsFollowSystemWithDynamicColor() {
         val default = Appearance()
         assertEquals(ThemeMode.System, default.mode)
         assertTrue(default.dynamicColor)
+        assertEquals(RemoteLayout.Compact, default.layout)
     }
 }

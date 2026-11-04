@@ -24,9 +24,11 @@ import android.os.ParcelUuid
 import android.util.Log
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.StateFlow
+import org.ghostsinthelab.app.ringomote.diagnostics.EventLog
 import org.ghostsinthelab.app.ringomote.hid.HidReport
 import org.ghostsinthelab.app.ringomote.hid.HidReportDescriptor
 import org.ghostsinthelab.app.ringomote.hid.HidReports
+import java.util.UUID
 
 /**
  * [HidTransport] over Bluetooth Low Energy: HID over GATT (HOGP), with the phone as the
@@ -46,8 +48,14 @@ import org.ghostsinthelab.app.ringomote.hid.HidReports
  * Permissions are checked (via [BluetoothPermissions]) before each guarded call. Lint cannot
  * see those checks through [BlePeripheralPort], so `MissingPermission` is suppressed only on
  * the members that make guarded calls.
+ *
+ * Every platform event that matters for diagnosing a link is also recorded in [eventLog],
+ * which the diagnostics report in Settings prints.
  */
-class BleHidTransport(context: Context) : HidTransport {
+class BleHidTransport(
+    context: Context,
+    private val eventLog: EventLog = EventLog(),
+) : HidTransport {
 
     private val appContext = context.applicationContext
     private val manager: BluetoothManager? = appContext.getSystemService(BluetoothManager::class.java)
@@ -65,10 +73,15 @@ class BleHidTransport(context: Context) : HidTransport {
         override fun isBluetoothOn() = adapter?.isEnabled == true
 
         override fun openServer(): Boolean {
-            val opened = manager?.openGattServer(appContext, serverCallback) ?: return false
+            val opened = manager?.openGattServer(appContext, serverCallback)
+            if (opened == null) {
+                eventLog.record("GATT server: open refused")
+                return false
+            }
             val built = HidGattServices(HidReportDescriptor.bytes)
             server = opened
             services = built
+            eventLog.record("GATT server: opened, adding services")
             // Services are added one at a time; onServiceAdded adds the next.
             return opened.addService(built.pending.removeFirst())
         }
@@ -78,16 +91,23 @@ class BleHidTransport(context: Context) : HidTransport {
             server = null
             services = null
             open.close()
+            eventLog.record("GATT server: closed")
         }
 
         override fun startAdvertising(): Boolean {
-            val advertiser = adapter?.bluetoothLeAdvertiser ?: return false
+            val advertiser = adapter?.bluetoothLeAdvertiser
+            if (advertiser == null) {
+                eventLog.record("Advertising: no LE advertiser")
+                return false
+            }
             advertiser.startAdvertising(advertiseSettings, advertiseData, advertiseCallback)
+            eventLog.record("Advertising: start requested")
             return true
         }
 
         override fun stopAdvertising() {
             adapter?.bluetoothLeAdvertiser?.stopAdvertising(advertiseCallback)
+            eventLog.record("Advertising: stopped")
         }
 
         override fun connect(address: String): Boolean {
@@ -97,12 +117,15 @@ class BleHidTransport(context: Context) : HidTransport {
             // server-side disconnect), while autoConnect only arms the accept list and the
             // Apple TV never dials in. If no link exists, the TV closes the new one within a
             // second and the controller falls back to Ready.
-            return server?.connect(device, false) == true
+            val requested = server?.connect(device, false) == true
+            eventLog.record("Connect to $address: ${if (requested) "requested" else "refused"}")
+            return requested
         }
 
         override fun disconnect(address: String) {
             val device = remoteDevice(address) ?: return
             if (hasPermission()) server?.cancelConnection(device)
+            eventLog.record("Disconnect from $address: requested")
         }
 
         override fun isBonded(address: String): Boolean =
@@ -161,7 +184,7 @@ class BleHidTransport(context: Context) : HidTransport {
         val characteristic = services?.inputReport(report.id) ?: return false
         val device = controller.connectedHost?.let(::remoteDevice) ?: return false
         if (!BluetoothPermissions.canConnect(appContext)) return false
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val sent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             server.notifyCharacteristicChanged(device, characteristic, false, report.data) ==
                 BluetoothStatusCodes.SUCCESS
         } else {
@@ -170,6 +193,9 @@ class BleHidTransport(context: Context) : HidTransport {
             @Suppress("DEPRECATION")
             server.notifyCharacteristicChanged(device, characteristic, false)
         }
+        // Only failures are logged: successes would flood the log with every key press.
+        if (!sent) eventLog.record("Notify report ${report.id}: failed")
+        return sent
     }
 
     private fun remoteDevice(address: String): BluetoothDevice? =
@@ -189,10 +215,14 @@ class BleHidTransport(context: Context) : HidTransport {
         .build()
 
     private val advertiseCallback: AdvertiseCallback = object : AdvertiseCallback() {
-        override fun onStartSuccess(settingsInEffect: AdvertiseSettings) = controller.onAdvertisingStarted()
+        override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
+            eventLog.record("Advertising: started")
+            controller.onAdvertisingStarted()
+        }
 
         override fun onStartFailure(errorCode: Int) {
             Log.w(TAG, "Advertising failed: $errorCode")
+            eventLog.record("Advertising: failed, error $errorCode")
             controller.onAdvertisingFailed()
         }
     }
@@ -205,13 +235,17 @@ class BleHidTransport(context: Context) : HidTransport {
             val built = services ?: return
             if (status != BluetoothGatt.GATT_SUCCESS) {
                 Log.w(TAG, "Adding service ${service.uuid} failed: $status")
+                eventLog.record("Service ${service.uuid.short()}: add failed, status $status")
                 controller.onServicesFailed()
                 return
             }
+            eventLog.record("Service ${service.uuid.short()}: added, instance ${service.instanceId}")
             val next = built.pending.removeFirstOrNull()
             if (next == null) {
+                eventLog.record("GATT server: all services added")
                 controller.onServicesAdded()
             } else if (!open.addService(next)) {
+                eventLog.record("Service ${next.uuid.short()}: add refused")
                 controller.onServicesFailed()
             }
         }
@@ -219,6 +253,8 @@ class BleHidTransport(context: Context) : HidTransport {
         override fun onConnectionStateChange(device: BluetoothDevice, status: Int, newState: Int) {
             // No address: the status (HCI reason) and state are enough to diagnose link drops.
             Log.i(TAG, "Host connection state=$newState status=$status")
+            val bonded = device.bondState == BluetoothDevice.BOND_BONDED
+            eventLog.record("Host ${device.address}: ${connectionState(newState)}, status $status, bonded $bonded")
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> controller.onHostConnected(device.address)
                 BluetoothProfile.STATE_DISCONNECTED -> controller.onHostDisconnected(device.address)
@@ -244,6 +280,8 @@ class BleHidTransport(context: Context) : HidTransport {
             preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray,
         ) {
             if (responseNeeded) server?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value)
+            val uuid = descriptor.characteristic?.uuid?.short() ?: "?"
+            eventLog.record("Host ${device.address}: wrote descriptor ${descriptor.uuid.short()} of $uuid = ${value.hex()}")
             if (services?.isInputReportNotificationEnable(descriptor, value) == true) {
                 controller.onHostSubscribed(device.address)
             }
@@ -255,6 +293,7 @@ class BleHidTransport(context: Context) : HidTransport {
         ) {
             // Protocol Mode and HID Control Point writes: boot protocol and suspend are not
             // supported, so they are acknowledged and otherwise ignored.
+            eventLog.record("Host ${device.address}: wrote ${characteristic.uuid.short()} = ${value.hex()}")
             if (responseNeeded) server?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value)
         }
     }
@@ -262,8 +301,15 @@ class BleHidTransport(context: Context) : HidTransport {
     private val adapterStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)) {
-                BluetoothAdapter.STATE_ON -> controller.onBluetoothOn()
-                BluetoothAdapter.STATE_TURNING_OFF, BluetoothAdapter.STATE_OFF -> controller.onBluetoothOff()
+                BluetoothAdapter.STATE_ON -> {
+                    eventLog.record("Bluetooth: on")
+                    controller.onBluetoothOn()
+                }
+
+                BluetoothAdapter.STATE_TURNING_OFF, BluetoothAdapter.STATE_OFF -> {
+                    eventLog.record("Bluetooth: off")
+                    controller.onBluetoothOff()
+                }
             }
         }
     }
@@ -282,8 +328,25 @@ class BleHidTransport(context: Context) : HidTransport {
     private fun ByteArray.from(offset: Int): ByteArray =
         if (offset <= 0) this else copyOfRange(minOf(offset, size), size)
 
+    /** The 16-bit form of a Bluetooth SIG UUID (`0x1812`), or the full UUID otherwise. */
+    private fun UUID.short(): String {
+        val full = toString()
+        return if (full.endsWith(BASE_UUID_SUFFIX) && full.startsWith("0000")) "0x" + full.substring(4, 8).uppercase() else full
+    }
+
+    private fun ByteArray.hex(): String = joinToString(" ") { "%02X".format(it) }
+
+    private fun connectionState(state: Int): String = when (state) {
+        BluetoothProfile.STATE_CONNECTED -> "connected"
+        BluetoothProfile.STATE_DISCONNECTED -> "disconnected"
+        BluetoothProfile.STATE_CONNECTING -> "connecting"
+        BluetoothProfile.STATE_DISCONNECTING -> "disconnecting"
+        else -> "state $state"
+    }
+
     private companion object {
         const val TAG = "BleHidTransport"
         const val FEATURE_BLE = "android.hardware.bluetooth_le"
+        const val BASE_UUID_SUFFIX = "-0000-1000-8000-00805f9b34fb"
     }
 }

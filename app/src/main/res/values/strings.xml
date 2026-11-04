@@ -75,12 +75,23 @@
     <string name="settings_bluetooth_title">Bluetooth</string>
     <string name="settings_bluetooth_description">Pairing with an Apple TV happens on the TV. To remove a paired Apple TV from this phone, open the phone’s Bluetooth settings and forget it there.</string>
     <string name="settings_bluetooth_open">Open Bluetooth settings</string>
+    <string name="settings_advanced_title">Advanced</string>
+    <string name="settings_diagnostics_description">A Bluetooth diagnostics report helps developers find out why pairing or input fails. It lists this phone, its Bluetooth state, the devices paired with it (names and addresses) and what the app saw on the link. It leaves the phone only if you share or save it.</string>
+    <string name="settings_diagnostics_open">Bluetooth diagnostics</string>
+    <string name="diagnostics_title">Bluetooth diagnostics</string>
+    <string name="diagnostics_back">Back</string>
+    <string name="diagnostics_refresh">Refresh</string>
+    <string name="diagnostics_copy">Copy</string>
+    <string name="diagnostics_share">Share</string>
+    <string name="diagnostics_save">Save</string>
+    <string name="diagnostics_copied">Report copied.</string>
+    <string name="diagnostics_saved">Report saved.</string>
     <string name="tab_about">About</string>
     <string name="about_version">Version %1$s (%2$d)</string>
     <string name="about_tagline">Use your phone as a remote for Apple TV, compatible with the Siri Remote (1st generation).</string>
     <string name="about_copyright" translatable="false">Copyright © 2026 Hui-Hong You</string>
     <string name="about_privacy_title">Privacy</string>
-    <string name="about_privacy_body">Ringomote has no internet permission and collects no data. Button presses go only to your Apple TV, directly over Bluetooth. The app stores only your appearance settings and whether it has connected before.</string>
+    <string name="about_privacy_body">Ringomote has no internet permission and collects no data. Button presses go only to your Apple TV, directly over Bluetooth. The app stores only your appearance settings and whether it has connected before. The Bluetooth diagnostics report in Settings names your paired devices and their addresses; it leaves the phone only when you share or save it.</string>
     <string name="about_license_title">License</string>
     <string name="about_license_body">Ringomote is free software, released under the GNU General Public License, version 3 or later. You may use, study, share and change it under the terms of that license.</string>
     <string name="about_license_link">Read the license</string>

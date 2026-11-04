@@ -8,6 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.ghostsinthelab.app.ringomote.bluetooth.BleHidTransport
 import org.ghostsinthelab.app.ringomote.bluetooth.HidTransport
+import org.ghostsinthelab.app.ringomote.diagnostics.DiagnosticsReport
+import org.ghostsinthelab.app.ringomote.diagnostics.EventLog
 import org.ghostsinthelab.app.ringomote.history.ConnectionHistory
 import org.ghostsinthelab.app.ringomote.history.SharedPreferencesConnectionHistory
 import org.ghostsinthelab.app.ringomote.remote.RemoteSession
@@ -23,7 +25,9 @@ import org.ghostsinthelab.app.ringomote.settings.SharedPreferencesAppearanceSett
  * kept as an alternative) without touching the UI.
  */
 class AppContainer(context: Context) {
-    val transport: HidTransport by lazy { BleHidTransport(context) }
+    val eventLog: EventLog by lazy { EventLog() }
+    val transport: HidTransport by lazy { BleHidTransport(context, eventLog) }
+    val diagnosticsReport: DiagnosticsReport by lazy { DiagnosticsReport(context, transport, eventLog) }
     val session: RemoteSession by lazy { RemoteSession(transport) }
     val connectionHistory: ConnectionHistory by lazy { SharedPreferencesConnectionHistory(context) }
     val appearanceSettings: AppearanceSettings by lazy { SharedPreferencesAppearanceSettings(context) }

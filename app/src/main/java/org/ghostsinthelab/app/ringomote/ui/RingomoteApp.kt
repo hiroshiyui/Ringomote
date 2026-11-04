@@ -15,6 +15,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import org.ghostsinthelab.app.ringomote.R
 import org.ghostsinthelab.app.ringomote.ui.about.AboutScreen
 import org.ghostsinthelab.app.ringomote.ui.connection.rememberSystemScreenLauncher
+import org.ghostsinthelab.app.ringomote.diagnostics.DiagnosticsReport
+import org.ghostsinthelab.app.ringomote.ui.settings.DiagnosticsScreen
 import org.ghostsinthelab.app.ringomote.ui.settings.SettingsScreen
 import org.ghostsinthelab.app.ringomote.settings.AppearanceSettings
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,7 +44,8 @@ import org.ghostsinthelab.app.ringomote.ui.remote.RemoteViewModel
 /**
  * Root of the UI: wires [RemoteViewModel] to the screens.
  *
- * Three tabs: the remote, [SettingsScreen] and [AboutScreen]. Settings and About are always
+ * Three tabs: the remote, [SettingsScreen] (which can open [DiagnosticsScreen] in its place)
+ * and [AboutScreen]. Settings and About are always
  * reachable; on the remote tab, until
  * every permission in [BluetoothPermissions.runtime] is granted it shows
  * [PermissionScreen]; afterwards it starts the transport and shows the [ConnectionPanel] above
@@ -56,6 +59,7 @@ import org.ghostsinthelab.app.ringomote.ui.remote.RemoteViewModel
 @Composable
 fun RingomoteApp(
     appearanceSettings: AppearanceSettings,
+    diagnosticsReport: DiagnosticsReport,
     modifier: Modifier = Modifier,
     vm: RemoteViewModel = viewModel(factory = RemoteViewModel.Factory),
 ) {
@@ -72,6 +76,7 @@ fun RingomoteApp(
     LaunchedEffect(granted) { if (granted) vm.start() }
 
     var tab by rememberSaveable { mutableStateOf(AppTab.Remote) }
+    var showDiagnostics by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -93,6 +98,12 @@ fun RingomoteApp(
     ) { innerPadding ->
         val content = Modifier.padding(innerPadding)
         when {
+            tab == AppTab.Settings && showDiagnostics -> DiagnosticsScreen(
+                buildReport = diagnosticsReport::build,
+                onBack = { showDiagnostics = false },
+                modifier = content,
+            )
+
             tab == AppTab.Settings -> {
                 val appearance by appearanceSettings.appearance.collectAsStateWithLifecycle()
                 val launchSystemScreen = rememberSystemScreenLauncher()
@@ -102,6 +113,7 @@ fun RingomoteApp(
                     onDynamicColorChange = appearanceSettings::setDynamicColor,
                     onLayoutChange = appearanceSettings::setLayout,
                     onOpenBluetoothSettings = { launchSystemScreen(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) },
+                    onOpenDiagnostics = { showDiagnostics = true },
                     modifier = content,
                 )
             }

@@ -38,8 +38,8 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
 import org.ghostsinthelab.app.ringomote.ui.theme.supportsDynamicColor
 
 /**
- * The Settings tab: appearance, the remote's layout, and a shortcut to the phone's Bluetooth
- * settings.
+ * The Settings tab: appearance, the remote's layout, a shortcut to the phone's Bluetooth
+ * settings, and an Advanced section with Bluetooth diagnostics.
  *
  * Theme mode is a single-choice segmented row (System / Light / Dark); dynamic colour is a
  * switch whose whole row toggles, with [Role.Switch] semantics so TalkBack reads it as one
@@ -50,6 +50,9 @@ import org.ghostsinthelab.app.ringomote.ui.theme.supportsDynamicColor
  * The Bluetooth section only opens the system screen via [onOpenBluetoothSettings]: a paired
  * Apple TV is removed from the phone there (Forget), which the app cannot do itself. Android
  * offers no Disconnect for a GATT-only link, so the text does not promise one.
+ *
+ * The Advanced section opens the Bluetooth diagnostics report ([onOpenDiagnostics]), meant
+ * for attaching to a bug report; its text says what the report contains.
  */
 @Composable
 fun SettingsScreen(
@@ -58,6 +61,7 @@ fun SettingsScreen(
     onDynamicColorChange: (Boolean) -> Unit,
     onLayoutChange: (RemoteLayout) -> Unit,
     onOpenBluetoothSettings: () -> Unit,
+    onOpenDiagnostics: () -> Unit,
     modifier: Modifier = Modifier,
     showDynamicColor: Boolean = supportsDynamicColor,
 ) {
@@ -154,6 +158,18 @@ fun SettingsScreen(
             OutlinedButton(onClick = onOpenBluetoothSettings) {
                 Text(stringResource(R.string.settings_bluetooth_open))
             }
+            Text(
+                text = stringResource(R.string.settings_advanced_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.semantics { heading() }.padding(top = 16.dp),
+            )
+            Text(
+                text = stringResource(R.string.settings_diagnostics_description),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            OutlinedButton(onClick = onOpenDiagnostics) {
+                Text(stringResource(R.string.settings_diagnostics_open))
+            }
         }
     }
 }
@@ -183,6 +199,7 @@ private fun SettingsScreenPreview() {
             onDynamicColorChange = {},
             onLayoutChange = {},
             onOpenBluetoothSettings = {},
+            onOpenDiagnostics = {},
             showDynamicColor = true,
         )
     }

@@ -20,11 +20,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val settings = (application as RingomoteApplication).container.appearanceSettings
+        val container = (application as RingomoteApplication).container
+        val settings = container.appearanceSettings
         setContent {
             val appearance by settings.appearance.collectAsStateWithLifecycle()
             RingomoteTheme(appearance = appearance) {
-                RingomoteApp(appearanceSettings = settings)
+                RingomoteApp(appearanceSettings = settings, diagnosticsReport = container.diagnosticsReport)
             }
         }
     }

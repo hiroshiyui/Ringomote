@@ -1,5 +1,7 @@
 package org.ghostsinthelab.app.ringomote.ui
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.statusBars
@@ -12,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import org.ghostsinthelab.app.ringomote.R
 import org.ghostsinthelab.app.ringomote.ui.about.AboutScreen
+import org.ghostsinthelab.app.ringomote.ui.connection.rememberSystemScreenLauncher
 import org.ghostsinthelab.app.ringomote.ui.settings.SettingsScreen
 import org.ghostsinthelab.app.ringomote.settings.AppearanceSettings
 import androidx.compose.foundation.layout.fillMaxSize
@@ -92,10 +95,12 @@ fun RingomoteApp(
         when {
             tab == AppTab.Settings -> {
                 val appearance by appearanceSettings.appearance.collectAsStateWithLifecycle()
+                val launchSystemScreen = rememberSystemScreenLauncher()
                 SettingsScreen(
                     appearance = appearance,
                     onModeChange = appearanceSettings::setMode,
                     onDynamicColorChange = appearanceSettings::setDynamicColor,
+                    onOpenBluetoothSettings = { launchSystemScreen(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) },
                     modifier = content,
                 )
             }
@@ -141,7 +146,6 @@ private fun RemoteHome(vm: RemoteViewModel, modifier: Modifier = Modifier) {
                 pairedDevices = pairedDevices,
                 expandDetailsByDefault = !hasConnectedBefore,
                 onConnect = vm::connect,
-                onDisconnect = vm::disconnect,
                 onRetry = vm::start,
             )
         },

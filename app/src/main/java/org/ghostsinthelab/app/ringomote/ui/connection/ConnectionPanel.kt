@@ -50,8 +50,12 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
  * The row always shows a Bluetooth status icon and a short status label (a polite live region, so TalkBack
  * announces every change), plus the one action the state needs right away:
  * - [TransportState.BluetoothOff]: turn Bluetooth on.
- * - [TransportState.Connecting] / [TransportState.Connected]: disconnect.
  * - [TransportState.RegistrationFailed]: retry via [onRetry].
+ *
+ * There is no Disconnect: a BLE peripheral cannot end the link, only detach from it, and the
+ * Apple TV then keeps showing the phone as connected while input is dead (seen on hardware).
+ * The phone's own Bluetooth settings offer no disconnect for a GATT-only link either (only
+ * Forget), so the Connected details say to disconnect on the Apple TV.
  *
  * Details, for the states that have any ([hasDetails]), hold the full explanation and, when
  * [TransportState.Ready], the pairing steps: the phone is already advertising, so pick it on
@@ -71,7 +75,6 @@ fun ConnectionPanel(
     state: TransportState,
     pairedDevices: List<HostDevice>,
     onConnect: (HostDevice) -> Unit,
-    onDisconnect: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     expandDetailsByDefault: Boolean = false,
@@ -108,10 +111,6 @@ fun ConnectionPanel(
                 TransportState.BluetoothOff -> FilledTonalButton(
                     onClick = { launchSystemScreen(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)) },
                 ) { Text(stringResource(R.string.action_turn_on_bluetooth)) }
-
-                is TransportState.Connecting, is TransportState.Connected -> OutlinedButton(
-                    onClick = onDisconnect,
-                ) { Text(stringResource(R.string.action_disconnect)) }
 
                 TransportState.RegistrationFailed -> FilledTonalButton(onClick = onRetry) {
                     Text(stringResource(R.string.action_retry))
@@ -151,7 +150,7 @@ fun ConnectionPanel(
 /** Whether [ConnectionPanel] has more to say about this state than the status row. */
 private fun TransportState.hasDetails(): Boolean = when (this) {
     TransportState.Ready, TransportState.RegistrationFailed,
-    TransportState.Unsupported, TransportState.PermissionRequired -> true
+    TransportState.Unsupported, TransportState.PermissionRequired, is TransportState.Connected -> true
     else -> false
 }
 
@@ -223,7 +222,7 @@ private fun PairedDeviceList(devices: List<HostDevice>, onConnect: (HostDevice) 
  * requires a Bluetooth permission the user revoked meanwhile).
  */
 @Composable
-private fun rememberSystemScreenLauncher(): (Intent) -> Unit {
+internal fun rememberSystemScreenLauncher(): (Intent) -> Unit {
     val context = LocalContext.current
     val message = stringResource(R.string.error_no_system_screen)
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
@@ -266,7 +265,7 @@ private fun TransportState.describe(): String = when (this) {
     TransportState.RegistrationFailed -> stringResource(R.string.state_registration_failed)
     TransportState.Ready -> stringResource(R.string.state_ready)
     is TransportState.Connecting -> stringResource(R.string.state_connecting, device.displayName())
-    is TransportState.Connected -> stringResource(R.string.state_connected, device.displayName())
+    is TransportState.Connected -> stringResource(R.string.state_connected_details, device.displayName())
 }
 
 @Preview(showBackground = true)
@@ -280,7 +279,6 @@ private fun ConnectionPanelReadyPreview() {
                 HostDevice("66:77:88:99:AA:BB", null),
             ),
             onConnect = {},
-            onDisconnect = {},
             onRetry = {},
         )
     }

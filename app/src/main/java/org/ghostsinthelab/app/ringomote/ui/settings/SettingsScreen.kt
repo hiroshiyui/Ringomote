@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -36,19 +37,24 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
 import org.ghostsinthelab.app.ringomote.ui.theme.supportsDynamicColor
 
 /**
- * The Settings tab: appearance only, for now.
+ * The Settings tab: appearance, and a shortcut to the phone's Bluetooth settings.
  *
  * Theme mode is a single-choice segmented row (System / Light / Dark); dynamic colour is a
  * switch whose whole row toggles, with [Role.Switch] semantics so TalkBack reads it as one
  * control. The switch is shown only where the platform can provide dynamic colour (Android
  * 12+), so the setting never promises what the phone cannot do. Changes apply immediately
  * through [RingomoteTheme]; nothing needs a restart.
+ *
+ * The Bluetooth section only opens the system screen via [onOpenBluetoothSettings]: a paired
+ * Apple TV is removed from the phone there (Forget), which the app cannot do itself. Android
+ * offers no Disconnect for a GATT-only link, so the text does not promise one.
  */
 @Composable
 fun SettingsScreen(
     appearance: Appearance,
     onModeChange: (ThemeMode) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
+    onOpenBluetoothSettings: () -> Unit,
     modifier: Modifier = Modifier,
     showDynamicColor: Boolean = supportsDynamicColor,
 ) {
@@ -113,6 +119,18 @@ fun SettingsScreen(
                     Switch(checked = appearance.dynamicColor, onCheckedChange = null)
                 }
             }
+            Text(
+                text = stringResource(R.string.settings_bluetooth_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.semantics { heading() }.padding(top = 16.dp),
+            )
+            Text(
+                text = stringResource(R.string.settings_bluetooth_description),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            OutlinedButton(onClick = onOpenBluetoothSettings) {
+                Text(stringResource(R.string.settings_bluetooth_open))
+            }
         }
     }
 }
@@ -133,6 +151,7 @@ private fun SettingsScreenPreview() {
             appearance = Appearance(),
             onModeChange = {},
             onDynamicColorChange = {},
+            onOpenBluetoothSettings = {},
             showDynamicColor = true,
         )
     }

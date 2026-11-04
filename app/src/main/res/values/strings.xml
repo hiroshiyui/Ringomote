@@ -15,9 +15,10 @@
     <string name="state_bluetooth_off">Bluetooth is off.</string>
     <string name="state_registering">Preparing the remote…</string>
     <string name="state_registration_failed">Ringomote could not start advertising as a Bluetooth remote. Another app may be using all of the phone’s Bluetooth advertising. Close that app and try again.</string>
-    <string name="state_ready">Not connected. Pick this phone in the Apple TV’s Bluetooth settings, or connect to a paired device below.</string>
+    <string name="state_ready">Not connected. A paired Apple TV reconnects by itself once it is awake; to pair a new one, pick this phone in its Bluetooth settings.</string>
     <string name="state_connecting">Connecting to %1$s…</string>
     <string name="state_connected">Connected to %1$s.</string>
+    <string name="state_connected_details">Connected to %1$s. To disconnect, remove this phone in the Apple TV’s Bluetooth settings; the phone cannot end the link itself.</string>
     <string name="state_short_stopped">Starting…</string>
     <string name="state_short_unsupported">Not supported</string>
     <string name="state_short_permission_required">Permission needed</string>
@@ -35,7 +36,6 @@
     <string name="paired_devices_empty">No paired devices yet.</string>
     <string name="action_connect">Connect</string>
     <string name="action_connect_to">Connect to %1$s</string>
-    <string name="action_disconnect">Disconnect</string>
     <string name="action_retry">Retry</string>
     <string name="error_no_system_screen">This phone has no screen for that Bluetooth setting.</string>
 
@@ -68,6 +68,9 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_dynamic_color_label">Dynamic colour</string>
     <string name="settings_dynamic_color_description">Take the colours from your wallpaper. When off, Ringomote uses its own coral palette.</string>
+    <string name="settings_bluetooth_title">Bluetooth</string>
+    <string name="settings_bluetooth_description">Pairing with an Apple TV happens on the TV. To remove a paired Apple TV from this phone, open the phone’s Bluetooth settings and forget it there.</string>
+    <string name="settings_bluetooth_open">Open Bluetooth settings</string>
     <string name="tab_about">About</string>
     <string name="about_version">Version %1$s (%2$d)</string>
     <string name="about_tagline">Use your phone as a remote for Apple TV, compatible with the Siri Remote (1st generation).</string>

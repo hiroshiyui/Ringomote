@@ -92,12 +92,6 @@ class RemoteViewModel(
      */
     fun connect(device: HostDevice) = serial { transport.connect(device.address) }
 
-    /** Releases held controls first, so nothing stays pressed on the host, then disconnects. */
-    fun disconnect() = serial {
-        session.releaseAll()
-        transport.disconnect()
-    }
-
     /** Finger down on [control]: held until [release]. */
     fun press(control: RemoteControl) = serial { session.press(control) }
 

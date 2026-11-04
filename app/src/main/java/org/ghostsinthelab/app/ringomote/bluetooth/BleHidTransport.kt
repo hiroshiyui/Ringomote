@@ -92,9 +92,12 @@ class BleHidTransport(context: Context) : HidTransport {
 
         override fun connect(address: String): Boolean {
             val device = remoteDevice(address) ?: return false
-            // autoConnect: let the stack bring the bonded host back when it is reachable, instead
-            // of dialling it directly, which the Apple TV closes after a second.
-            return server?.connect(device, true) == true
+            // Direct, not autoConnect: a direct connect attaches this server to a link the
+            // stack already has with the host (seen when the TV kept the link after a
+            // server-side disconnect), while autoConnect only arms the accept list and the
+            // Apple TV never dials in. If no link exists, the TV closes the new one within a
+            // second and the controller falls back to Ready.
+            return server?.connect(device, false) == true
         }
 
         override fun disconnect(address: String) {

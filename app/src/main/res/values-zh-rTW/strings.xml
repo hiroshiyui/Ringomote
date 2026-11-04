@@ -15,9 +15,10 @@
     <string name="state_bluetooth_off">藍牙已關閉。</string>
     <string name="state_registering">正在準備遙控器…</string>
     <string name="state_registration_failed">Ringomote 無法以藍牙遙控器的身分開始廣播。可能有其他應用程式用盡了手機的藍牙廣播，請您關閉該應用程式後再試一次。</string>
-    <string name="state_ready">尚未連線。請您在 Apple TV 的藍牙設定中選擇這支手機，或在下方連線到已配對的裝置。</string>
+    <string name="state_ready">尚未連線。已配對的 Apple TV 喚醒後會自行重新連線；若要配對新的 Apple TV，請您在它的藍牙設定中選擇這支手機。</string>
     <string name="state_connecting">正在連線到 %1$s…</string>
     <string name="state_connected">已連線到 %1$s。</string>
+    <string name="state_connected_details">已連線到 %1$s。若要中斷連線，請您在 Apple TV 的藍牙設定中移除這支手機；手機這端無法自行結束連線。</string>
     <string name="state_short_stopped">正在啟動…</string>
     <string name="state_short_unsupported">不支援</string>
     <string name="state_short_permission_required">需要權限</string>
@@ -35,7 +36,6 @@
     <string name="paired_devices_empty">尚無已配對的裝置。</string>
     <string name="action_connect">連線</string>
     <string name="action_connect_to">連線到 %1$s</string>
-    <string name="action_disconnect">中斷連線</string>
     <string name="action_retry">重試</string>
     <string name="error_no_system_screen">這支手機沒有這項藍牙設定的畫面。</string>
 
@@ -68,6 +68,9 @@
     <string name="settings_theme_dark">深色</string>
     <string name="settings_dynamic_color_label">動態色彩</string>
     <string name="settings_dynamic_color_description">從您的桌布取色。關閉時，Ringomote 會使用自己的珊瑚色配色。</string>
+    <string name="settings_bluetooth_title">藍牙</string>
+    <string name="settings_bluetooth_description">與 Apple TV 的配對在 Apple TV 上進行。若要從這支手機移除已配對的 Apple TV，請您開啟手機的藍牙設定，在那裡清除它。</string>
+    <string name="settings_bluetooth_open">開啟藍牙設定</string>
     <string name="tab_about">關於</string>
     <string name="about_version">版本 %1$s（%2$d）</string>
     <string name="about_tagline">將您的手機當作 Apple TV 遙控器使用，與 Siri Remote（第 1 代）相容。</string>

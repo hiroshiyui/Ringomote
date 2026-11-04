@@ -8,9 +8,23 @@ An Android app that turns your phone into a remote for Apple TV, compatible with
 
 ## Status 開發狀態
 
-Ringomote is ready for everyday use. Pairing with a real Apple TV, reconnection after the app restarts or the Apple TV wakes, and every control (touch surface, Menu, TV/Home, Play/Pause, Volume) have been verified on hardware, including holding the TV button to open Control Center. Siri voice input is not reproduced.
+Ringomote is ready for everyday use. Pairing with a real Apple TV, reconnection after the app restarts or the Apple TV wakes, and every control (touch surface, Menu, TV/Home, Play/Pause, Volume, Mute) have been verified on hardware, including holding the TV button to open Control Center. Siri voice input is not reproduced.
 
-Ringomote 已可供日常使用。與實際的 Apple TV 配對、App 重新啟動或 Apple TV 喚醒後的重新連線，以及所有操作（觸控表面、Menu、TV／主畫面、播放／暫停、音量）都已在實機上驗證可行，包括長按 TV 鍵開啟控制中心。Siri 語音輸入則無法重現。
+Ringomote 已可供日常使用。與實際的 Apple TV 配對、App 重新啟動或 Apple TV 喚醒後的重新連線，以及所有操作（觸控表面、Menu、TV／主畫面、播放／暫停、音量、靜音）都已在實機上驗證可行，包括長按 TV 鍵開啟控制中心。Siri 語音輸入則無法重現。
+
+## Screenshots 螢幕截圖
+
+<p align="center">
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1-remote-compact.png" alt="The remote, compact layout, connected to an Apple TV" width="180">
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2-remote-spread.png" alt="The remote, spread-out layout" width="180">
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3-remote-dark.png" alt="The remote in the dark theme" width="180">
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4-settings.png" alt="The Settings tab: theme, dynamic colour, layout, Bluetooth and Advanced" width="180">
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5-diagnostics.png" alt="The Bluetooth diagnostics report" width="180">
+</p>
+
+Left to right: the remote in the compact and spread-out layouts and in the dark theme, the Settings tab, and the Bluetooth diagnostics report. Taken on a Nokia G50 with dynamic colour on, so the palette follows the wallpaper.
+
+由左至右：緊湊與延伸至邊緣版面的遙控器、深色主題、「設定」分頁，以及藍牙診斷報告。於 Nokia G50 上擷取，開啟了動態色彩，因此配色跟隨桌布。
 
 ## How it works 運作方式
 
@@ -24,7 +38,7 @@ In more detail:
    - Touch surface: swipes become the arrow keys, a tap becomes Enter (Select).
    - Menu: Escape, which tvOS treats as "back".
    - TV: the same consumer-control usage the Siri Remote's TV button sends ("Data On Screen"), so tvOS treats a tap as Home and a hold as Control Center.
-   - Play/Pause, Volume up and Volume down: the matching consumer-control usages, as on a media keyboard.
+   - Play/Pause, Volume up, Volume down and Mute: the matching consumer-control usages, as on a media keyboard. Mute comes from the 2nd-generation Siri Remote.
 
 tvOS already knows how to drive its interface from a Bluetooth keyboard, so the phone needs no companion app or special protocol on the Apple TV side. Siri voice input is not reproduced, because the Siri Remote streams voice over its own protocol.
 
@@ -38,7 +52,7 @@ tvOS already knows how to drive its interface from a Bluetooth keyboard, so the 
    - 觸控表面：滑動對應方向鍵，輕觸對應 Enter（選取）。
    - Menu：Escape，tvOS 將它視為「返回」。
    - TV：與 Siri Remote 的 TV 鍵相同的消費性控制用途（「Data On Screen」），因此 tvOS 會把點按視為主畫面、長按視為控制中心。
-   - 播放／暫停、音量加與音量減：對應的消費性控制用途，和多媒體鍵盤相同。
+   - 播放／暫停、音量加、音量減與靜音：對應的消費性控制用途，和多媒體鍵盤相同。靜音鍵來自第二代 Siri Remote。
 
 tvOS 本來就知道如何用藍牙鍵盤操作介面，所以 Apple TV 那一端不需要任何配套程式或特殊協定。Siri 語音輸入沒有重現，因為 Siri Remote 是用自己的協定傳送語音的。
 

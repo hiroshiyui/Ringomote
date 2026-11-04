@@ -8,9 +8,9 @@ An Android app that turns your phone into a remote for Apple TV, compatible with
 
 ## Status 開發狀態
 
-Ringomote is in early development. Pairing with a real Apple TV and every control (touch surface, Menu, TV/Home, Play/Pause, Volume) have been verified on hardware, including holding the TV button to open Control Center.
+Ringomote is ready for everyday use. Pairing with a real Apple TV, reconnection after the app restarts or the Apple TV wakes, and every control (touch surface, Menu, TV/Home, Play/Pause, Volume) have been verified on hardware, including holding the TV button to open Control Center. Siri voice input is not reproduced.
 
-Ringomote 仍在早期開發階段。與實際的 Apple TV 配對，以及所有操作（觸控表面、Menu、TV／主畫面、播放／暫停、音量）都已在實機上驗證可行，包括長按 TV 鍵開啟控制中心。
+Ringomote 已可供日常使用。與實際的 Apple TV 配對、App 重新啟動或 Apple TV 喚醒後的重新連線，以及所有操作（觸控表面、Menu、TV／主畫面、播放／暫停、音量）都已在實機上驗證可行，包括長按 TV 鍵開啟控制中心。Siri 語音輸入則無法重現。
 
 ## How it works 運作方式
 

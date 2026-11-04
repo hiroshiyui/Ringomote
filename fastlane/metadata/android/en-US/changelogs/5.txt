@@ -1,0 +1,6 @@
+Hello, it's me, Ringomote, and I'm ready for everyday use!
+
+* Hold the TV button for a moment to open Control Center, like the real remote.
+* I no longer miss an Apple TV that reconnects the instant I start.
+* The Disconnect button is gone: a phone can't end the link itself, and the Apple TV kept treating it as connected. The Apple TV reconnects to me once it is awake.
+* Settings has a new Bluetooth section that opens the phone's Bluetooth settings, where a paired Apple TV can be removed.

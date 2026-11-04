@@ -1,0 +1,6 @@
+Hello, it's me, Ringomote, with a few touches you asked for!
+
+* The remote fades in when the Apple TV connects and stays out of the way while it is not.
+* A "Spread out" layout in Settings stretches the touch surface and buttons to the screen edges.
+* A Mute button sits between Volume up and down, as on the 2nd-generation Siri Remote.
+* Settings > Advanced has a Bluetooth diagnostics report you can copy, share or save for developers. It leaves your phone only when you send it.

@@ -13,8 +13,8 @@ android {
         applicationId = "org.ghostsinthelab.app.ringomote"
         minSdk = 28
         targetSdk = 37
-        versionCode = 5
-        versionName = "0.3.0"
+        versionCode = 6
+        versionName = "0.4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

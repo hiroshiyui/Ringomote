@@ -41,7 +41,7 @@ private const val HEADER_MAX_FRACTION = 0.4f
 
 /**
  * The remote itself, laid out like the 1st-generation Siri Remote: the [TouchSurface], then
- * Menu and TV (Home), Play/Pause, and Volume up/down, with [header] (the connection panel)
+ * Menu and TV (Home), Play/Pause, and Volume up, Mute and down, with [header] (the connection panel)
  * above it.
  *
  * The whole remote always fits on one screen, because scrolling it is unreliable: drags that
@@ -172,7 +172,7 @@ private fun RemoteFade(visible: Boolean, modifier: Modifier = Modifier, content:
 }
 
 /**
- * Menu | TV, Play/Pause, and Volume + | −, as on the physical remote. With [spread] each row
+ * Menu | TV, Play/Pause, and Volume + | Mute | −, as on the physical remote. With [spread] each row
  * fills the width and its buttons share it equally, so the grid reaches the screen edges.
  */
 @Composable
@@ -249,6 +249,13 @@ private fun RemoteButtons(
                 R.string.button_volume_up_label,
                 R.string.button_volume_up_description,
                 symbolStyle,
+                modifier = cell(),
+            )
+            ControlButton(
+                RemoteControl.Mute,
+                R.string.button_mute_label,
+                R.string.button_mute_description,
+                icon = R.drawable.ic_volume_off,
                 modifier = cell(),
             )
             ControlButton(

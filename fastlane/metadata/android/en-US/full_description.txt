@@ -5,7 +5,7 @@ I turn your phone into a remote for Apple TV, compatible with the Siri Remote (1
 What I offer:
 
 * A touch surface: swipe to move the highlight, tap to select.
-* Menu, TV (tap for Home, hold for Control Center), Play/Pause, and Volume up/down buttons.
+* Menu, TV (tap for Home, hold for Control Center), Play/Pause, Volume up/down and Mute buttons.
 * Pairing from the Apple TV's own Bluetooth settings, with the steps shown on screen.
 * TalkBack support, keyboard and D-pad control, and layouts that survive large fonts.
 * English, 台灣漢語 and 日本語.

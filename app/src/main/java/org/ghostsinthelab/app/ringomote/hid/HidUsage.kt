@@ -42,6 +42,9 @@ object ConsumerUsage {
     const val PLAY_PAUSE = 0x00CD
     const val VOLUME_INCREMENT = 0x00E9
     const val VOLUME_DECREMENT = 0x00EA
+
+    /** Mute: the usage the 2nd-generation Siri Remote sends for its Mute button. */
+    const val MUTE = 0x00E2
     const val AC_HOME = 0x0223
 
     /**

@@ -25,6 +25,7 @@ class HidKeyMapTest {
         RemoteControl.PlayPause to HidUsage.Consumer(0xCD), // Play/Pause
         RemoteControl.VolumeUp to HidUsage.Consumer(0xE9), // Volume Increment
         RemoteControl.VolumeDown to HidUsage.Consumer(0xEA), // Volume Decrement
+        RemoteControl.Mute to HidUsage.Consumer(0xE2), // Mute
         RemoteControl.Home to HidUsage.Consumer(0x60), // Data On Screen (Siri Remote TV button)
     )
 

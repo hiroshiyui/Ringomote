@@ -56,6 +56,8 @@
     <string name="button_play_pause_description">再生または一時停止</string>
     <string name="button_volume_up_label">+</string>
     <string name="button_volume_up_description">音量を上げる</string>
+    <string name="button_mute_label">消音</string>
+    <string name="button_mute_description">テレビを消音</string>
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">音量を下げる</string>
     <!-- Tabs, Settings and About -->
@@ -96,7 +98,7 @@
     <string name="about_license_link">ライセンス全文を読む</string>
     <string name="about_source_link">GitHub のソースコード</string>
     <string name="about_oss_title">オープンソースソフトウェア</string>
-    <string name="about_oss_body">Ringomote は AndroidX、Jetpack Compose、Material 3、Kotlin、kotlinx.coroutines を使って作られており、いずれも Apache License 2.0 で提供されています。Bluetooth の状態アイコンと Menu、TV ボタンのアイコンには Google の Material Icons（Apache License 2.0）を使用しています。</string>
+    <string name="about_oss_body">Ringomote は AndroidX、Jetpack Compose、Material 3、Kotlin、kotlinx.coroutines を使って作られており、いずれも Apache License 2.0 で提供されています。Bluetooth の状態アイコンと Menu、TV、消音ボタンのアイコンには Google の Material Icons（Apache License 2.0）を使用しています。</string>
     <string name="about_notices_link">サードパーティに関するすべての告知</string>
     <string name="about_trademarks_title">商標</string>
     <string name="about_trademarks_body">Apple、Apple TV、Siri、Siri Remote は、米国およびその他の国で登録された Apple Inc. の商標です。Android は Google LLC の商標です。Bluetooth® のワードマークおよびロゴは Bluetooth SIG, Inc. が所有する登録商標です。Ringomote は独立したプロジェクトであり、これらの企業とは提携しておらず、後援や承認も受けていません。これらの名称は、互換性と使用している技術を説明するためにのみ使用しています。</string>

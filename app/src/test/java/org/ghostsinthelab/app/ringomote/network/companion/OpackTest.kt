@@ -4,6 +4,10 @@ import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+/**
+ * The OPACK codec against the examples in pyatv's protocol notes (corrected for little-endian
+ * and shortest-form encoding, which is what real devices send) and a Companion request round trip.
+ */
 class OpackTest {
     private fun hex(s: String) = s.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
 

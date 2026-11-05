@@ -4,6 +4,7 @@ import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+/** HAP TLV8 framing: the 255-byte split rule and the byte layout the Apple TV reads. */
 class Tlv8Test {
     /** Items keep their order; a value over 255 bytes splits and merges back. */
     @Test

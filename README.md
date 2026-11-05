@@ -46,6 +46,8 @@ tvOS already knows how to drive its interface from a Bluetooth keyboard, so the 
 
 手機透過藍牙低功耗直接與 Apple TV 連線，像實體遙控器一樣以藍牙輸入裝置（HID over GATT 鍵盤）的身分出現，不需經過 Wi-Fi 網路、Apple 帳號或其他橋接裝置。唯一的例外需要您自行開啟，原因是 Apple TV 睡眠時不接收藍牙（也不理會 Wake-on-LAN 封包）：「設定 > 網路」可以用 Bonjour 在區域網路上尋找 Apple TV，並透過 Apple 的 Companion Link 協定（iOS 遙控器使用的同一條連線）與它配對，之後就有「喚醒」按鈕可以把它開啟。此功能預設關閉，配對是在 Apple TV 上另外輸入 PIN 的步驟，本程式也絕不會連線到區域網路以外的任何地方。
 
+遙控器啟動後，會有一則安靜的通知讓它在背景保持可用。這是因為藍牙鍵盤不能在程式離開畫面時就消失：若真的消失，tvOS 會把它移除，必須重新建立連線。點選通知中的「停止」會結束遙控器，直到下次開啟程式。
+
 詳細一點來說：
 
 1. **廣播。** Ringomote 開啟時，手機會廣播標準的藍牙 HID 服務，因此 Apple TV 會在「設定 > 遙控器與裝置 > 藍牙」中，把它和鍵盤、遊戲控制器列在一起。（傳統藍牙在這裡行不通：Android 將手機的裝置類別回報為「電話」，tvOS 會把它濾掉，而應用程式無法更改這一點。）
@@ -68,15 +70,33 @@ tvOS 本來就知道如何用藍牙鍵盤操作介面，所以 Apple TV 那一�
 
 ## Pairing 配對
 
-1. Open Ringomote and allow the Bluetooth permissions it asks for. The phone starts advertising itself as a remote right away (the pairing details open by themselves until the first connection; otherwise tap **Details**).
+1. Open Ringomote and allow the Bluetooth permissions it asks for (on Android 13 and later it also asks to show notifications, for the one that keeps the remote available). The phone starts advertising itself as a remote right away (the pairing details open by themselves until the first connection; otherwise tap **Details**).
 2. On the Apple TV, open **Settings > Remotes and Devices > Bluetooth** and pick your phone.
 3. On the phone, accept the pairing request. A second prompt follows: open the notification shade, tap the Bluetooth pairing notification, check that the 6-digit code matches the one on the TV and tap **Pair**. The Apple TV then shows the phone as connected.
-4. Once paired, the Apple TV reconnects by itself whenever it is awake and Ringomote is open. If it does not, tap **Connect** next to the Apple TV under **Details**.
+4. Once paired, the Apple TV reconnects by itself whenever it is awake and the remote is running (the app open, or its notification present). If the app ever says the Apple TV *needs to reconnect*, turn the phone's Bluetooth off and on; the Apple TV then re-checks the remote on a fresh link. Pairing again is only needed if the Apple TV has forgotten the phone.
 
-1. 開啟 Ringomote，並允許它要求的藍牙權限。手機會立刻以遙控器的身分開始廣播（首次連線前，配對說明會自動展開；否則請點選「詳細資訊」）。
+1. 開啟 Ringomote，並允許它要求的藍牙權限（Android 13 以上還會詢問是否允許顯示通知，用於讓遙控器保持可用的那則通知）。手機會立刻以遙控器的身分開始廣播（首次連線前，配對說明會自動展開；否則請點選「詳細資訊」）。
 2. 到 Apple TV 開啟「設定 > 遙控器與裝置 > 藍牙」，選擇您的手機。
 3. 在手機上接受配對要求。接著還有第二個提示：請拉下通知列，點選藍牙配對通知，確認 6 位數的配對碼與電視上顯示的一致，然後點選「配對」。Apple TV 隨即會顯示手機已連線。
-4. 配對完成後，只要 Apple TV 醒著且 Ringomote 開啟中，Apple TV 就會自動重新連線。若沒有，請在「詳細資訊」中點選 Apple TV 旁的「連線」。
+4. 配對完成後，只要 Apple TV 醒著且遙控器仍在執行（程式開啟中，或其通知仍在），Apple TV 就會自動重新連線。若程式顯示 Apple TV「需要重新連線」，請將手機的藍牙關閉再開啟，Apple TV 就會在新的連線上重新讀取遙控器。只有在 Apple TV 已清除這支手機時才需要重新配對。
+
+## Permissions and privacy 權限與隱私
+
+Ringomote collects nothing and contacts no server. The permissions it declares, and why:
+
+- **Bluetooth** (`BLUETOOTH_CONNECT` and `BLUETOOTH_ADVERTISE` on Android 12 and later; `BLUETOOTH` and `BLUETOOTH_ADMIN` before that): to present the phone as a Bluetooth input device and send key presses to the Apple TV.
+- **Notifications** (`POST_NOTIFICATIONS`, Android 13 and later) and a foreground service of the *connected device* type: for the notification that keeps the remote available in the background. Declining it hides the notification; the remote still runs.
+- **Network** (`INTERNET`, `ACCESS_NETWORK_STATE`, `CHANGE_WIFI_MULTICAST_STATE`): used only when *Use the local network* is on in Settings, to find Apple TVs with Bonjour and to wake one over Companion Link. Nothing goes beyond the local network.
+
+Stored on the phone: the appearance and network settings, whether an Apple TV has ever connected, the Bluetooth handle layout the Apple TV last subscribed to, and, once you pair for waking, the Companion Link pairing keys and the Apple TV's last address. The pairing keys include a private key, so that file is excluded from Android backups; everything else may be backed up. The Bluetooth diagnostics report under Settings > Advanced names your paired devices and leaves the phone only when you share or save it.
+
+Ringomote 不會收集任何資料，也不會連線到任何伺服器。它宣告的權限及其用途如下：
+
+- **藍牙**（Android 12 以上為 `BLUETOOTH_CONNECT` 與 `BLUETOOTH_ADVERTISE`，之前的版本為 `BLUETOOTH` 與 `BLUETOOTH_ADMIN`）：讓手機以藍牙輸入裝置的身分出現，並將按鍵送到 Apple TV。
+- **通知**（`POST_NOTIFICATIONS`，Android 13 以上）以及「已連線裝置」類型的前景服務：用於讓遙控器在背景保持可用的那則通知。拒絕後通知不會顯示，遙控器仍會執行。
+- **網路**（`INTERNET`、`ACCESS_NETWORK_STATE`、`CHANGE_WIFI_MULTICAST_STATE`）：只在「設定」中開啟「使用區域網路」後才會使用，用來以 Bonjour 尋找 Apple TV，以及透過 Companion Link 喚醒它。不會有任何資料送出區域網路。
+
+儲存在手機上的資料：外觀與網路設定、是否曾有 Apple TV 連線過、Apple TV 上次訂閱時的藍牙服務配置，以及在您為喚醒功能配對後的 Companion Link 配對金鑰與 Apple TV 最近的位址。配對金鑰含有私鑰，因此該檔案不納入 Android 備份；其他資料可以備份。「設定 > 進階」中的藍牙診斷報告會列出您已配對的裝置，只有在您分享或儲存時才會離開手機。
 
 ## Building 建置
 

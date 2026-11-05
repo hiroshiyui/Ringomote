@@ -6,6 +6,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+/** Merging Apple TVs from Companion pairings, Bonjour and Bluetooth bonds by their shared name. */
 class KnownAppleTvTest {
     private val livingRoom = AppleTv("客廳", "客廳", "AppleTV6,2", "192.168.50.48", 49153)
     private val bedroom = AppleTv("Bedroom", "Bedroom", "AppleTV14,1", "192.168.50.60", 49153)

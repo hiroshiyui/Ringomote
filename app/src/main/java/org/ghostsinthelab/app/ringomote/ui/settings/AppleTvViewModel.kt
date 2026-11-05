@@ -177,8 +177,12 @@ class AppleTvViewModel(
                 withContext(ioDispatcher) { wakeBlocking(tv, credentials) }
                 AppleTvLinkState.Outcome.WakeSent
             } catch (e: PairingException) {
+                // The Apple TV forgot us (Ringomote removed under Remotes and Devices): the
+                // stored keys are dead, so drop them and offer Pair instead of Wake.
                 Log.w(TAG, "Wake rejected by ${tv.host}", e)
-                AppleTvLinkState.Outcome.Rejected
+                store.remove(tv.id)
+                set(tv, AppleTvLinkState.Failed(AppleTvLinkState.Outcome.Rejected))
+                return@launch
             } catch (e: IOException) {
                 Log.w(TAG, "Wake failed for ${tv.host}", e)
                 AppleTvLinkState.Outcome.WakeFailed

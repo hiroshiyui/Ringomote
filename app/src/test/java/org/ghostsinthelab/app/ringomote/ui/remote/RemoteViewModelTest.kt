@@ -20,6 +20,7 @@ import org.ghostsinthelab.app.ringomote.network.companion.CompanionLink
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionLinkPort
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionSession
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionState
+import org.ghostsinthelab.app.ringomote.network.companion.PairingException
 import org.ghostsinthelab.app.ringomote.remote.RemoteControl
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -127,6 +128,18 @@ class RemoteViewModelTest {
         assertEquals(listOf("down Home", "up Home"), port.links[0].sent)
     }
 
+    /** A pairing the Apple TV refuses is dropped from the store, so the UI offers Pair again. */
+    @Test
+    fun rejectedPairingIsForgotten() = scope.runTest {
+        credentials.credentials.value = mapOf("TV" to CompanionCredentials(ByteArray(32), ByteArray(32), ByteArray(32), ByteArray(32)))
+        port.rejectNext = true
+        val vm = newViewModel()
+        vm.setRemoteShown(true)
+        runCurrent()
+        assertTrue(credentials.credentials.value.isEmpty())
+        assertEquals(CompanionState.Off, session.state.value)
+    }
+
     /** A tap is one down/up pair. */
     @Test
     fun tapSendsDownAndUp() = scope.runTest {
@@ -146,7 +159,7 @@ class RemoteViewModelTest {
     private class FakeCredentialsStore : CompanionCredentialsStore {
         override val credentials = MutableStateFlow<Map<String, CompanionCredentials>>(emptyMap())
         override fun put(appleTvId: String, credentials: CompanionCredentials) = Unit
-        override fun remove(appleTvId: String) = Unit
+        override fun remove(appleTvId: String) { credentials.value = credentials.value - appleTvId }
         override val deviceId = "AA:BB:CC:DD:EE:FF"
         override fun endpoint(appleTvId: String): CompanionCredentialsStore.Endpoint? = null
         override fun putEndpoint(appleTvId: String, endpoint: CompanionCredentialsStore.Endpoint) = Unit
@@ -155,7 +168,11 @@ class RemoteViewModelTest {
     /** Opens a recording link per call; a link can be told to fail its next send. */
     private class FakePort : CompanionLinkPort {
         val links = mutableListOf<FakeLink>()
-        override fun open(name: String) = FakeLink(name).also { links += it }
+        var rejectNext = false
+        override fun open(name: String): CompanionLink {
+            if (rejectNext) { rejectNext = false; throw PairingException("forgotten") }
+            return FakeLink(name).also { links += it }
+        }
     }
 
     private class FakeLink(override val name: String) : CompanionLink {

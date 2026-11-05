@@ -32,7 +32,9 @@ import org.ghostsinthelab.app.ringomote.remote.RemoteControl
  * The session is wanted while the remote is on screen ([setRemoteShown]) in the foreground
  * ([setForeground]); its target is the paired Apple TV the Remote tab is aimed at
  * ([NetworkSettings.selectedAppleTv], or the only pairing). A new pairing makes the session
- * try again after a refusal. Whenever the link leaves [CompanionState.Connected], held
+ * try again after a refusal; a refusal ([CompanionState.Rejected]) means the Apple TV forgot
+ * the pairing, so the dead keys are dropped from the store, which turns the reminders back
+ * into Pair. Whenever the link leaves [CompanionState.Connected], held
  * controls are released, so a finger that was down when the link dropped never leaves a key
  * stuck on the Apple TV.
  *
@@ -65,6 +67,9 @@ class RemoteViewModel(
         }
         viewModelScope.launch {
             companionCredentials.credentials.map { it.keys }.distinctUntilChanged().collect { companion.retry() }
+        }
+        viewModelScope.launch {
+            companion.state.collect { if (it is CompanionState.Rejected) companionCredentials.remove(it.name) }
         }
         viewModelScope.launch {
             combine(remoteShown, foreground) { shown, fg -> shown && fg }

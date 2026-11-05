@@ -56,7 +56,7 @@
     <string name="settings_apple_tv_outcome_wake_sent">起動要求を送りました。</string>
     <string name="settings_apple_tv_outcome_wake_failed">Apple TV に届きませんでした。</string>
     <string name="settings_apple_tv_outcome_unreachable">Apple TV に接続できませんでした。</string>
-    <string name="settings_apple_tv_outcome_rejected">Apple TV がペアリングを拒否しました。コードを確認してもう一度試すか、Apple TV の「設定 › リモコンとデバイス」で Ringomote を削除してからやり直してください。</string>
+    <string name="settings_apple_tv_outcome_rejected">Apple TV がペアリングを拒否しました。コードを確認してもう一度試してください。Apple TV 側で Ringomote が削除されていた場合は、そのままペアリングし直せます。</string>
     <string name="remote_wake_button">起動</string>
     <string name="remote_wake_hint">%1$s は接続されていません。スリープ中なら、起動できます。</string>
     <string name="remote_wake_sending">%1$s を起動しています…</string>
@@ -66,7 +66,7 @@
     <string name="remote_wifi_connected">Wi-Fi 経由で %1$s を操作しています。</string>
     <string name="remote_wifi_connecting">Wi-Fi 経由で %1$s に接続しています…</string>
     <string name="remote_wifi_unreachable">Wi-Fi 経由で %1$s に届きませんでした。再試行しています。</string>
-    <string name="remote_wifi_rejected">%1$s が Wi-Fi のペアリングを拒否しました。「設定 › ネットワーク」でペアリングし直してください。</string>
+    <string name="remote_wifi_rejected">%1$s はこのペアリングを認識しなくなりました。「設定」でペアリングし直してください。</string>
     <string name="action_open_settings">設定</string>
     <string name="remote_wifi_off">接続されていません。「設定」で Ringomote を Apple TV とペアリングしてください。</string>
     <string name="remote_pair_network_hint">iPad と同じように Ringomote を %1$s とペアリングすると、この Apple TV を操作できます。</string>

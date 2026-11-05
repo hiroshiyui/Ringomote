@@ -38,6 +38,8 @@
     <string name="settings_layout_spread">延伸至邊緣</string>
     <string name="settings_apple_tvs_title">這個網路上的 Apple TV</string>
     <string name="settings_apple_tvs_description">Ringomote 會以 Bonjour 在您的 Wi-Fi 網路上尋找 Apple TV，並像 iPad 一樣與它配對：Apple TV 會顯示一組代碼，請您在此輸入。不會有任何資料送出您的網路。</string>
+    <string name="settings_remote_name_label">這支手機的名稱</string>
+    <string name="settings_remote_name_hint">Apple TV 會把這支手機列為「%1$s」。留空則使用手機本身的名稱。新名稱會在下次配對時生效。</string>
     <string name="settings_apple_tvs_searching">搜尋中…</string>
     <string name="settings_apple_tvs_none">找不到 Apple TV。請確認手機與 Apple TV 在同一個 Wi-Fi 網路。</string>
     <string name="settings_apple_tv_pair">配對</string>

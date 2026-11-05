@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
                     appearanceSettings = settings,
                     networkSettings = container.networkSettings,
                     appleTvDiscovery = container.appleTvDiscovery,
+                    phoneName = container.phoneName,
                 )
             }
         }

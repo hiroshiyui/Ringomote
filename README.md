@@ -53,12 +53,12 @@ Siri 語音輸入無法重現，也沒有靜音鍵：Companion Link 沒有靜音
 
 ## Pairing 配對
 
-1. Open Ringomote and go to **Settings**. The Apple TVs on your network appear under *Apple TVs on this network* within a few seconds.
+1. Open Ringomote and go to **Settings**. Optionally give this phone a name (the Apple TV lists it as *Ringomote (name)*; with several phones of the same model, each needs its own). The Apple TVs on your network appear under *Apple TVs on this network* within a few seconds.
 2. Tap **Pair** next to your Apple TV. The Apple TV shows a 4-digit code; type it into the field that appears and tap **Confirm**.
 3. Go back to the **Remote** tab. The panel says *Controlling <name> over Wi-Fi* and the controls appear. If the Apple TV is asleep, tap **Wake** first.
 4. The pairing lasts until you remove it with **Forget pairing** in Settings or remove Ringomote on the Apple TV under **Settings > Remotes and Devices**; if the Apple TV then rejects the pairing, the panel says so and offers Settings to pair again.
 
-1. 開啟 Ringomote，進入「設定」。幾秒之內，您網路上的 Apple TV 會列在「這個網路上的 Apple TV」之下。
+1. 開啟 Ringomote，進入「設定」。您可以為這支手機取個名稱（Apple TV 會將它列為「Ringomote (名稱)」；同型號的手機有好幾支時，每支都需要不同的名稱）。幾秒之內，您網路上的 Apple TV 會列在「這個網路上的 Apple TV」之下。
 2. 點選您的 Apple TV 旁的「配對」。Apple TV 會顯示 4 位數代碼；請在出現的欄位輸入並點選「確認」。
 3. 回到「遙控器」分頁。面板會顯示「正透過 Wi-Fi 控制 <名稱>」，操作介面隨即出現。若 Apple TV 在睡眠中，請先點選「喚醒」。
 4. 配對會一直保留，直到您在「設定」點選「清除配對」，或在 Apple TV 的「設定 > 遙控器與裝置」移除 Ringomote；若 Apple TV 之後拒絕配對，面板會顯示並提供「設定」讓您重新配對。
@@ -69,13 +69,13 @@ Ringomote collects nothing and contacts no server. The permissions it declares, 
 
 - **Network** (`INTERNET`, `ACCESS_NETWORK_STATE`, `CHANGE_WIFI_MULTICAST_STATE`): to find Apple TVs with Bonjour and to talk to the paired one over Companion Link, encrypted with the pairing keys. Nothing goes beyond the local network.
 
-Stored on the phone: the appearance settings, the chosen Apple TV, and, once you pair, the Companion Link pairing keys and the Apple TV's last address. The pairing keys include a private key, so that file is excluded from Android backups; everything else may be backed up.
+Stored on the phone: the appearance settings, the chosen Apple TV, this phone's name, and, once you pair, the Companion Link pairing keys and the Apple TV's last address. The pairing keys include a private key, so that file is excluded from Android backups; everything else may be backed up.
 
 Ringomote 不會收集任何資料，也不會連線到任何伺服器。它宣告的權限及其用途如下：
 
 - **網路**（`INTERNET`、`ACCESS_NETWORK_STATE`、`CHANGE_WIFI_MULTICAST_STATE`）：用來以 Bonjour 尋找 Apple TV，並以配對金鑰加密、透過 Companion Link 與已配對的 Apple TV 通訊。不會有任何資料送出區域網路。
 
-儲存在手機上的資料：外觀設定、所選的 Apple TV，以及配對後的 Companion Link 配對金鑰與 Apple TV 最近的位址。配對金鑰含有私鑰，因此該檔案不納入 Android 備份；其他資料可以備份。
+儲存在手機上的資料：外觀設定、所選的 Apple TV、這支手機的名稱，以及配對後的 Companion Link 配對金鑰與 Apple TV 最近的位址。配對金鑰含有私鑰，因此該檔案不納入 Android 備份；其他資料可以備份。
 
 ## Building 建置
 

@@ -38,6 +38,8 @@
     <string name="settings_layout_spread">画面いっぱい</string>
     <string name="settings_apple_tvs_title">このネットワーク上の Apple TV</string>
     <string name="settings_apple_tvs_description">Ringomote は Bonjour で Wi-Fi ネットワーク上の Apple TV を探し、iPad と同じようにペアリングします。Apple TV に表示されるコードをここに入力してください。ネットワークの外には何も送りません。</string>
+    <string name="settings_remote_name_label">このスマートフォンの名前</string>
+    <string name="settings_remote_name_hint">Apple TV にはこのスマートフォンが「%1$s」として表示されます。空にするとスマートフォン自身の名前を使います。新しい名前は次にペアリングしたときに反映されます。</string>
     <string name="settings_apple_tvs_searching">検索中…</string>
     <string name="settings_apple_tvs_none">Apple TV が見つかりません。スマートフォンが Apple TV と同じ Wi-Fi ネットワークにあるか確認してください。</string>
     <string name="settings_apple_tv_pair">ペアリング</string>

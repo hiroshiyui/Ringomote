@@ -64,7 +64,7 @@ class AppleTvViewModel(
     private val store: CompanionCredentialsStore,
     private val discovery: AppleTvDiscovery,
     private val bindSocket: (Socket) -> Unit = {},
-    private val displayName: String = DeviceName.APP_NAME,
+    private val displayName: () -> String = { DeviceName.APP_NAME },
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
     private val _states = MutableStateFlow<Map<String, AppleTvLinkState>>(emptyMap())
@@ -116,7 +116,7 @@ class AppleTvViewModel(
                     val client = CompanionClient(tv.host, tv.port, bindSocket)
                     try {
                         client.connect()
-                        val setup = client.startPairing(displayName)
+                        val setup = client.startPairing(displayName())
                         pending = Pending(client, setup)
                     } catch (e: Exception) {
                         client.close()
@@ -191,7 +191,7 @@ class AppleTvViewModel(
         CompanionClient(tv.host, tv.port, bindSocket).use { client ->
             client.connect()
             client.verify(credentials)
-            client.startSession(credentials, name = displayName, model = Build.MODEL, deviceId = store.deviceId)
+            client.startSession(credentials, name = displayName(), model = Build.MODEL, deviceId = store.deviceId)
             client.hidPress(CompanionCommand.Wake)
         }
     }

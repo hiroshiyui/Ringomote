@@ -51,6 +51,7 @@ import org.ghostsinthelab.app.ringomote.settings.ThemeMode
 import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
 import org.ghostsinthelab.app.ringomote.ui.theme.supportsDynamicColor
 import org.ghostsinthelab.app.ringomote.network.AppleTv
+import org.ghostsinthelab.app.ringomote.network.companion.DeviceName
 
 /**
  * The Settings tab: appearance, the remote's layout, and the Apple TVs on the network.
@@ -61,7 +62,9 @@ import org.ghostsinthelab.app.ringomote.network.AppleTv
  * 12+), so the setting never promises what the phone cannot do. Changes apply immediately
  * through [RingomoteTheme]; nothing needs a restart.
  *
- * The Apple TV section lists the Apple TVs found through Bonjour ([appleTvs], with a progress
+ * The Apple TV section starts with the name this phone pairs under ([remoteName], with
+ * [phoneName] as the placeholder default; [onRemoteNameChange] stores it, and a new name
+ * takes effect at the next pairing). Below it lists the Apple TVs found through Bonjour ([appleTvs], with a progress
  * bar while [browsing]). The caller starts and stops the browse; this screen only shows the
  * result. Each Apple TV row carries its Companion Link state ([linkStateOf]): Pair, then a
  * PIN field while the Apple TV shows one, then Wake and Forget.
@@ -72,6 +75,9 @@ fun SettingsScreen(
     onModeChange: (ThemeMode) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
     onLayoutChange: (RemoteLayout) -> Unit,
+    remoteName: String?,
+    phoneName: String,
+    onRemoteNameChange: (String?) -> Unit,
     appleTvs: List<AppleTv>,
     browsing: Boolean,
     linkStateOf: (AppleTv) -> AppleTvLinkState,
@@ -172,6 +178,17 @@ fun SettingsScreen(
             Text(
                 text = stringResource(R.string.settings_apple_tvs_description),
                 style = MaterialTheme.typography.bodyMedium,
+            )
+            // The draft is local so the field keeps the caret; every change is stored at once.
+            var nameDraft by rememberSaveable(remoteName) { mutableStateOf(remoteName.orEmpty()) }
+            OutlinedTextField(
+                value = nameDraft,
+                onValueChange = { nameDraft = it; onRemoteNameChange(it) },
+                label = { Text(stringResource(R.string.settings_remote_name_label)) },
+                placeholder = { Text(phoneName) },
+                supportingText = { Text(stringResource(R.string.settings_remote_name_hint, "${DeviceName.APP_NAME} (${nameDraft.ifBlank { phoneName }})")) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
             )
             if (browsing) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             if (appleTvs.isEmpty()) {
@@ -317,6 +334,9 @@ private fun SettingsScreenPreview() {
             onModeChange = {},
             onDynamicColorChange = {},
             onLayoutChange = {},
+            remoteName = null,
+            phoneName = "Nokia G50",
+            onRemoteNameChange = {},
             appleTvs = listOf(AppleTv("keting", "keting", "AppleTV14,1", "192.168.50.48", 49152)),
             browsing = true,
             linkStateOf = { AppleTvLinkState.AwaitingPin },

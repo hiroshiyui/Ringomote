@@ -193,7 +193,7 @@ class CompanionSession(
         private val store: CompanionCredentialsStore,
         private val discovery: AppleTvDiscovery,
         private val bindSocket: (java.net.Socket) -> Unit,
-        private val displayName: String,
+        private val displayName: () -> String,
         private val model: String,
     ) : CompanionLinkPort {
         override fun open(name: String): CompanionLink {
@@ -206,7 +206,7 @@ class CompanionSession(
             try {
                 client.connect()
                 client.verify(credentials)
-                client.startSession(credentials, name = displayName, model = model, deviceId = store.deviceId)
+                client.startSession(credentials, name = displayName(), model = model, deviceId = store.deviceId)
             } catch (e: Exception) {
                 client.close()
                 throw e

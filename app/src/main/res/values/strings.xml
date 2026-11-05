@@ -38,6 +38,8 @@
     <string name="settings_layout_spread">Spread out</string>
     <string name="settings_apple_tvs_title">Apple TVs on this network</string>
     <string name="settings_apple_tvs_description">Ringomote finds Apple TVs on your Wi-Fi network with Bonjour and pairs with one the way an iPad does: it shows a code, you type it here. Nothing is sent beyond your network.</string>
+    <string name="settings_remote_name_label">This phone’s name</string>
+    <string name="settings_remote_name_hint">The Apple TV lists this phone as “%1$s”. Leave empty to use the phone’s own name. A new name takes effect when you pair again.</string>
     <string name="settings_apple_tvs_searching">Searching…</string>
     <string name="settings_apple_tvs_none">No Apple TV found. Check that the phone is on the same Wi-Fi network as the Apple TV.</string>
     <string name="settings_apple_tv_pair">Pair</string>

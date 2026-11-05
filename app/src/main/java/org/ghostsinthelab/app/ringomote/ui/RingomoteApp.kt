@@ -59,6 +59,7 @@ fun RingomoteApp(
     appearanceSettings: AppearanceSettings,
     networkSettings: NetworkSettings,
     appleTvDiscovery: AppleTvDiscovery,
+    phoneName: String,
     modifier: Modifier = Modifier,
     vm: RemoteViewModel = viewModel(factory = RemoteViewModel.Factory),
 ) {
@@ -96,6 +97,7 @@ fun RingomoteApp(
                 val browsing by appleTvDiscovery.browsing.collectAsStateWithLifecycle()
                 val appleTvVm: AppleTvViewModel = viewModel(factory = AppleTvViewModel.Factory)
                 val linkStates by appleTvVm.states.collectAsStateWithLifecycle()
+                val remoteName by networkSettings.remoteName.collectAsStateWithLifecycle()
                 // Browse only while the Settings tab shows the list.
                 DisposableEffect(Unit) {
                     appleTvDiscovery.start()
@@ -106,6 +108,9 @@ fun RingomoteApp(
                     onModeChange = appearanceSettings::setMode,
                     onDynamicColorChange = appearanceSettings::setDynamicColor,
                     onLayoutChange = appearanceSettings::setLayout,
+                    remoteName = remoteName,
+                    phoneName = phoneName,
+                    onRemoteNameChange = networkSettings::setRemoteName,
                     appleTvs = appleTvs,
                     browsing = browsing,
                     linkStateOf = { tv -> linkStates[tv.id] ?: appleTvVm.stateOf(tv) },

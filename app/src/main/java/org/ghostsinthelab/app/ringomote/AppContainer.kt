@@ -26,8 +26,11 @@ import org.ghostsinthelab.app.ringomote.network.companion.SharedPreferencesCompa
  * outlive any single screen. Swap implementations here without touching the UI.
  */
 class AppContainer(context: Context) {
-    /** The name the Apple TV lists this phone under. */
-    val displayName: String by lazy { DeviceName.forPairing(context) }
+    /** The name the Apple TV lists this phone under; read when pairing or starting a session. */
+    val displayName: () -> String = { DeviceName.forPairing(context, networkSettings.remoteName.value) }
+
+    /** The phone's own name, shown in Settings as the default for the remote name. */
+    val phoneName: String by lazy { DeviceName.phoneName(context) }
     val appearanceSettings: AppearanceSettings by lazy { SharedPreferencesAppearanceSettings(context) }
     val networkSettings: NetworkSettings by lazy { SharedPreferencesNetworkSettings(context) }
     val appleTvDiscovery: AppleTvDiscovery by lazy { NsdAppleTvDiscovery(context) }

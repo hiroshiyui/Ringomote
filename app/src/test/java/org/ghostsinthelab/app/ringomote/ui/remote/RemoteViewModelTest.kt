@@ -139,6 +139,8 @@ class RemoteViewModelTest {
     private class FakeNetworkSettings : NetworkSettings {
         override val selectedAppleTv = MutableStateFlow<String?>(null)
         override fun setSelectedAppleTv(name: String?) { selectedAppleTv.value = name }
+        override val remoteName = MutableStateFlow<String?>(null)
+        override fun setRemoteName(name: String?) { remoteName.value = name }
     }
 
     private class FakeCredentialsStore : CompanionCredentialsStore {

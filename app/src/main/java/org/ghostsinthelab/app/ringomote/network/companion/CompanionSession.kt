@@ -93,10 +93,25 @@ class CompanionSession(
     }
 
     /** The Apple TV to hold a session with, by Bonjour name; null for none. */
-    fun target(name: String?) = desire.update { if (it.target == name) it else it.copy(target = name, epoch = it.epoch + 1) }
+    fun target(name: String?) {
+        desire.update { if (it.target == name) it else it.copy(target = name, epoch = it.epoch + 1) }
+        showConnectingEarly()
+    }
 
     /** Whether the remote needs the Wi-Fi link right now. */
-    fun setWanted(wanted: Boolean) = desire.update { if (it.wanted == wanted) it else it.copy(wanted = wanted) }
+    fun setWanted(wanted: Boolean) {
+        desire.update { if (it.wanted == wanted) it else it.copy(wanted = wanted) }
+        showConnectingEarly()
+    }
+
+    /**
+     * Reports Connecting as soon as a target is wanted, before the runner gets to it, so the
+     * panel never shows "not connected, pair" for a frame while a pairing exists.
+     */
+    private fun showConnectingEarly() {
+        val d = desire.value
+        if (d.target != null && d.wanted) _state.compareAndSet(CompanionState.Off, CompanionState.Connecting(d.target))
+    }
 
     /** Tries again after [CompanionState.Rejected], e.g. once a new pairing is stored. */
     fun retry() = desire.update { it.copy(epoch = it.epoch + 1) }

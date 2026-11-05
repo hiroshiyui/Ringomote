@@ -52,6 +52,17 @@ class CompanionSessionTest {
         block(session)
     }
 
+    /** Connecting shows at once when a target is wanted, before the runner has run. */
+    @Test
+    fun connectingShowsBeforeTheRunnerStarts() = runSession { session ->
+        session.target("TV")
+        assertEquals(CompanionState.Off, session.state.value)
+        session.setWanted(true)
+        assertEquals(CompanionState.Connecting("TV"), session.state.value)
+        runCurrent()
+        assertEquals(CompanionState.Connected("TV"), session.state.value)
+    }
+
     /** Target plus wanted is what opens the link; either alone does nothing. */
     @Test
     fun connectsWhenTargetedAndWanted() = runSession { session ->

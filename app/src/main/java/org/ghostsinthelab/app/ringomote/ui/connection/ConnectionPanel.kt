@@ -46,7 +46,14 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
  * The connection header: one compact status row, with the longer explanations behind a
  * Details toggle that is collapsed by default, so the remote below keeps most of the screen.
  *
- * The row always shows a Bluetooth status icon and a short status label (a polite live region, so TalkBack
+ * The Wi-Fi remote session ([companionState]) leads, because it is the first input link: while
+ * it is doing anything, the top row says so with a Wi-Fi icon: connecting, controlling over
+ * Wi-Fi (with the note that Mute is unavailable there, shown only while Bluetooth cannot carry
+ * it either), unreachable, or rejected with the advice to pair again.
+ *
+ * The Bluetooth row follows, demoted to body text while Wi-Fi is in control, and its details
+ * stay collapsed by default then, so the pairing steps do not crowd a remote that already
+ * works. It shows a Bluetooth status icon and a short status label (a polite live region, so TalkBack
  * announces every change), plus the one action the state needs right away:
  * - [TransportState.BluetoothOff]: turn Bluetooth on.
  * - [TransportState.RegistrationFailed]: retry via [onRetry].
@@ -62,12 +69,6 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
  * owns the link and reconnects by itself, and a phone-side connect opens a classic link the
  * TV closes at once (see the link rules in CLAUDE.md). Neither the icon's shape nor its colour is the
  * only signal; the label always says the same in words, so the icon is decorative to TalkBack.
- *
- * Below the Bluetooth row, while the Wi-Fi remote session ([companionState]) is doing
- * anything, a second row says so: connecting, controlling over Wi-Fi (with the note that Mute
- * is unavailable there, shown only while Bluetooth cannot carry it either), unreachable, or
- * rejected with the advice to pair again. Wi-Fi is the first link, so the row stays while the
- * Apple TV is also subscribed over Bluetooth.
  *
  * Details start expanded when [expandDetailsByDefault] is true (first use, before any Apple TV
  * was connected), so the pairing steps are visible without a tap; otherwise they start
@@ -88,10 +89,40 @@ fun ConnectionPanel(
     val launchSystemScreen = rememberSystemScreenLauncher()
     // null until the user toggles; then their choice overrides the default.
     var userExpanded by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    val expanded = userExpanded ?: expandDetailsByDefault
+    val wifiInControl = companionState is CompanionState.Connected
+    val expanded = userExpanded ?: (expandDetailsByDefault && !wifiInControl)
     val showDetails = expanded && state.hasDetails()
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        if (companionState != CompanionState.Off) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_wifi),
+                    contentDescription = null,
+                    tint = companionState.indicatorColor(),
+                    modifier = Modifier.size(24.dp),
+                )
+                Text(
+                    text = companionState.describe(),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .weight(1f)
+                        .semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+            if (wifiInControl && state !is TransportState.Connected) {
+                Text(
+                    text = stringResource(R.string.remote_wifi_mute_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -106,7 +137,8 @@ fun ConnectionPanel(
             )
             Text(
                 text = state.describeShort(),
-                style = MaterialTheme.typography.titleMedium,
+                style = if (wifiInControl) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.titleMedium,
+                color = if (wifiInControl) MaterialTheme.colorScheme.onSurfaceVariant else Color.Unspecified,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -137,35 +169,6 @@ fun ConnectionPanel(
                         stringResource(if (showDetails) R.string.action_hide_details else R.string.action_show_details),
                     )
                 }
-            }
-        }
-
-        if (companionState != CompanionState.Off) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_wifi),
-                    contentDescription = null,
-                    tint = companionState.indicatorColor(),
-                    modifier = Modifier.size(24.dp),
-                )
-                Text(
-                    text = companionState.describe(),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .weight(1f)
-                        .semantics { liveRegion = LiveRegionMode.Polite },
-                )
-            }
-            if (companionState is CompanionState.Connected && state !is TransportState.Connected) {
-                Text(
-                    text = stringResource(R.string.remote_wifi_mute_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
         }
 

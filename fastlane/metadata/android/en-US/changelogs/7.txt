@@ -1,0 +1,6 @@
+Hello, it's me, Ringomote. This time I learned to wake your Apple TV!
+
+* Settings > Network (off by default) finds Apple TVs on your Wi-Fi with Bonjour. Pair once with the code the Apple TV shows, and a Wake button turns it on when it sleeps.
+* The Remote tab names the Apple TV it is aimed at and offers Wake there too.
+* A quiet notification keeps the remote available after you leave the app, and after a reboot.
+* The Connect button is gone; the Apple TV connects by itself.

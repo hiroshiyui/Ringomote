@@ -20,12 +20,12 @@
     <string name="state_connected">已連線到 %1$s。</string>
     <string name="state_connected_details">已連線到 %1$s。若要中斷連線，請您在 Apple TV 的藍牙設定中移除這支手機；手機這端無法自行結束連線。</string>
     <string name="state_short_resyncing">%1$s 需要重新連線</string>
-    <string name="state_resyncing">%1$s 已連線，但自 Ringomote 的藍牙服務重新建立後，它還沒有重新讀取遙控器，所以按鍵不會有作用。請將手機的藍牙關閉再開啟並稍等一分鐘，Apple TV 通常會重新連線並重新認得遙控器。若仍無效，請在 Apple TV 的「設定 › 遙控器與裝置 › 藍牙」清除這支手機後重新配對。</string>
+    <string name="state_resyncing">%1$s 已連線，但自 Ringomote 的藍牙服務重新建立後，它還沒有重新讀取遙控器，所以按鍵不會有作用。請稍等一分鐘：Apple TV 會自行重新建立連線並重新認得遙控器。若等了兩三分鐘仍無反應，請將手機的藍牙關閉再開啟；若還是不行，請在 Apple TV 的「設定 › 遙控器與裝置 › 藍牙」清除這支手機後重新配對。</string>
     <string name="notification_channel">遙控器連線</string>
     <string name="notification_channel_description">顯示 Ringomote 正為 Apple TV 保持藍牙遙控器可用。</string>
     <string name="notification_waiting">等待 Apple TV 連線。</string>
     <string name="notification_connected">已連線至 %1$s。</string>
-    <string name="notification_resyncing">%1$s 需要重新連線：請關閉再開啟藍牙。</string>
+    <string name="notification_resyncing">%1$s 需要重新連線，通常一分鐘內會自行完成。</string>
     <string name="notification_bluetooth_off">藍牙已關閉。</string>
     <string name="notification_stop">停止</string>
     <string name="state_short_stopped">正在啟動…</string>

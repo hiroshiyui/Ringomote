@@ -20,12 +20,12 @@
     <string name="state_connected">%1$s に接続しました。</string>
     <string name="state_connected_details">%1$s に接続中です。接続を解除するには、Apple TV の Bluetooth 設定でこのスマートフォンを削除してください。スマートフォン側からは解除できません。</string>
     <string name="state_short_resyncing">%1$s の再接続が必要</string>
-    <string name="state_resyncing">%1$s は接続されていますが、Ringomote の Bluetooth サービスが作り直されてから、まだリモコンを読み直していないため、キーは効きません。スマートフォンの Bluetooth をいったんオフにしてからオンにし、1 分ほど待ってください。たいていは Apple TV が再接続してリモコンを認識し直します。それでも効かない場合は、Apple TV の「設定 › リモコンとデバイス › Bluetooth」でこのスマートフォンを削除してからペアリングし直してください。</string>
+    <string name="state_resyncing">%1$s は接続されていますが、Ringomote の Bluetooth サービスが作り直されてから、まだリモコンを読み直していないため、キーは効きません。1 分ほど待ってください。Apple TV は自分でリンクを作り直し、リモコンを認識し直します。2〜3 分たっても何も起きない場合は、スマートフォンの Bluetooth をいったんオフにしてからオンにしてください。それでも効かない場合は、Apple TV の「設定 › リモコンとデバイス › Bluetooth」でこのスマートフォンを削除してからペアリングし直してください。</string>
     <string name="notification_channel">リモコンのリンク</string>
     <string name="notification_channel_description">Ringomote が Apple TV 向けに Bluetooth リモコンを待機させていることを示します。</string>
     <string name="notification_waiting">Apple TV の接続を待っています。</string>
     <string name="notification_connected">%1$s に接続中。</string>
-    <string name="notification_resyncing">%1$s の再接続が必要です。Bluetooth をオフにしてからオンにしてください。</string>
+    <string name="notification_resyncing">%1$s の再接続が必要です。たいてい 1 分以内に自動で行われます。</string>
     <string name="notification_bluetooth_off">Bluetooth がオフです。</string>
     <string name="notification_stop">停止</string>
     <string name="state_short_stopped">起動中…</string>

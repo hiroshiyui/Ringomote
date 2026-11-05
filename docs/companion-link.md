@@ -75,9 +75,13 @@ unavailable over Wi-Fi. `_sessionStop` with the same `_srvT`/`_sid` ends the rem
 
 ## Wi-Fi remote mode (2026-11-06)
 
-`CompanionSession` keeps one verified session open while the Remote tab is on screen without
-a Bluetooth link, and `RemoteRouter` sends each button there as `_hidC` down/up (`CompanionKeyMap`
-maps `RemoteControl` to the codes above). Keeping the socket: there is no documented ping, and
+`CompanionSession` keeps one verified session open while the Remote tab is on screen, and
+`RemoteRouter` sends each button there as `_hidC` down/up (`CompanionKeyMap` maps
+`RemoteControl` to the codes above). Wi-Fi is the first link and Bluetooth the fallback (only
+Mute, which has no `_hidC` code, goes over Bluetooth): a hardware pass on 2026-11-06 showed the
+Bluetooth link coming back subscribed after a Bluetooth toggle yet swallowing every key (the
+stale-keyboard caching described in CLAUDE.md), whereas the Companion session is owned by the
+phone and simply reconnects. Keeping the socket: there is no documented ping, and
 the client only reads while waiting for a reply, so a peer close shows up as an `IOException`
 on the next send; the session then drops the link, reports the press as failed, and reconnects
 with a back-off of 1, 2, 5, 10 s. A refused pair-verify stops the retries until a new pairing

@@ -268,7 +268,7 @@ private fun RemoteHome(
         onHold = vm::hold,
         modifier = modifier.padding(16.dp),
         layout = appearance.layout,
-        disabledControls = if (activeLink == RemoteRouter.Link.WiFi) setOf(RemoteControl.Mute) else emptySet(),
+        disabledControls = if (activeLink == RemoteRouter.Link.WiFi && state !is TransportState.Connected) setOf(RemoteControl.Mute) else emptySet(),
         header = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 AppleTvSelector(

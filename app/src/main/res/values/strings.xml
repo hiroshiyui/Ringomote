@@ -117,7 +117,7 @@
     <string name="remote_wifi_unreachable">Could not reach %1$s over Wi-Fi. Trying again.</string>
     <string name="remote_wifi_rejected">%1$s rejected the Wi-Fi pairing. Pair again under Settings › Network.</string>
     <string name="remote_wifi_mute_hint">Mute is not available over Wi-Fi.</string>
-    <string name="remote_pair_network_hint">Pair Ringomote with %1$s over the network, as an iPad is, and it can control the Apple TV over Wi-Fi too, even when Bluetooth is not connected.</string>
+    <string name="remote_pair_network_hint">Pair Ringomote with %1$s over the network, as an iPad is, and it controls the Apple TV over Wi-Fi, with Bluetooth as the fallback.</string>
     <string name="remote_pair_network_button">Pair</string>
     <string name="remote_network_off_hint">Turn on the local network in Settings and Ringomote can wake and control the Apple TV over Wi-Fi as well.</string>
     <string name="remote_network_off_button">Settings</string>
@@ -134,7 +134,7 @@
     <string name="about_tagline">Use your phone as a remote for Apple TV, compatible with the Siri Remote (1st generation).</string>
     <string name="about_copyright" translatable="false">Copyright © 2026 Hui-Hong You</string>
     <string name="about_privacy_title">Privacy</string>
-    <string name="about_privacy_body">Ringomote collects no data and connects to no server. Button presses go only to your Apple TV, directly over Bluetooth. The app stores only your settings and whether it has connected before. If you turn on “Use the local network” in Settings, it looks for Apple TVs on your Wi-Fi network with Bonjour and, once you pair one for waking, talks to that Apple TV directly, and while the remote is open without a Bluetooth link, button presses go to that Apple TV over Wi-Fi, encrypted with the pairing keys; the keys stay on the phone and are excluded from backups. Nothing is sent beyond your network. The Bluetooth diagnostics report in Settings names your paired devices and their addresses; it leaves the phone only when you share or save it.</string>
+    <string name="about_privacy_body">Ringomote collects no data and connects to no server. Button presses go only to your Apple TV, directly over Bluetooth. The app stores only your settings and whether it has connected before. If you turn on “Use the local network” in Settings, it looks for Apple TVs on your Wi-Fi network with Bonjour and, once you pair one for waking, talks to that Apple TV directly, and while the remote is open, button presses go to that Apple TV over Wi-Fi, encrypted with the pairing keys, with Bluetooth as the fallback; the keys stay on the phone and are excluded from backups. Nothing is sent beyond your network. The Bluetooth diagnostics report in Settings names your paired devices and their addresses; it leaves the phone only when you share or save it.</string>
     <string name="about_license_title">License</string>
     <string name="about_license_body">Ringomote is free software, released under the GNU General Public License, version 3 or later. You may use, study, share and change it under the terms of that license.</string>
     <string name="about_license_link">Read the license</string>

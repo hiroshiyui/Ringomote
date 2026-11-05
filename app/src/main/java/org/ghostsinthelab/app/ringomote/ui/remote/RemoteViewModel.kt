@@ -38,13 +38,13 @@ import org.ghostsinthelab.app.ringomote.remote.RemoteRouter
  * the order the user produced them, binder calls stay off the main thread, and start/stop
  * requests from successive screens cannot overtake each other.
  *
- * Input goes through [RemoteRouter]: over Bluetooth while the Apple TV is subscribed, else over
- * the Wi-Fi [CompanionSession] while it is connected ([activeLink]). Whenever the active link
+ * Input goes through [RemoteRouter]: over the Wi-Fi [CompanionSession] while it is connected,
+ * else over Bluetooth while the Apple TV is subscribed ([activeLink]). Whenever the active link
  * changes, held controls are released on both links, so a finger that was down when the Apple
  * TV disconnected does not block the same button after reconnecting.
  *
  * The Wi-Fi session is wanted only while the remote is on screen ([setRemoteShown]) in the
- * foreground ([setForeground]) and Bluetooth is not connected; its target is the paired Apple
+ * foreground ([setForeground]), Bluetooth connected or not; its target is the paired Apple
  * TV the Remote tab is aimed at ([NetworkSettings.selectedAppleTv], or the only pairing),
  * and only with the network switch on.
  *
@@ -115,9 +115,9 @@ class RemoteViewModel(
             companionCredentials.credentials.map { it.keys }.distinctUntilChanged().collect { companion.retry() }
         }
         viewModelScope.launch {
-            combine(remoteShown, foreground, transport.state) { shown, fg, ble ->
-                shown && fg && ble !is TransportState.Connected
-            }.distinctUntilChanged().collect { companion.setWanted(it) }
+            // Wanted whenever the remote is in front, Bluetooth or not: Wi-Fi is the first link.
+            combine(remoteShown, foreground) { shown, fg -> shown && fg }
+                .distinctUntilChanged().collect { companion.setWanted(it) }
         }
     }
 
@@ -127,7 +127,7 @@ class RemoteViewModel(
     /** Whether the app is in the foreground; the Wi-Fi session closes a while after it leaves. */
     fun setForeground(inForeground: Boolean) { foreground.value = inForeground }
 
-    /** Whether [control] can be sent on the active link (Mute has no Wi-Fi command). */
+    /** Whether [control] can be sent right now (Mute has no Wi-Fi command; it falls back to Bluetooth). */
     fun supports(control: RemoteControl): Boolean = router.supports(control)
 
     /** Starts (or retries) the transport, e.g. after permissions were granted. */

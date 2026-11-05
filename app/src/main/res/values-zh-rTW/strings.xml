@@ -117,7 +117,7 @@
     <string name="remote_wifi_unreachable">無法透過 Wi-Fi 連上 %1$s，正在重試。</string>
     <string name="remote_wifi_rejected">%1$s 拒絕了 Wi-Fi 配對。請在「設定 › 網路」重新配對。</string>
     <string name="remote_wifi_mute_hint">透過 Wi-Fi 時無法使用靜音。</string>
-    <string name="remote_pair_network_hint">像 iPad 一樣，將 Ringomote 與 %1$s 透過網路配對，之後即使藍牙未連線，也能透過 Wi-Fi 控制 Apple TV。</string>
+    <string name="remote_pair_network_hint">像 iPad 一樣，將 Ringomote 與 %1$s 透過網路配對，之後就會透過 Wi-Fi 控制 Apple TV，藍牙則作為備援。</string>
     <string name="remote_pair_network_button">配對</string>
     <string name="remote_network_off_hint">在「設定」開啟區域網路，Ringomote 就也能透過 Wi-Fi 喚醒與控制 Apple TV。</string>
     <string name="remote_network_off_button">設定</string>
@@ -133,7 +133,7 @@
     <string name="about_version">版本 %1$s（%2$d）</string>
     <string name="about_tagline">將您的手機當作 Apple TV 遙控器使用，與 Siri Remote（第 1 代）相容。</string>
     <string name="about_privacy_title">隱私</string>
-    <string name="about_privacy_body">Ringomote 不會收集任何資料，也不會連線到任何伺服器。按鍵操作只會透過藍牙直接傳送到您的 Apple TV。本程式只會儲存您的設定，以及是否曾經連線過。若您在「設定」開啟「使用區域網路」，它會以 Bonjour 在您的 Wi-Fi 網路上尋找 Apple TV，並在您為喚醒功能配對後直接與該 Apple TV 通訊；遙控器開啟而藍牙未連線時，按鍵操作會以配對金鑰加密後透過 Wi-Fi 傳送到該 Apple TV。配對金鑰留在手機上，且不納入備份。不會有任何資料送出您的網路。「設定」中的藍牙診斷報告會列出您已配對的裝置及其位址；只有在您分享或儲存時才會離開手機。</string>
+    <string name="about_privacy_body">Ringomote 不會收集任何資料，也不會連線到任何伺服器。按鍵操作只會透過藍牙直接傳送到您的 Apple TV。本程式只會儲存您的設定，以及是否曾經連線過。若您在「設定」開啟「使用區域網路」，它會以 Bonjour 在您的 Wi-Fi 網路上尋找 Apple TV，並在您為喚醒功能配對後直接與該 Apple TV 通訊；遙控器開啟時，按鍵操作會以配對金鑰加密後透過 Wi-Fi 傳送到該 Apple TV，藍牙則作為備援。配對金鑰留在手機上，且不納入備份。不會有任何資料送出您的網路。「設定」中的藍牙診斷報告會列出您已配對的裝置及其位址；只有在您分享或儲存時才會離開手機。</string>
     <string name="about_license_title">授權</string>
     <string name="about_license_body">Ringomote 是自由軟體，以 GNU 通用公共授權第 3 版或其後版本釋出。您可以依該授權條款使用、研究、分享與修改本程式。</string>
     <string name="about_license_link">閱讀授權條款</string>

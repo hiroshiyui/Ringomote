@@ -63,11 +63,11 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
  * TV closes at once (see the link rules in CLAUDE.md). Neither the icon's shape nor its colour is the
  * only signal; the label always says the same in words, so the icon is decorative to TalkBack.
  *
- * Below the Bluetooth row, while the Bluetooth link is not connected and the Wi-Fi remote
- * session ([companionState]) is doing anything, a second row says so: connecting, controlling
- * over Wi-Fi (with the note that Mute is unavailable there), unreachable, or rejected with
- * the advice to pair again. Bluetooth stays first, so the row disappears once the Apple TV
- * subscribes over Bluetooth.
+ * Below the Bluetooth row, while the Wi-Fi remote session ([companionState]) is doing
+ * anything, a second row says so: connecting, controlling over Wi-Fi (with the note that Mute
+ * is unavailable there, shown only while Bluetooth cannot carry it either), unreachable, or
+ * rejected with the advice to pair again. Wi-Fi is the first link, so the row stays while the
+ * Apple TV is also subscribed over Bluetooth.
  *
  * Details start expanded when [expandDetailsByDefault] is true (first use, before any Apple TV
  * was connected), so the pairing steps are visible without a tap; otherwise they start
@@ -140,7 +140,7 @@ fun ConnectionPanel(
             }
         }
 
-        if (state !is TransportState.Connected && companionState != CompanionState.Off) {
+        if (companionState != CompanionState.Off) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -160,7 +160,7 @@ fun ConnectionPanel(
                         .semantics { liveRegion = LiveRegionMode.Polite },
                 )
             }
-            if (companionState is CompanionState.Connected) {
+            if (companionState is CompanionState.Connected && state !is TransportState.Connected) {
                 Text(
                     text = stringResource(R.string.remote_wifi_mute_hint),
                     style = MaterialTheme.typography.bodySmall,

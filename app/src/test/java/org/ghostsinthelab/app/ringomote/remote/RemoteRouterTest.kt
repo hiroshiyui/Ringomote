@@ -9,7 +9,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Tests the Bluetooth-first routing rule of [RemoteRouter] and the per-link release rule, with
+ * Tests the Wi-Fi-first routing rule of [RemoteRouter] and the per-link release rule, with
  * a recording HID sink behind a real [RemoteSession] and a recording [CompanionInput].
  */
 class RemoteRouterTest {
@@ -29,19 +29,29 @@ class RemoteRouterTest {
     private var wifi = false
     private val router = RemoteRouter(session, companion, { bluetooth }, { wifi })
 
-    /** Bluetooth wins while it is connected, even with the Wi-Fi session open. */
+    /** Wi-Fi wins while its session is open, even with the Bluetooth host subscribed. */
     @Test
-    fun bluetoothFirst() = runTest {
+    fun wifiFirst() = runTest {
         bluetooth = true; wifi = true
-        assertEquals(RemoteRouter.Link.Bluetooth, router.activeLink())
+        assertEquals(RemoteRouter.Link.WiFi, router.activeLink())
         router.tap(RemoteControl.Up)
+        assertEquals(listOf("down Up", "up Up"), companion.events)
+        assertTrue(sink.reports.isEmpty())
+    }
+
+    /** Without Wi-Fi the press goes over Bluetooth as a HID report pair. */
+    @Test
+    fun bluetoothWhenWifiIsNotConnected() = runTest {
+        bluetooth = true
+        assertEquals(RemoteRouter.Link.Bluetooth, router.activeLink())
+        router.tap(RemoteControl.Select)
         assertEquals(2, sink.reports.size)
         assertTrue(companion.events.isEmpty())
     }
 
-    /** Without Bluetooth the press goes over Wi-Fi as down/up. */
+    /** The press goes over Wi-Fi as down/up. */
     @Test
-    fun wifiWhenBluetoothIsNotConnected() = runTest {
+    fun wifiSendsDownAndUp() = runTest {
         wifi = true
         assertEquals(RemoteRouter.Link.WiFi, router.activeLink())
         router.tap(RemoteControl.Select)
@@ -56,26 +66,29 @@ class RemoteRouterTest {
         assertTrue(sink.reports.isEmpty() && companion.events.isEmpty())
     }
 
-    /** A control pressed on Wi-Fi is released on Wi-Fi even if Bluetooth came up meanwhile. */
+    /** A control pressed on Bluetooth is released on Bluetooth even if Wi-Fi came up meanwhile. */
     @Test
     fun releasedOnTheLinkItWasPressedOn() = runTest {
-        wifi = true
-        router.press(RemoteControl.Menu)
         bluetooth = true
+        router.press(RemoteControl.Menu)
+        wifi = true
         router.release(RemoteControl.Menu)
-        assertEquals(listOf("down Menu", "up Menu"), companion.events)
-        assertTrue(sink.reports.isEmpty())
+        assertEquals(2, sink.reports.size)
+        assertTrue(companion.events.isEmpty())
     }
 
-    /** Mute has no Wi-Fi command: unsupported there, supported over Bluetooth. */
+    /** Mute has no Wi-Fi command: dropped on Wi-Fi alone, sent over Bluetooth when that is up too. */
     @Test
-    fun muteOnlyOverBluetooth() = runTest {
+    fun muteFallsBackToBluetooth() = runTest {
         wifi = true
         assertFalse(router.supports(RemoteControl.Mute))
         assertFalse(router.press(RemoteControl.Mute))
         bluetooth = true
+        assertEquals(RemoteRouter.Link.WiFi, router.activeLink())
         assertTrue(router.supports(RemoteControl.Mute))
         assertTrue(router.press(RemoteControl.Mute))
+        assertTrue(companion.events.isEmpty())
+        assertEquals(1, sink.reports.size)
     }
 
     /** releaseAll lifts both links and forgets what was held. */
@@ -86,7 +99,7 @@ class RemoteRouterTest {
         router.releaseAll()
         assertEquals(listOf("down Up", "all up"), companion.events)
         assertEquals(2, sink.reports.size)
-        bluetooth = true
+        wifi = false; bluetooth = true
         router.press(RemoteControl.Up)
         assertEquals(3, sink.reports.size)
     }

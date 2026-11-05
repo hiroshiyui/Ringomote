@@ -14,10 +14,13 @@ interface CompanionInput {
 }
 
 /**
- * Sends each press over the link that is live, Bluetooth first: while the Bluetooth host is
- * subscribed ([bluetoothConnected]) a control goes to [session] as a HID report; otherwise,
- * while the Wi-Fi session is open ([companionConnected]) and supports the control, it goes to
- * [companion]; otherwise it is dropped (the remote is disabled then anyway).
+ * Sends each press over the link that is live, Wi-Fi first: while the Wi-Fi session is open
+ * ([companionConnected]) a control goes to [companion], unless it lacks the control (Mute),
+ * which falls through to Bluetooth; otherwise, while the Bluetooth host is subscribed
+ * ([bluetoothConnected]), it goes to [session] as a HID report; otherwise it is dropped (the
+ * remote is disabled then anyway). Wi-Fi comes first because the Companion session is the one
+ * the phone owns: it reconnects by itself and is not subject to the Apple TV's cached picture
+ * of the HID keyboard, which can leave a subscribed Bluetooth link that swallows every key.
  *
  * A control is released on the link it was pressed on, remembered in [heldOn], so a link
  * change between finger-down and finger-up never leaves a key stuck on the Apple TV.
@@ -36,25 +39,28 @@ class RemoteRouter(
 
     private val heldOn = mutableMapOf<RemoteControl, Link>()
 
-    /** Which link is live, Bluetooth first; null when neither can carry input. */
+    /** Which link is live, Wi-Fi first; null when neither can carry input. */
     fun activeLink(): Link? = when {
-        bluetoothConnected() -> Link.Bluetooth
         companionConnected() -> Link.WiFi
+        bluetoothConnected() -> Link.Bluetooth
         else -> null
     }
 
-    /** Whether [control] can be sent on the active link; only Wi-Fi lacks some (Mute). */
-    fun supports(control: RemoteControl): Boolean = when (activeLink()) {
-        Link.Bluetooth -> true
-        Link.WiFi -> companion.supports(control)
-        null -> false
+    /** The link [control] would take: the active one, or Bluetooth for a control Wi-Fi lacks. */
+    private fun linkFor(control: RemoteControl): Link? = when (activeLink()) {
+        Link.WiFi -> if (companion.supports(control)) Link.WiFi else Link.Bluetooth.takeIf { bluetoothConnected() }
+        Link.Bluetooth -> Link.Bluetooth
+        null -> null
     }
+
+    /** Whether [control] can be sent right now; only Wi-Fi lacks some (Mute). */
+    fun supports(control: RemoteControl): Boolean = linkFor(control) != null
 
     suspend fun press(control: RemoteControl): Boolean {
         if (control in heldOn) return true
-        return when (val link = activeLink()) {
+        return when (val link = linkFor(control)) {
             Link.Bluetooth -> session.press(control).also { heldOn[control] = link }
-            Link.WiFi -> if (companion.supports(control)) companion.press(control).also { heldOn[control] = link } else false
+            Link.WiFi -> companion.press(control).also { heldOn[control] = link }
             null -> false
         }
     }

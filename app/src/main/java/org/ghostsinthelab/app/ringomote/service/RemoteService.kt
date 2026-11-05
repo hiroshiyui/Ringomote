@@ -38,7 +38,9 @@ import org.ghostsinthelab.app.ringomote.bluetooth.TransportState
  * Stop, which closes the server for good (the next launch starts it again).
  *
  * The transport itself belongs to [org.ghostsinthelab.app.ringomote.AppContainer]; this
- * service only starts it and keeps the process alive.
+ * service only starts it and keeps the process alive. Whether the user wants it running is
+ * remembered ([isWanted]): set by [start], cleared by Stop, read by [BootReceiver] so the
+ * remote comes back after a reboot without the app being opened.
  */
 class RemoteService : Service() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -49,6 +51,7 @@ class RemoteService : Service() {
         val container = (application as RingomoteApplication).container
         when (intent?.action) {
             ACTION_STOP -> {
+                setWanted(this, false)
                 container.applicationScope.launch { container.transport.stop() }
                 ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
                 stopSelf()
@@ -118,9 +121,21 @@ class RemoteService : Service() {
         private const val NOTIFICATION_ID = 1
         private const val ACTION_STOP = "org.ghostsinthelab.app.ringomote.action.STOP"
 
-        /** Starts (or refreshes) the service; idempotent. */
+        private const val PREFS_NAME = "remote_service"
+        private const val KEY_WANTED = "wanted"
+
+        /** Starts (or refreshes) the service and remembers that it is wanted; idempotent. */
         fun start(context: Context) {
+            setWanted(context, true)
             ContextCompat.startForegroundService(context, Intent(context, RemoteService::class.java))
+        }
+
+        /** Whether the remote was running when last seen, i.e. not stopped from the notification. */
+        fun isWanted(context: Context): Boolean =
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(KEY_WANTED, false)
+
+        private fun setWanted(context: Context, wanted: Boolean) {
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_WANTED, wanted).apply()
         }
     }
 }

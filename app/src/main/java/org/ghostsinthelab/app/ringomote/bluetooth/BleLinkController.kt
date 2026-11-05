@@ -303,6 +303,9 @@ class BleLinkController(private val port: BlePeripheralPort) {
     /** Bluetooth is turning off or off: drop everything tied to the old adapter session. */
     @Synchronized
     fun onBluetoothOff() {
+        // Tell the port even though the adapter is going: it may need to forget the
+        // advertising registration, which otherwise blocks the next start.
+        if (advertising) port.stopAdvertising()
         if (server != Server.None) port.closeServer()
         reset()
         if (started) _state.value = TransportState.BluetoothOff

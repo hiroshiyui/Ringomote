@@ -368,6 +368,17 @@ class BleLinkControllerTest {
         assertEquals(TransportState.Registering, controller.state.value)
     }
 
+    /** Bluetooth off while advertising stops the advertising, so the port drops its registration. */
+    @Test
+    fun bluetoothOffWhileAdvertisingStopsIt() {
+        startAdvertising()
+        assertEquals(0, port.stopAdvertisingCalls)
+        port.bluetoothOn = false
+        controller.onBluetoothOff()
+        assertEquals(1, port.stopAdvertisingCalls)
+        assertEquals(TransportState.BluetoothOff, controller.state.value)
+    }
+
     /** Bluetooth off while stopped is remembered for nothing: the state stays Stopped. */
     @Test
     fun bluetoothOffWhileStoppedStaysStopped() {

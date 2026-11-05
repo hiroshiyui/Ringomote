@@ -122,13 +122,26 @@ class BleHidTransport(
                 eventLog.record("Advertising: no LE advertiser")
                 return false
             }
+            // The platform advertiser keeps our callback on its list until stopAdvertising is
+            // called with it, even across Bluetooth off/on, when the adapter gave us no chance
+            // to call stop (it is already gone); a start would then fail with
+            // ADVERTISE_FAILED_ALREADY_STARTED for good. Clear a leftover entry first.
+            if (advertiseRequested) {
+                advertiser.stopAdvertising(advertiseCallback)
+                eventLog.record("Advertising: cleared a stale registration")
+            }
+            advertiseRequested = true
             advertiser.startAdvertising(advertiseSettings, advertiseData, advertiseCallback)
             eventLog.record("Advertising: start requested")
             return true
         }
 
         override fun stopAdvertising() {
-            adapter?.bluetoothLeAdvertiser?.stopAdvertising(advertiseCallback)
+            val advertiser = adapter?.bluetoothLeAdvertiser
+            if (advertiser != null) {
+                advertiser.stopAdvertising(advertiseCallback)
+                advertiseRequested = false
+            }
             eventLog.record("Advertising: stopped")
         }
 
@@ -253,6 +266,13 @@ class BleHidTransport(
         .addServiceUuid(ParcelUuid(HidGattServices.HID_SERVICE))
         .build()
 
+    /**
+     * Whether [advertiseCallback] was handed to the platform advertiser without a matching
+     * stop since; see [BlePeripheralPort.startAdvertising] above.
+     */
+    @Volatile
+    private var advertiseRequested = false
+
     private val advertiseCallback: AdvertiseCallback = object : AdvertiseCallback() {
         override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
             eventLog.record("Advertising: started")
@@ -262,6 +282,12 @@ class BleHidTransport(
         override fun onStartFailure(errorCode: Int) {
             Log.w(TAG, "Advertising failed: $errorCode")
             eventLog.record("Advertising: failed, error $errorCode")
+            if (errorCode == AdvertiseCallback.ADVERTISE_FAILED_ALREADY_STARTED) {
+                // The platform still lists the callback as active; a stop frees it, and the
+                // controller's next attempt (Retry, or Bluetooth off/on) can then succeed.
+                adapter?.bluetoothLeAdvertiser?.stopAdvertising(advertiseCallback)
+                advertiseRequested = false
+            }
             controller.onAdvertisingFailed()
         }
     }

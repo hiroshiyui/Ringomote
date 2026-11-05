@@ -92,11 +92,13 @@ interface BlePeripheralPort {
  *   not rediscover it on the same link, even with identical handles (verified 2026-11-05).
  *   The phone cannot fix this by itself: a server-side disconnect only detaches this server,
  *   and a GATT-client disconnect does take the link down (tried 2026-11-05) but the TV then
- *   reconnects without re-enumerating, so the keys stay dead while the link looks fine. The
- *   UI therefore tells the user to toggle Bluetooth, after which the TV has been seen to
- *   drop and re-make the link itself and subscribe again; failing that, Forget and re-pair
- *   on the TV. The same race happens after a Bluetooth toggle: the TV connects within
- *   milliseconds of the adapter coming up, before the services exist.
+ *   reconnects without re-enumerating, so the keys stay dead while the link looks fine.
+ *   Left alone, tvOS recovers by itself: some 20–30 s after the Service Changed it drops
+ *   the link, re-makes it and re-enumerates, writing its subscriptions again (seen twice on
+ *   2026-11-05). So the controller does nothing but wait and show [TransportState.Resyncing]
+ *   meanwhile; hurrying the TV prevented the recovery every time it was tried. The same
+ *   race happens after a Bluetooth toggle: the TV connects within milliseconds of the
+ *   adapter coming up, before the services exist.
  *   [org.ghostsinthelab.app.ringomote.service.RemoteService] exists so this rarely happens.
  *
  * Thread-safe: every method is synchronized, because platform events arrive on binder threads

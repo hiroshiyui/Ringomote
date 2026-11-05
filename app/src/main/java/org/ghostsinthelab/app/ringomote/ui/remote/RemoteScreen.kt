@@ -63,6 +63,9 @@ private const val HEADER_MAX_FRACTION = 0.4f
  * [layout]: [RemoteLayout.Compact] keeps the controls at their natural size, grouped in the
  * middle; [RemoteLayout.Spread] lets the touch surface fill the width and stretches the
  * buttons into a grid that reaches the screen edges, with wider gaps.
+ *
+ * [disabledControls] are shown but disabled while the rest is enabled: the active link cannot
+ * carry them (Mute over Wi-Fi).
  */
 @Composable
 fun RemoteScreen(
@@ -73,6 +76,7 @@ fun RemoteScreen(
     onHold: (RemoteControl) -> Unit,
     modifier: Modifier = Modifier,
     layout: RemoteLayout = RemoteLayout.Compact,
+    disabledControls: Set<RemoteControl> = emptySet(),
     header: @Composable () -> Unit = {},
 ) {
     val spread = layout == RemoteLayout.Spread
@@ -88,7 +92,7 @@ fun RemoteScreen(
     )
 
     @Composable
-    fun Buttons() = RemoteButtons(enabled, spread, onPress, onRelease, onTap, onHold)
+    fun Buttons() = RemoteButtons(enabled, spread, disabledControls, onPress, onRelease, onTap, onHold)
 
     @Composable
     fun Remote(modifier: Modifier = Modifier, content: @Composable () -> Unit) =
@@ -179,6 +183,7 @@ private fun RemoteFade(visible: Boolean, modifier: Modifier = Modifier, content:
 private fun RemoteButtons(
     enabled: Boolean,
     spread: Boolean,
+    disabledControls: Set<RemoteControl>,
     onPress: (RemoteControl) -> Unit,
     onRelease: (RemoteControl) -> Unit,
     onTap: (RemoteControl) -> Unit,
@@ -197,7 +202,7 @@ private fun RemoteButtons(
         control = control,
         label = stringResource(label),
         contentDescription = stringResource(description),
-        enabled = enabled,
+        enabled = enabled && control !in disabledControls,
         onPress = onPress,
         onRelease = onRelease,
         onTap = onTap,

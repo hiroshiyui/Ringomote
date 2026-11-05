@@ -112,6 +112,15 @@
     <string name="remote_wake_sent">%1$s に起動要求を送りました。まもなく接続されるはずです。</string>
     <string name="remote_wake_failed">ネットワーク経由で %1$s に届きませんでした。</string>
     <string name="remote_wake_rejected">%1$s がペアリングを拒否しました。「設定 › ネットワーク」でペアリングし直してください。</string>
+    <string name="remote_wifi_connected">Wi-Fi 経由で %1$s を操作しています。</string>
+    <string name="remote_wifi_connecting">Wi-Fi 経由で %1$s に接続しています…</string>
+    <string name="remote_wifi_unreachable">Wi-Fi 経由で %1$s に届きませんでした。再試行しています。</string>
+    <string name="remote_wifi_rejected">%1$s が Wi-Fi のペアリングを拒否しました。「設定 › ネットワーク」でペアリングし直してください。</string>
+    <string name="remote_wifi_mute_hint">Wi-Fi 経由では消音は使えません。</string>
+    <string name="remote_pair_network_hint">iPad と同じように Ringomote を %1$s とネットワーク経由でペアリングすると、Bluetooth が接続されていないときも Wi-Fi 経由で Apple TV を操作できます。</string>
+    <string name="remote_pair_network_button">ペアリング</string>
+    <string name="remote_network_off_hint">「設定」でローカルネットワークを有効にすると、Ringomote は Wi-Fi 経由でも Apple TV を起動・操作できます。</string>
+    <string name="remote_network_off_button">設定</string>
     <string name="diagnostics_title">Bluetooth 診断</string>
     <string name="diagnostics_back">戻る</string>
     <string name="diagnostics_refresh">更新</string>
@@ -124,7 +133,7 @@
     <string name="about_version">バージョン %1$s（%2$d）</string>
     <string name="about_tagline">スマートフォンを Apple TV のリモコンとして使えます。Siri Remote（第 1 世代）互換です。</string>
     <string name="about_privacy_title">プライバシー</string>
-    <string name="about_privacy_body">Ringomote はデータを収集せず、どのサーバーにも接続しません。ボタン操作は Bluetooth で直接 Apple TV にだけ送られます。このアプリが保存するのは、設定と、以前に接続したことがあるかどうかだけです。設定で「ローカルネットワークを使う」をオンにすると、Bonjour で Wi-Fi ネットワーク上の Apple TV を探し、起動用にペアリングした Apple TV とは直接通信します。ペアリングの鍵はスマートフォンに留まり、バックアップには含まれません。ネットワークの外には何も送りません。設定の Bluetooth 診断レポートにはペアリング済みのデバイスとそのアドレスが含まれますが、共有または保存したときにだけスマートフォンの外に出ます。</string>
+    <string name="about_privacy_body">Ringomote はデータを収集せず、どのサーバーにも接続しません。ボタン操作は Bluetooth で直接 Apple TV にだけ送られます。このアプリが保存するのは、設定と、以前に接続したことがあるかどうかだけです。設定で「ローカルネットワークを使う」をオンにすると、Bonjour で Wi-Fi ネットワーク上の Apple TV を探し、起動用にペアリングした Apple TV とは直接通信します。リモコンを開いていて Bluetooth が接続されていないときは、ボタン操作はペアリングの鍵で暗号化して Wi-Fi 経由でその Apple TV に送られます。ペアリングの鍵はスマートフォンに留まり、バックアップには含まれません。ネットワークの外には何も送りません。設定の Bluetooth 診断レポートにはペアリング済みのデバイスとそのアドレスが含まれますが、共有または保存したときにだけスマートフォンの外に出ます。</string>
     <string name="about_license_title">ライセンス</string>
     <string name="about_license_body">Ringomote はフリーソフトウェアで、GNU 一般公衆利用許諾書 バージョン 3 またはそれ以降のもとで公開されています。このライセンスの条件に従って、使用、研究、共有、改変ができます。</string>
     <string name="about_license_link">ライセンス全文を読む</string>

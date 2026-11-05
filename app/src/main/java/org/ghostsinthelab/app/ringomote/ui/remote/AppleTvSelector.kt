@@ -32,6 +32,13 @@ import org.ghostsinthelab.app.ringomote.ui.settings.AppleTvLinkState
  * [linkState] gives the progress and the outcome. The selector only names the target; the
  * Bluetooth link is still made by the Apple TV itself, so a TV that is awake and bonded
  * connects on its own.
+ *
+ * Two reminders point at the Wi-Fi side, because pairing over the network is what makes the
+ * phone work like an iPad (waking the TV and controlling it without Bluetooth): with the
+ * network switch off ([networkEnabled]) and no Bluetooth link, a line offers Settings
+ * ([onOpenSettings]); with it on and the selected TV not yet paired over the network, a line
+ * offers Pair ([onPairOverNetwork], which also lands on Settings, where the PIN flow lives).
+ * Both vanish once the pairing is stored.
  */
 @Composable
 fun AppleTvSelector(
@@ -42,9 +49,27 @@ fun AppleTvSelector(
     onSelect: (KnownAppleTv) -> Unit,
     onWake: (KnownAppleTv) -> Unit,
     modifier: Modifier = Modifier,
+    networkEnabled: Boolean = true,
+    onOpenSettings: () -> Unit = {},
+    onPairOverNetwork: () -> Unit = {},
 ) {
+    if (!networkEnabled && !bluetoothConnected) {
+        HintRow(
+            text = stringResource(R.string.remote_network_off_hint),
+            button = stringResource(R.string.remote_network_off_button),
+            onClick = onOpenSettings,
+            modifier = modifier,
+        )
+    }
     if (tvs.isEmpty()) return
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        if (networkEnabled && selected != null && !selected.pairedForWaking) {
+            HintRow(
+                text = stringResource(R.string.remote_pair_network_hint, selected.name),
+                button = stringResource(R.string.remote_pair_network_button),
+                onClick = onPairOverNetwork,
+            )
+        }
         if (tvs.size > 1) {
             Row(
                 modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
@@ -91,5 +116,23 @@ fun AppleTvSelector(
                 }
             }
         }
+    }
+}
+
+/** One line of advice with a button at its end. */
+@Composable
+private fun HintRow(text: String, button: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
+        )
+        FilledTonalButton(onClick = onClick) { Text(button) }
     }
 }

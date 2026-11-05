@@ -24,6 +24,8 @@ import org.ghostsinthelab.app.ringomote.network.NetworkSettings
 import androidx.compose.runtime.DisposableEffect
 import org.ghostsinthelab.app.ringomote.ui.settings.AppleTvViewModel
 import org.ghostsinthelab.app.ringomote.network.mergeKnownAppleTvs
+import org.ghostsinthelab.app.ringomote.remote.RemoteControl
+import org.ghostsinthelab.app.ringomote.remote.RemoteRouter
 import org.ghostsinthelab.app.ringomote.ui.remote.AppleTvSelector
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
@@ -87,8 +89,12 @@ fun RingomoteApp(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         granted = BluetoothPermissions.allGranted(context)
         if (granted) vm.refreshPairedDevices()
+        vm.setForeground(true)
     }
-    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { vm.releaseAll() }
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+        vm.releaseAll()
+        vm.setForeground(false)
+    }
 
     // start() is idempotent, so it is safe on entry, after a grant and after recreation. The
     // foreground service keeps the transport alive once the screen is gone; its notification
@@ -174,6 +180,7 @@ fun RingomoteApp(
                 appearanceSettings = appearanceSettings,
                 networkSettings = networkSettings,
                 appleTvDiscovery = appleTvDiscovery,
+                onOpenSettings = { tab = AppTab.Settings },
                 modifier = content,
             )
             else -> PermissionScreen(onGranted = { granted = true }, modifier = content)
@@ -199,6 +206,10 @@ private enum class AppTab(@StringRes val label: Int) {
  * Companion pairings, the latest Bonjour result and the phone's bonds (see
  * [mergeKnownAppleTvs]). When the network is enabled, a short Bonjour browse runs on entry
  * to refresh which TVs are reachable, then stops to save the radio.
+ *
+ * The remote is enabled while either link can carry input ([RemoteViewModel.activeLink]);
+ * over Wi-Fi, Mute is shown disabled. The ViewModel holds the Wi-Fi session only while this
+ * screen is composed. [onOpenSettings] switches to the Settings tab for the network reminders.
  */
 @Composable
 private fun RemoteHome(
@@ -206,9 +217,16 @@ private fun RemoteHome(
     appearanceSettings: AppearanceSettings,
     networkSettings: NetworkSettings,
     appleTvDiscovery: AppleTvDiscovery,
+    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by vm.transportState.collectAsStateWithLifecycle()
+    val companionState by vm.companionState.collectAsStateWithLifecycle()
+    val activeLink by vm.activeLink.collectAsStateWithLifecycle()
+    DisposableEffect(Unit) {
+        vm.setRemoteShown(true)
+        onDispose { vm.setRemoteShown(false) }
+    }
     val appearance by appearanceSettings.appearance.collectAsStateWithLifecycle()
     val pairedDevices by vm.pairedDevices.collectAsStateWithLifecycle()
     val hasConnectedBefore by vm.hasConnectedBefore.collectAsStateWithLifecycle()
@@ -243,13 +261,14 @@ private fun RemoteHome(
         ?: knownTvs.singleOrNull()
 
     RemoteScreen(
-        enabled = state is TransportState.Connected,
+        enabled = activeLink != null,
         onPress = vm::press,
         onRelease = vm::release,
         onTap = vm::tap,
         onHold = vm::hold,
         modifier = modifier.padding(16.dp),
         layout = appearance.layout,
+        disabledControls = if (activeLink == RemoteRouter.Link.WiFi) setOf(RemoteControl.Mute) else emptySet(),
         header = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 AppleTvSelector(
@@ -259,11 +278,15 @@ private fun RemoteHome(
                     bluetoothConnected = connectedHost != null,
                     onSelect = { networkSettings.setSelectedAppleTv(it.name) },
                     onWake = { appleTvVm.wake(it.name) },
+                    networkEnabled = networkEnabled,
+                    onOpenSettings = onOpenSettings,
+                    onPairOverNetwork = onOpenSettings,
                 )
                 ConnectionPanel(
                     state = state,
                     expandDetailsByDefault = !hasConnectedBefore,
                     onRetry = vm::start,
+                    companionState = companionState,
                 )
             }
         },

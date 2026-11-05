@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ghostsinthelab.app.ringomote.R
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionState
 import org.ghostsinthelab.app.ringomote.bluetooth.HostDevice
 import org.ghostsinthelab.app.ringomote.bluetooth.TransportState
 import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
@@ -62,6 +63,12 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
  * TV closes at once (see the link rules in CLAUDE.md). Neither the icon's shape nor its colour is the
  * only signal; the label always says the same in words, so the icon is decorative to TalkBack.
  *
+ * Below the Bluetooth row, while the Bluetooth link is not connected and the Wi-Fi remote
+ * session ([companionState]) is doing anything, a second row says so: connecting, controlling
+ * over Wi-Fi (with the note that Mute is unavailable there), unreachable, or rejected with
+ * the advice to pair again. Bluetooth stays first, so the row disappears once the Apple TV
+ * subscribes over Bluetooth.
+ *
  * Details start expanded when [expandDetailsByDefault] is true (first use, before any Apple TV
  * was connected), so the pairing steps are visible without a tap; otherwise they start
  * collapsed. Once the user toggles them, their choice wins over the default.
@@ -76,6 +83,7 @@ fun ConnectionPanel(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     expandDetailsByDefault: Boolean = false,
+    companionState: CompanionState = CompanionState.Off,
 ) {
     val launchSystemScreen = rememberSystemScreenLauncher()
     // null until the user toggles; then their choice overrides the default.
@@ -129,6 +137,35 @@ fun ConnectionPanel(
                         stringResource(if (showDetails) R.string.action_hide_details else R.string.action_show_details),
                     )
                 }
+            }
+        }
+
+        if (state !is TransportState.Connected && companionState != CompanionState.Off) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_wifi),
+                    contentDescription = null,
+                    tint = companionState.indicatorColor(),
+                    modifier = Modifier.size(24.dp),
+                )
+                Text(
+                    text = companionState.describe(),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .weight(1f)
+                        .semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+            if (companionState is CompanionState.Connected) {
+                Text(
+                    text = stringResource(R.string.remote_wifi_mute_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
 
@@ -214,6 +251,24 @@ private fun TransportState.describeShort(): String = when (this) {
     is TransportState.Connecting -> stringResource(R.string.state_connecting, device.displayName())
     is TransportState.Connected -> stringResource(R.string.state_connected, device.displayName())
     is TransportState.Resyncing -> stringResource(R.string.state_short_resyncing, device.displayName())
+}
+
+/** The Wi-Fi row's text; [CompanionState.Off] has no row. */
+@Composable
+private fun CompanionState.describe(): String = when (this) {
+    CompanionState.Off -> ""
+    is CompanionState.Connecting -> stringResource(R.string.remote_wifi_connecting, name)
+    is CompanionState.Connected -> stringResource(R.string.remote_wifi_connected, name)
+    is CompanionState.Unreachable -> stringResource(R.string.remote_wifi_unreachable, name)
+    is CompanionState.Rejected -> stringResource(R.string.remote_wifi_rejected, name)
+}
+
+/** Wi-Fi icon colour: primary while controlling, error when the pairing was refused. */
+@Composable
+private fun CompanionState.indicatorColor(): Color = when (this) {
+    is CompanionState.Connected -> MaterialTheme.colorScheme.primary
+    is CompanionState.Rejected -> MaterialTheme.colorScheme.error
+    else -> MaterialTheme.colorScheme.onSurfaceVariant
 }
 
 /** The full explanation shown under Details. */

@@ -22,12 +22,12 @@ Ringomote 已可供日常使用。透過網路與實際的 Apple TV 配對、App
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1-remote-compact.png" alt="The remote, compact layout, connected to an Apple TV" width="180">
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2-remote-spread.png" alt="The remote, spread-out layout" width="180">
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3-remote-dark.png" alt="The remote in the dark theme" width="180">
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4-settings.png" alt="The Settings tab: theme, dynamic colour, layout and Apple TVs" width="180">
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4-settings.png" alt="The Settings tab: theme, dynamic colour, layout, the phone's name and the paired Apple TV" width="180">
 </p>
 
-Left to right: the remote in the compact and spread-out layouts and in the dark theme, and the Settings tab. Taken on a Nokia G50 with dynamic colour on, so the palette follows the wallpaper. (The screenshots predate the move to Wi-Fi and will be refreshed.)
+Left to right: the remote in the compact and spread-out layouts and in the dark theme, controlling an Apple TV over Wi-Fi, and the Settings tab with the phone's name and the paired Apple TV. Taken on a Nokia G50 with dynamic colour on, so the palette follows the wallpaper.
 
-由左至右：緊湊與延伸至邊緣版面的遙控器、深色主題，以及「設定」分頁。於 Nokia G50 上擷取，開啟了動態色彩，因此配色跟隨桌布。（截圖攝於改用 Wi-Fi 之前，將會更新。）
+由左至右：緊湊與延伸至邊緣版面的遙控器、深色主題（皆正透過 Wi-Fi 控制 Apple TV），以及含手機名稱與已配對 Apple TV 的「設定」分頁。於 Nokia G50 上擷取，開啟了動態色彩，因此配色跟隨桌布。
 
 ## How it works 運作方式
 

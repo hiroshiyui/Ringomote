@@ -68,7 +68,21 @@ reply's `_sid` << 32 | sid is the session id), then `TVRCSessionStart` with
 Buttons: `_i: _hidC`, `_c: {_hidC: <command>, _hBtS: 1 press / 2 release}`. Commands: 1 Up,
 2 Down, 3 Left, 4 Right, 5 Menu, 6 Select, 7 Home, 8 VolUp, 9 VolDown, 10 Siri,
 11 Screensaver, 12 Sleep, **13 Wake**, 14 PlayPause, 15/16 channel, 17 Guide, 18/19 page.
-pyatv's `turn_on` is a press/release of 13.
+pyatv's `turn_on` is a press/release of 13. There is no mute command: the media-control
+message `_mcc` (1 Play, 2 Pause, 3/4 tracks, 5 GetVolume, 6 SetVolume with `_vol` 0.0–1.0,
+7 SkipBy, 8–11 fast-forward/rewind, 12/13 captions) only sets an absolute level, so Mute is
+unavailable over Wi-Fi. `_sessionStop` with the same `_srvT`/`_sid` ends the remote session.
+
+## Wi-Fi remote mode (2026-11-06)
+
+`CompanionSession` keeps one verified session open while the Remote tab is on screen without
+a Bluetooth link, and `RemoteRouter` sends each button there as `_hidC` down/up (`CompanionKeyMap`
+maps `RemoteControl` to the codes above). Keeping the socket: there is no documented ping, and
+the client only reads while waiting for a reply, so a peer close shows up as an `IOException`
+on the next send; the session then drops the link, reports the press as failed, and reconnects
+with a back-off of 1, 2, 5, 10 s. A refused pair-verify stops the retries until a new pairing
+is stored. The link lingers 10 s after the remote leaves the screen so a tab switch is free.
+Events the TV pushes (`_t` = 1) between requests are skipped by `request()`.
 
 Power state: `FetchAttentionState` returns `{state: 1 asleep, 2 screensaver, 3 awake}`;
 subscribe with `_interest` `_regEvents: ["SystemStatus"]`.

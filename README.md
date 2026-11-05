@@ -28,7 +28,7 @@ Left to right: the remote in the compact and spread-out layouts and in the dark 
 
 ## How it works 運作方式
 
-The phone talks to the Apple TV directly over Bluetooth Low Energy, presenting itself as a Bluetooth input device (a HID over GATT keyboard), just as the physical remote does. No Wi-Fi network, Apple account or bridge device is involved. The one exception is opt-in and exists because a sleeping Apple TV does not listen for Bluetooth (and ignores Wake-on-LAN packets): Settings > Network can find Apple TVs on the local network with Bonjour and pair with one over Apple's Companion Link protocol, the same link the iOS remote uses, after which a Wake button turns it on. It is off by default, the pairing is a separate PIN step on the Apple TV, and the app never contacts anything beyond the local network.
+The phone talks to the Apple TV directly over Bluetooth Low Energy, presenting itself as a Bluetooth input device (a HID over GATT keyboard), just as the physical remote does. No Wi-Fi network, Apple account or bridge device is involved. The one exception is opt-in and exists because a sleeping Apple TV does not listen for Bluetooth (and ignores Wake-on-LAN packets): Settings > Network can find Apple TVs on the local network with Bonjour and pair with one over Apple's Companion Link protocol, the same link the iOS remote uses, after which a Wake button turns it on. The same pairing lets the phone work like an iPad's remote: while the remote is open and the Bluetooth link is not connected (the Apple TV asleep or just woken, Bluetooth off, or tvOS holding a stale picture of the phone), button presses travel to the paired Apple TV over Wi-Fi on that encrypted session, Bluetooth first whenever it is up. Mute has no counterpart in that protocol and is disabled over Wi-Fi. It is off by default, the pairing is a separate PIN step on the Apple TV, and the app never contacts anything beyond the local network.
 
 While the remote is started, a quiet notification keeps it available in the background. It is there because a Bluetooth keyboard must not vanish when its app leaves the screen: if it did, tvOS would drop it and need the link made afresh. Stop from the notification ends the remote until the next launch; otherwise it also comes back after a reboot.
 
@@ -44,7 +44,7 @@ In more detail:
 
 tvOS already knows how to drive its interface from a Bluetooth keyboard, so the phone needs no companion app or special protocol on the Apple TV side. Siri voice input is not reproduced, because the Siri Remote streams voice over its own protocol.
 
-手機透過藍牙低功耗直接與 Apple TV 連線，像實體遙控器一樣以藍牙輸入裝置（HID over GATT 鍵盤）的身分出現，不需經過 Wi-Fi 網路、Apple 帳號或其他橋接裝置。唯一的例外需要您自行開啟，原因是 Apple TV 睡眠時不接收藍牙（也不理會 Wake-on-LAN 封包）：「設定 > 網路」可以用 Bonjour 在區域網路上尋找 Apple TV，並透過 Apple 的 Companion Link 協定（iOS 遙控器使用的同一條連線）與它配對，之後就有「喚醒」按鈕可以把它開啟。此功能預設關閉，配對是在 Apple TV 上另外輸入 PIN 的步驟，本程式也絕不會連線到區域網路以外的任何地方。
+手機透過藍牙低功耗直接與 Apple TV 連線，像實體遙控器一樣以藍牙輸入裝置（HID over GATT 鍵盤）的身分出現，不需經過 Wi-Fi 網路、Apple 帳號或其他橋接裝置。唯一的例外需要您自行開啟，原因是 Apple TV 睡眠時不接收藍牙（也不理會 Wake-on-LAN 封包）：「設定 > 網路」可以用 Bonjour 在區域網路上尋找 Apple TV，並透過 Apple 的 Companion Link 協定（iOS 遙控器使用的同一條連線）與它配對，之後就有「喚醒」按鈕可以把它開啟。同一組配對也讓手機能像 iPad 的遙控器一樣運作：遙控器開啟而藍牙未連線時（Apple TV 睡眠中或剛喚醒、藍牙關閉，或 tvOS 仍記著手機過時的服務表），按鍵會經由那條加密連線透過 Wi-Fi 送到已配對的 Apple TV；只要藍牙連線存在，仍以藍牙優先。該協定沒有靜音鍵，因此透過 Wi-Fi 時靜音鍵會停用。此功能預設關閉，配對是在 Apple TV 上另外輸入 PIN 的步驟，本程式也絕不會連線到區域網路以外的任何地方。
 
 遙控器啟動後，會有一則安靜的通知讓它在背景保持可用。這是因為藍牙鍵盤不能在程式離開畫面時就消失：若真的消失，tvOS 會把它移除，必須重新建立連線。點選通知中的「停止」會結束遙控器，直到下次開啟程式；否則重新開機後它也會自動回來。
 
@@ -87,7 +87,7 @@ Ringomote collects nothing and contacts no server. The permissions it declares, 
 - **Bluetooth** (`BLUETOOTH_CONNECT` and `BLUETOOTH_ADVERTISE` on Android 12 and later; `BLUETOOTH` and `BLUETOOTH_ADMIN` before that): to present the phone as a Bluetooth input device and send key presses to the Apple TV.
 - **Notifications** (`POST_NOTIFICATIONS`, Android 13 and later) and a foreground service of the *connected device* type: for the notification that keeps the remote available in the background. Declining it hides the notification; the remote still runs.
 - **Boot** (`RECEIVE_BOOT_COMPLETED`): to start that service again after a reboot, and likewise after an app update, so the Apple TV finds the remote without the app being opened. Only if the remote was running before, not after Stop.
-- **Network** (`INTERNET`, `ACCESS_NETWORK_STATE`, `CHANGE_WIFI_MULTICAST_STATE`): used only when *Use the local network* is on in Settings, to find Apple TVs with Bonjour and to wake one over Companion Link. Nothing goes beyond the local network.
+- **Network** (`INTERNET`, `ACCESS_NETWORK_STATE`, `CHANGE_WIFI_MULTICAST_STATE`): used only when *Use the local network* is on in Settings, to find Apple TVs with Bonjour, to wake one over Companion Link and, while Bluetooth is not connected, to send button presses to a paired one over the same encrypted session. Nothing goes beyond the local network.
 
 Stored on the phone: the appearance and network settings, whether an Apple TV has ever connected, the Bluetooth handle layout the Apple TV last subscribed to, and, once you pair for waking, the Companion Link pairing keys and the Apple TV's last address. The pairing keys include a private key, so that file is excluded from Android backups; everything else may be backed up. The Bluetooth diagnostics report under Settings > Advanced names your paired devices and leaves the phone only when you share or save it.
 
@@ -96,7 +96,7 @@ Ringomote 不會收集任何資料，也不會連線到任何伺服器。它宣�
 - **藍牙**（Android 12 以上為 `BLUETOOTH_CONNECT` 與 `BLUETOOTH_ADVERTISE`，之前的版本為 `BLUETOOTH` 與 `BLUETOOTH_ADMIN`）：讓手機以藍牙輸入裝置的身分出現，並將按鍵送到 Apple TV。
 - **通知**（`POST_NOTIFICATIONS`，Android 13 以上）以及「已連線裝置」類型的前景服務：用於讓遙控器在背景保持可用的那則通知。拒絕後通知不會顯示，遙控器仍會執行。
 - **開機**（`RECEIVE_BOOT_COMPLETED`）：在重新開機後（程式更新後亦同）重新啟動該服務，讓 Apple TV 不必等您開啟程式就能找到遙控器。只在遙控器先前仍在執行時才會啟動，按過「停止」則不會。
-- **網路**（`INTERNET`、`ACCESS_NETWORK_STATE`、`CHANGE_WIFI_MULTICAST_STATE`）：只在「設定」中開啟「使用區域網路」後才會使用，用來以 Bonjour 尋找 Apple TV，以及透過 Companion Link 喚醒它。不會有任何資料送出區域網路。
+- **網路**（`INTERNET`、`ACCESS_NETWORK_STATE`、`CHANGE_WIFI_MULTICAST_STATE`）：只在「設定」中開啟「使用區域網路」後才會使用，用來以 Bonjour 尋找 Apple TV、透過 Companion Link 喚醒它，以及在藍牙未連線時經由同一條加密連線把按鍵送到已配對的 Apple TV。不會有任何資料送出區域網路。
 
 儲存在手機上的資料：外觀與網路設定、是否曾有 Apple TV 連線過、Apple TV 上次訂閱時的藍牙服務配置，以及在您為喚醒功能配對後的 Companion Link 配對金鑰與 Apple TV 最近的位址。配對金鑰含有私鑰，因此該檔案不納入 Android 備份；其他資料可以備份。「設定 > 進階」中的藍牙診斷報告會列出您已配對的裝置，只有在您分享或儲存時才會離開手機。
 

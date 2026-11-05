@@ -7,7 +7,7 @@ What I offer:
 * A touch surface: swipe to move the highlight, tap to select.
 * Menu, TV (tap for Home, hold for Control Center), Play/Pause, Volume up/down and Mute buttons.
 * Pairing from the Apple TV's own Bluetooth settings, with the steps shown on screen.
-* Optionally, waking a sleeping Apple TV over your Wi-Fi network: find it with Bonjour, pair once with the code the Apple TV shows, then tap Wake.
+* Optionally, your Wi-Fi network as a second way in, like an iPad: find the Apple TV with Bonjour, pair once with the code it shows, and I can wake it when it sleeps and keep controlling it over Wi-Fi whenever Bluetooth is not connected (Mute excepted).
 * A quiet notification that keeps the remote available in the background, so the Apple TV keeps reconnecting after you leave the app.
 * TalkBack support, keyboard and D-pad control, and layouts that survive large fonts.
 * English, 台灣漢語 and 日本語.

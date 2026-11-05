@@ -273,6 +273,8 @@ class BleHidTransport(
     @Volatile
     private var advertiseRequested = false
 
+    // Advertising callbacks only arrive after a start made with BLUETOOTH_ADVERTISE granted.
+    @SuppressLint("MissingPermission")
     private val advertiseCallback: AdvertiseCallback = object : AdvertiseCallback() {
         override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
             eventLog.record("Advertising: started")

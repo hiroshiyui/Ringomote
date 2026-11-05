@@ -25,7 +25,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             val appearance by settings.appearance.collectAsStateWithLifecycle()
             RingomoteTheme(appearance = appearance) {
-                RingomoteApp(appearanceSettings = settings, diagnosticsReport = container.diagnosticsReport)
+                RingomoteApp(
+                    appearanceSettings = settings,
+                    diagnosticsReport = container.diagnosticsReport,
+                    networkSettings = container.networkSettings,
+                    appleTvDiscovery = container.appleTvDiscovery,
+                )
             }
         }
     }

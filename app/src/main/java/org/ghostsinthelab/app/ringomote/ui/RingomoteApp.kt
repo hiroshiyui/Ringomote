@@ -19,6 +19,9 @@ import org.ghostsinthelab.app.ringomote.diagnostics.DiagnosticsReport
 import org.ghostsinthelab.app.ringomote.ui.settings.DiagnosticsScreen
 import org.ghostsinthelab.app.ringomote.ui.settings.SettingsScreen
 import org.ghostsinthelab.app.ringomote.settings.AppearanceSettings
+import org.ghostsinthelab.app.ringomote.network.AppleTvDiscovery
+import org.ghostsinthelab.app.ringomote.network.NetworkSettings
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -60,6 +63,8 @@ import org.ghostsinthelab.app.ringomote.ui.remote.RemoteViewModel
 fun RingomoteApp(
     appearanceSettings: AppearanceSettings,
     diagnosticsReport: DiagnosticsReport,
+    networkSettings: NetworkSettings,
+    appleTvDiscovery: AppleTvDiscovery,
     modifier: Modifier = Modifier,
     vm: RemoteViewModel = viewModel(factory = RemoteViewModel.Factory),
 ) {
@@ -106,7 +111,15 @@ fun RingomoteApp(
 
             tab == AppTab.Settings -> {
                 val appearance by appearanceSettings.appearance.collectAsStateWithLifecycle()
+                val networkEnabled by networkSettings.enabled.collectAsStateWithLifecycle()
+                val appleTvs by appleTvDiscovery.appleTvs.collectAsStateWithLifecycle()
+                val browsing by appleTvDiscovery.browsing.collectAsStateWithLifecycle()
                 val launchSystemScreen = rememberSystemScreenLauncher()
+                // Browse only while the Settings tab shows the list and the user has opted in.
+                DisposableEffect(networkEnabled) {
+                    if (networkEnabled) appleTvDiscovery.start()
+                    onDispose { appleTvDiscovery.stop() }
+                }
                 SettingsScreen(
                     appearance = appearance,
                     onModeChange = appearanceSettings::setMode,
@@ -114,6 +127,10 @@ fun RingomoteApp(
                     onLayoutChange = appearanceSettings::setLayout,
                     onOpenBluetoothSettings = { launchSystemScreen(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) },
                     onOpenDiagnostics = { showDiagnostics = true },
+                    networkEnabled = networkEnabled,
+                    onNetworkEnabledChange = networkSettings::setEnabled,
+                    appleTvs = appleTvs,
+                    browsing = browsing,
                     modifier = content,
                 )
             }

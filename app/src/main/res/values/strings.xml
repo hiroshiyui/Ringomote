@@ -80,6 +80,12 @@
     <string name="settings_advanced_title">Advanced</string>
     <string name="settings_diagnostics_description">A Bluetooth diagnostics report helps developers find out why pairing or input fails. It lists this phone, its Bluetooth state, the devices paired with it (names and addresses) and what the app saw on the link. It leaves the phone only if you share or save it.</string>
     <string name="settings_diagnostics_open">Bluetooth diagnostics</string>
+    <string name="settings_network_title">Network</string>
+    <string name="settings_network_label">Use the local network</string>
+    <string name="settings_network_description">Lets Ringomote look for Apple TVs on your Wi-Fi network with Bonjour. The remote itself works over Bluetooth only; this is for features that need the network, such as waking a sleeping Apple TV. Nothing is sent beyond your network.</string>
+    <string name="settings_apple_tvs_title">Apple TVs on this network</string>
+    <string name="settings_apple_tvs_searching">Searching…</string>
+    <string name="settings_apple_tvs_none">No Apple TV found. Check that the phone is on the same Wi-Fi network as the Apple TV.</string>
     <string name="diagnostics_title">Bluetooth diagnostics</string>
     <string name="diagnostics_back">Back</string>
     <string name="diagnostics_refresh">Refresh</string>
@@ -93,7 +99,7 @@
     <string name="about_tagline">Use your phone as a remote for Apple TV, compatible with the Siri Remote (1st generation).</string>
     <string name="about_copyright" translatable="false">Copyright © 2026 Hui-Hong You</string>
     <string name="about_privacy_title">Privacy</string>
-    <string name="about_privacy_body">Ringomote has no internet permission and collects no data. Button presses go only to your Apple TV, directly over Bluetooth. The app stores only your appearance settings and whether it has connected before. The Bluetooth diagnostics report in Settings names your paired devices and their addresses; it leaves the phone only when you share or save it.</string>
+    <string name="about_privacy_body">Ringomote collects no data and connects to no server. Button presses go only to your Apple TV, directly over Bluetooth. The app stores only your settings and whether it has connected before. If you turn on “Use the local network” in Settings, it looks for Apple TVs on your Wi-Fi network with Bonjour; nothing is sent beyond that network. The Bluetooth diagnostics report in Settings names your paired devices and their addresses; it leaves the phone only when you share or save it.</string>
     <string name="about_license_title">License</string>
     <string name="about_license_body">Ringomote is free software, released under the GNU General Public License, version 3 or later. You may use, study, share and change it under the terms of that license.</string>
     <string name="about_license_link">Read the license</string>

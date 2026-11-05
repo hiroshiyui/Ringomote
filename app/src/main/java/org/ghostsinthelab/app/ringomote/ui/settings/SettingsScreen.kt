@@ -16,6 +16,9 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -36,6 +39,7 @@ import org.ghostsinthelab.app.ringomote.settings.RemoteLayout
 import org.ghostsinthelab.app.ringomote.settings.ThemeMode
 import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
 import org.ghostsinthelab.app.ringomote.ui.theme.supportsDynamicColor
+import org.ghostsinthelab.app.ringomote.network.AppleTv
 
 /**
  * The Settings tab: appearance, the remote's layout, a shortcut to the phone's Bluetooth
@@ -53,6 +57,11 @@ import org.ghostsinthelab.app.ringomote.ui.theme.supportsDynamicColor
  *
  * The Advanced section opens the Bluetooth diagnostics report ([onOpenDiagnostics]), meant
  * for attaching to a bug report; its text says what the report contains.
+ *
+ * The Network section is the only place the app touches the local network, so it is opt-in:
+ * a switch ([networkEnabled]), and once it is on, the Apple TVs found through Bonjour
+ * ([appleTvs], with a progress bar while [browsing]). The caller starts and stops the browse;
+ * this screen only shows the result.
  */
 @Composable
 fun SettingsScreen(
@@ -62,6 +71,10 @@ fun SettingsScreen(
     onLayoutChange: (RemoteLayout) -> Unit,
     onOpenBluetoothSettings: () -> Unit,
     onOpenDiagnostics: () -> Unit,
+    networkEnabled: Boolean,
+    onNetworkEnabledChange: (Boolean) -> Unit,
+    appleTvs: List<AppleTv>,
+    browsing: Boolean,
     modifier: Modifier = Modifier,
     showDynamicColor: Boolean = supportsDynamicColor,
 ) {
@@ -170,6 +183,59 @@ fun SettingsScreen(
             OutlinedButton(onClick = onOpenDiagnostics) {
                 Text(stringResource(R.string.settings_diagnostics_open))
             }
+            Text(
+                text = stringResource(R.string.settings_network_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.semantics { heading() }.padding(top = 16.dp),
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(
+                        value = networkEnabled,
+                        role = Role.Switch,
+                        onValueChange = onNetworkEnabledChange,
+                    )
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.settings_network_label),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        text = stringResource(R.string.settings_network_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(checked = networkEnabled, onCheckedChange = null)
+            }
+            if (networkEnabled) {
+                Text(
+                    text = stringResource(R.string.settings_apple_tvs_title),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+                if (browsing) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                if (appleTvs.isEmpty()) {
+                    Text(
+                        text = stringResource(
+                            if (browsing) R.string.settings_apple_tvs_searching else R.string.settings_apple_tvs_none,
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                appleTvs.forEach { tv ->
+                    ListItem(
+                        headlineContent = { Text(tv.name) },
+                        supportingContent = { Text("${tv.modelName} · ${tv.host}") },
+                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
+                    )
+                }
+            }
         }
     }
 }
@@ -200,6 +266,10 @@ private fun SettingsScreenPreview() {
             onLayoutChange = {},
             onOpenBluetoothSettings = {},
             onOpenDiagnostics = {},
+            networkEnabled = true,
+            onNetworkEnabledChange = {},
+            appleTvs = listOf(AppleTv("keting", "keting", "AppleTV14,1", "192.168.50.48", 49152)),
+            browsing = true,
             showDynamicColor = true,
         )
     }

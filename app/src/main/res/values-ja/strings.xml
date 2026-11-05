@@ -80,6 +80,12 @@
     <string name="settings_advanced_title">詳細設定</string>
     <string name="settings_diagnostics_description">Bluetooth 診断レポートは、ペアリングや入力がうまくいかない原因を開発者が調べるのに役立ちます。このスマートフォン、その Bluetooth の状態、ペアリング済みのデバイス（名前とアドレス）、アプリが接続で観測した出来事が含まれます。共有または保存したときにだけ、レポートはスマートフォンの外に出ます。</string>
     <string name="settings_diagnostics_open">Bluetooth 診断</string>
+    <string name="settings_network_title">ネットワーク</string>
+    <string name="settings_network_label">ローカルネットワークを使う</string>
+    <string name="settings_network_description">Ringomote が Bonjour で Wi-Fi ネットワーク上の Apple TV を探せるようにします。リモコン自体は Bluetooth だけで動きます。これは、スリープ中の Apple TV を起動するなど、ネットワークが要る機能のためのものです。ネットワークの外には何も送りません。</string>
+    <string name="settings_apple_tvs_title">このネットワーク上の Apple TV</string>
+    <string name="settings_apple_tvs_searching">検索中…</string>
+    <string name="settings_apple_tvs_none">Apple TV が見つかりません。スマートフォンが Apple TV と同じ Wi-Fi ネットワークにあるか確認してください。</string>
     <string name="diagnostics_title">Bluetooth 診断</string>
     <string name="diagnostics_back">戻る</string>
     <string name="diagnostics_refresh">更新</string>
@@ -92,7 +98,7 @@
     <string name="about_version">バージョン %1$s（%2$d）</string>
     <string name="about_tagline">スマートフォンを Apple TV のリモコンとして使えます。Siri Remote（第 1 世代）互換です。</string>
     <string name="about_privacy_title">プライバシー</string>
-    <string name="about_privacy_body">Ringomote にはインターネットの権限がなく、データを収集することもありません。ボタン操作は Bluetooth で直接 Apple TV にだけ送られます。このアプリが保存するのは、外観の設定と、以前に接続したことがあるかどうかだけです。設定の Bluetooth 診断レポートにはペアリング済みのデバイスとそのアドレスが含まれますが、共有または保存したときにだけスマートフォンの外に出ます。</string>
+    <string name="about_privacy_body">Ringomote はデータを収集せず、どのサーバーにも接続しません。ボタン操作は Bluetooth で直接 Apple TV にだけ送られます。このアプリが保存するのは、設定と、以前に接続したことがあるかどうかだけです。設定で「ローカルネットワークを使う」をオンにすると、Bonjour で Wi-Fi ネットワーク上の Apple TV を探します。そのネットワークの外には何も送りません。設定の Bluetooth 診断レポートにはペアリング済みのデバイスとそのアドレスが含まれますが、共有または保存したときにだけスマートフォンの外に出ます。</string>
     <string name="about_license_title">ライセンス</string>
     <string name="about_license_body">Ringomote はフリーソフトウェアで、GNU 一般公衆利用許諾書 バージョン 3 またはそれ以降のもとで公開されています。このライセンスの条件に従って、使用、研究、共有、改変ができます。</string>
     <string name="about_license_link">ライセンス全文を読む</string>

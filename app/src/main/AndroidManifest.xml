@@ -17,6 +17,12 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <!-- Android 12+: make the phone discoverable so the Apple TV can find it. -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <!-- Network features, all opt-in under Settings > Network. Bonjour browsing for Apple TVs
+         needs the multicast lock permission (normal); INTERNET gates every socket on Android
+         and is needed for the Companion Link connection. The app contacts no server. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <application
         android:name=".RingomoteApplication"

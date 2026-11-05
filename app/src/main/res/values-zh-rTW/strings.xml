@@ -80,6 +80,12 @@
     <string name="settings_advanced_title">進階</string>
     <string name="settings_diagnostics_description">藍牙診斷報告可協助開發者找出配對或輸入失敗的原因。內容包含這支手機、它的藍牙狀態、與它配對的裝置（名稱與位址），以及本程式在連線上觀察到的事件。只有在您分享或儲存時，報告才會離開手機。</string>
     <string name="settings_diagnostics_open">藍牙診斷</string>
+    <string name="settings_network_title">網路</string>
+    <string name="settings_network_label">使用區域網路</string>
+    <string name="settings_network_description">允許 Ringomote 以 Bonjour 在您的 Wi-Fi 網路上尋找 Apple TV。遙控器本身只透過藍牙運作；這是給需要網路的功能用的，例如喚醒睡眠中的 Apple TV。不會有任何資料送出您的網路。</string>
+    <string name="settings_apple_tvs_title">這個網路上的 Apple TV</string>
+    <string name="settings_apple_tvs_searching">搜尋中…</string>
+    <string name="settings_apple_tvs_none">找不到 Apple TV。請確認手機與 Apple TV 在同一個 Wi-Fi 網路。</string>
     <string name="diagnostics_title">藍牙診斷</string>
     <string name="diagnostics_back">返回</string>
     <string name="diagnostics_refresh">重新整理</string>
@@ -92,7 +98,7 @@
     <string name="about_version">版本 %1$s（%2$d）</string>
     <string name="about_tagline">將您的手機當作 Apple TV 遙控器使用，與 Siri Remote（第 1 代）相容。</string>
     <string name="about_privacy_title">隱私</string>
-    <string name="about_privacy_body">Ringomote 沒有網際網路權限，也不會收集任何資料。按鍵操作只會透過藍牙直接傳送到您的 Apple TV。本程式只會儲存您的外觀設定，以及是否曾經連線過。「設定」中的藍牙診斷報告會列出您已配對的裝置及其位址；只有在您分享或儲存時才會離開手機。</string>
+    <string name="about_privacy_body">Ringomote 不會收集任何資料，也不會連線到任何伺服器。按鍵操作只會透過藍牙直接傳送到您的 Apple TV。本程式只會儲存您的設定，以及是否曾經連線過。若您在「設定」開啟「使用區域網路」，它會以 Bonjour 在您的 Wi-Fi 網路上尋找 Apple TV；不會有任何資料送出該網路。「設定」中的藍牙診斷報告會列出您已配對的裝置及其位址；只有在您分享或儲存時才會離開手機。</string>
     <string name="about_license_title">授權</string>
     <string name="about_license_body">Ringomote 是自由軟體，以 GNU 通用公共授權第 3 版或其後版本釋出。您可以依該授權條款使用、研究、分享與修改本程式。</string>
     <string name="about_license_link">閱讀授權條款</string>

@@ -113,6 +113,11 @@ interface BlePeripheralPort {
  *   race happens after a Bluetooth toggle: the TV connects within milliseconds of the
  *   adapter coming up, before the services exist.
  *   [org.ghostsinthelab.app.ringomote.service.RemoteService] exists so this rarely happens.
+ *   GATT robust caching (Bluetooth 5.1) cannot be used to make the TV look again: Android's
+ *   Generic Attribute service exposes Server/Client Supported Features and Database Hash,
+ *   but the HCI snoop capture of 2026-11-06 shows tvOS never reading the hash or writing
+ *   the Client Supported Features bit; on a stale link it re-reads only that service and
+ *   the device name, i.e. it caches as a legacy client that acts on Service Changed alone.
  *
  * Thread-safe: every method is synchronized, because platform events arrive on binder threads
  * and the main thread.

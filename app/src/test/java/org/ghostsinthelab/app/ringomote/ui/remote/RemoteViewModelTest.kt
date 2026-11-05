@@ -110,9 +110,12 @@ class RemoteViewModelTest {
         assertTrue(transport.reports.isEmpty())
     }
 
-    /** Item 4: clearing the ViewModel releases held keys, then stops the transport. */
+    /**
+     * Item 4: clearing the ViewModel releases held keys but leaves the transport running:
+     * the HID device must outlive the screen (RemoteService owns stopping it).
+     */
     @Test
-    fun clearingReleasesThenStops() = scope.runTest {
+    fun clearingReleasesButKeepsTransport() = scope.runTest {
         transport.state.value = TransportState.Connected(tv)
         val vm = newViewModel()
         runCurrent()
@@ -125,18 +128,24 @@ class RemoteViewModelTest {
         assertTrue("teardown must not run on the caller's thread", transport.calls.isEmpty())
         runCurrent()
         assertEquals(listOf(allUp, consumerUp), transport.reports)
-        assertEquals(listOf("stop"), transport.calls)
+        assertTrue(transport.calls.isEmpty())
     }
 
-    /** Item 4: a stop queued by a closing screen runs before a start queued by the next one. */
+    /** Item 4: a release queued by a closing screen runs before a start queued by the next one. */
     @Test
-    fun stopFromOldScreenRunsBeforeStartFromNewOne() = scope.runTest {
+    fun releaseFromOldScreenRunsBeforeStartFromNewOne() = scope.runTest {
+        transport.state.value = TransportState.Connected(tv)
         val old = newViewModel()
         runCurrent()
+        old.press(RemoteControl.Up)
+        runCurrent()
+        transport.reports.clear()
+        transport.calls.clear()
         clear(old)
         newViewModel().start()
         runCurrent()
-        assertEquals(listOf("stop", "start", "bondedDevices"), transport.calls)
+        assertEquals(listOf(allUp, consumerUp), transport.reports)
+        assertEquals(listOf("start", "bondedDevices"), transport.calls)
     }
 
     /** An accessibility long-click holds the control for LONG_PRESS_MILLIS, then releases it. */

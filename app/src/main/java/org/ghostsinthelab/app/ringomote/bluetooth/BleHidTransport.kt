@@ -65,6 +65,12 @@ class BleHidTransport(
     @Volatile private var server: BluetoothGattServer? = null
     @Volatile private var services: HidGattServices? = null
 
+    /** Handles of the services added to the current server, in order. */
+    private val addedHandles = mutableListOf<Int>()
+
+    /** Where the layout a host subscribed to is remembered across restarts. */
+    private val layoutPrefs = appContext.getSharedPreferences("ble_layout", Context.MODE_PRIVATE)
+
     // Every call here is reached only through BleLinkController, which checks hasPermission().
     @SuppressLint("MissingPermission")
     private val port: BlePeripheralPort = object : BlePeripheralPort {
@@ -81,6 +87,7 @@ class BleHidTransport(
             val built = HidGattServices(HidReportDescriptor.bytes)
             server = opened
             services = built
+            addedHandles.clear()
             eventLog.record("GATT server: opened, adding services")
             // Services are added one at a time; onServiceAdded adds the next.
             return opened.addService(built.pending.removeFirst())
@@ -133,6 +140,21 @@ class BleHidTransport(
 
         override fun hostDevice(address: String): HostDevice =
             remoteDevice(address)?.toHostDevice() ?: HostDevice(address, null)
+
+        override fun pairedLayout(): List<Int>? =
+            layoutPrefs.getString(KEY_LAYOUT, null)?.split(',')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.isNotEmpty() }
+
+        override fun savePairedLayout(handles: List<Int>) {
+            layoutPrefs.edit().putString(KEY_LAYOUT, handles.joinToString(",")).apply()
+            eventLog.record("Layout: host subscribed at handles $handles, saved")
+        }
+
+        override fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>, reopening: Boolean) {
+            eventLog.record(
+                "Layout: services at $actual, host expects $expected; " +
+                    if (reopening) "reopening server" else "giving up; host must reconnect to re-check",
+            )
+        }
     }
 
     private val controller = BleLinkController(port)
@@ -240,10 +262,11 @@ class BleHidTransport(
                 return
             }
             eventLog.record("Service ${service.uuid.short()}: added, instance ${service.instanceId}")
+            addedHandles += service.instanceId
             val next = built.pending.removeFirstOrNull()
             if (next == null) {
                 eventLog.record("GATT server: all services added")
-                controller.onServicesAdded()
+                controller.onServicesAdded(addedHandles.toList())
             } else if (!open.addService(next)) {
                 eventLog.record("Service ${next.uuid.short()}: add refused")
                 controller.onServicesFailed()
@@ -345,6 +368,7 @@ class BleHidTransport(
     }
 
     private companion object {
+        private const val KEY_LAYOUT = "handles"
         const val TAG = "BleHidTransport"
         const val FEATURE_BLE = "android.hardware.bluetooth_le"
         const val BASE_UUID_SUFFIX = "-0000-1000-8000-00805f9b34fb"

@@ -38,10 +38,11 @@ import org.ghostsinthelab.app.ringomote.remote.RemoteSession
  * The first successful connection is recorded in [connectionHistory]; until then
  * [hasConnectedBefore] is false and the UI opens the pairing details by default.
  *
- * The ViewModel starts the transport on request ([start], after permissions are granted) and
- * stops it in [onCleared], i.e. when the user leaves the app for good, releasing held keys
- * first. That teardown runs in [applicationScope] because [viewModelScope] is already
- * cancelled by then.
+ * The ViewModel starts the transport on request ([start], after permissions are granted) but
+ * never stops it: the HID device must outlive the screen, or the Apple TV drops the keyboard
+ * (see [org.ghostsinthelab.app.ringomote.service.RemoteService], which keeps the process and
+ * the transport alive and is the only place that stops it). [onCleared] only releases held
+ * keys, in [applicationScope] because [viewModelScope] is already cancelled by then.
  */
 class RemoteViewModel(
     private val transport: HidTransport,
@@ -116,10 +117,7 @@ class RemoteViewModel(
     }
 
     override fun onCleared() {
-        applicationScope.launch(serialDispatcher) {
-            session.releaseAll()
-            transport.stop()
-        }
+        applicationScope.launch(serialDispatcher) { session.releaseAll() }
     }
 
     companion object {

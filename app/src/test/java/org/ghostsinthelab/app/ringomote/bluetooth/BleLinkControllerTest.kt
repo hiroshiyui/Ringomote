@@ -29,6 +29,91 @@ class BleLinkControllerTest {
         controller.onAdvertisingStarted()
     }
 
+    /** A host writing its subscription saves the handle layout it discovered. */
+    @Test
+    fun subscriptionSavesLayout() {
+        controller.start()
+        controller.onServicesAdded(listOf(50, 55, 59))
+        controller.onAdvertisingStarted()
+        controller.onHostConnected(tv)
+        controller.onHostSubscribed(tv)
+        assertEquals(listOf(50, 55, 59), port.savedLayout)
+        assertEquals(TransportState.Connected(HostDevice(tv, "Apple TV")), controller.state.value)
+    }
+
+    /** A server that comes up on other handles is reopened; once they match, all is well. */
+    @Test
+    fun reopensServerUntilLayoutMatches() {
+        port.savedLayout = listOf(50, 55, 59)
+        controller.start()
+        controller.onServicesAdded(listOf(44, 55, 59))
+        assertEquals(1, port.closeServerCalls)
+        assertEquals(2, port.openServerCalls)
+        assertEquals(TransportState.Registering, controller.state.value)
+        assertTrue(port.mismatches.single().third)
+
+        controller.onServicesAdded(listOf(50, 55, 59))
+        controller.onAdvertisingStarted()
+        assertEquals(TransportState.Ready, controller.state.value)
+        port.bonded += tv
+        controller.onHostConnected(tv)
+        assertEquals(TransportState.Connected(HostDevice(tv, "Apple TV")), controller.state.value)
+        assertEquals(tv, controller.connectedHost)
+    }
+
+    /** After the reopen budget, a bonded host is shown as Resyncing and gets no reports. */
+    @Test
+    fun givesUpAndReportsResyncingForBondedHost() {
+        port.savedLayout = listOf(50, 55, 59)
+        controller.start()
+        repeat(BleLinkController.MAX_LAYOUT_REOPENS + 1) { controller.onServicesAdded(listOf(60, 65, 69)) }
+        assertEquals(BleLinkController.MAX_LAYOUT_REOPENS, port.closeServerCalls)
+        assertFalse(port.mismatches.last().third)
+        controller.onAdvertisingStarted()
+        assertEquals(TransportState.Ready, controller.state.value)
+
+        port.bonded += tv
+        controller.onHostConnected(tv)
+        assertEquals(TransportState.Resyncing(HostDevice(tv, "Apple TV")), controller.state.value)
+        assertNull(controller.connectedHost)
+
+        // The TV was forgotten and re-paired: it subscribes again, which fixes everything.
+        controller.onHostSubscribed(tv)
+        assertEquals(TransportState.Connected(HostDevice(tv, "Apple TV")), controller.state.value)
+        assertEquals(listOf(60, 65, 69), port.savedLayout)
+        assertEquals(tv, controller.connectedHost)
+    }
+
+    /** A bonded host that was connected before the services existed is shown as Resyncing. */
+    @Test
+    fun hostConnectedBeforeServicesNeedsResync() {
+        port.bonded += tv
+        controller.start()
+        controller.onHostConnected(tv)
+        assertEquals(TransportState.Registering, controller.state.value)
+
+        controller.onServicesAdded(listOf(55, 60, 64))
+        assertEquals(TransportState.Resyncing(HostDevice(tv, "Apple TV")), controller.state.value)
+        assertNull(controller.connectedHost)
+        assertTrue(port.disconnects.isEmpty())
+
+        // After a Bluetooth toggle the TV comes back on a fresh link and subscribes again.
+        controller.onHostDisconnected(tv)
+        controller.onAdvertisingStarted()
+        controller.onHostConnected(tv)
+        assertEquals(TransportState.Connected(HostDevice(tv, "Apple TV")), controller.state.value)
+        assertEquals(tv, controller.connectedHost)
+    }
+
+    /** A host that connects after the services exist is simply connected. */
+    @Test
+    fun normalConnectionNeedsNoResync() {
+        port.bonded += tv
+        startAdvertising()
+        controller.onHostConnected(tv)
+        assertEquals(TransportState.Connected(HostDevice(tv, "Apple TV")), controller.state.value)
+    }
+
     /** Happy path: start opens the server, advertises once the services exist, and ends Ready. */
     @Test
     fun startOpensServerAdvertisesAndBecomesReady() {
@@ -226,7 +311,11 @@ class BleLinkControllerTest {
         assertEquals(TransportState.Registering, controller.state.value) // advertising again
     }
 
-    /** A bonded host that connects before the services are added (seen on hardware) is kept. */
+    /**
+     * A bonded host that connects before the services are added (seen on hardware) is kept
+     * through Registering and shown as Resyncing once the services exist; advertising starts
+     * only when it leaves.
+     */
     @Test
     fun hostConnectingBeforeServicesAddedIsKept() {
         port.bonded += tv
@@ -235,8 +324,7 @@ class BleLinkControllerTest {
         assertEquals(TransportState.Registering, controller.state.value)
 
         controller.onServicesAdded()
-        assertEquals(TransportState.Connected(port.hostDevice(tv)), controller.state.value)
-        assertEquals(tv, controller.connectedHost)
+        assertEquals(TransportState.Resyncing(port.hostDevice(tv)), controller.state.value)
         assertEquals(0, port.startAdvertisingCalls)
 
         controller.onHostDisconnected(tv)
@@ -393,5 +481,13 @@ class BleLinkControllerTest {
         override fun disconnect(address: String) { disconnects += address }
         override fun isBonded(address: String) = address in bonded
         override fun hostDevice(address: String) = HostDevice(address, "Apple TV")
+
+        var savedLayout: List<Int>? = null
+        val mismatches = mutableListOf<Triple<List<Int>, List<Int>, Boolean>>()
+        override fun pairedLayout() = savedLayout
+        override fun savePairedLayout(handles: List<Int>) { savedLayout = handles }
+        override fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>, reopening: Boolean) {
+            mismatches += Triple(expected, actual, reopening)
+        }
     }
 }

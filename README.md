@@ -30,6 +30,8 @@ Left to right: the remote in the compact and spread-out layouts and in the dark 
 
 The phone talks to the Apple TV directly over Bluetooth Low Energy, presenting itself as a Bluetooth input device (a HID over GATT keyboard), just as the physical remote does. No Wi-Fi network, Apple account or bridge device is involved. The one exception is opt-in and exists because a sleeping Apple TV does not listen for Bluetooth (and ignores Wake-on-LAN packets): Settings > Network can find Apple TVs on the local network with Bonjour and pair with one over Apple's Companion Link protocol, the same link the iOS remote uses, after which a Wake button turns it on. It is off by default, the pairing is a separate PIN step on the Apple TV, and the app never contacts anything beyond the local network.
 
+While the remote is started, a quiet notification keeps it available in the background. It is there because a Bluetooth keyboard must not vanish when its app leaves the screen: if it did, tvOS would drop it and need the link made afresh. Stop from the notification ends the remote until the next launch.
+
 In more detail:
 
 1. **Advertising.** While Ringomote is open, the phone advertises the standard Bluetooth HID service, so the Apple TV lists it under Settings > Remotes and Devices > Bluetooth, next to keyboards and game controllers. (Classic Bluetooth would not work here: Android reports the phone's device class as "phone", which tvOS filters out, and an app cannot change that.)

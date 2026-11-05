@@ -150,7 +150,8 @@ fun ConnectionPanel(
 /** Whether [ConnectionPanel] has more to say about this state than the status row. */
 private fun TransportState.hasDetails(): Boolean = when (this) {
     TransportState.Ready, TransportState.RegistrationFailed,
-    TransportState.Unsupported, TransportState.PermissionRequired, is TransportState.Connected -> true
+    TransportState.Unsupported, TransportState.PermissionRequired, is TransportState.Connected,
+    is TransportState.Resyncing -> true
     else -> false
 }
 
@@ -161,6 +162,7 @@ private fun TransportState.hasDetails(): Boolean = when (this) {
 @DrawableRes
 private fun TransportState.indicatorIcon(): Int = when (this) {
     is TransportState.Connected -> R.drawable.ic_bluetooth_connected
+    is TransportState.Resyncing -> R.drawable.ic_bluetooth_connected
     is TransportState.Connecting, TransportState.Registering, TransportState.Stopped ->
         R.drawable.ic_bluetooth_searching
     TransportState.Ready -> R.drawable.ic_bluetooth
@@ -172,6 +174,7 @@ private fun TransportState.indicatorIcon(): Int = when (this) {
 @Composable
 private fun TransportState.indicatorColor(): Color = when (this) {
     is TransportState.Connected -> MaterialTheme.colorScheme.primary
+    is TransportState.Resyncing -> MaterialTheme.colorScheme.error
     TransportState.BluetoothOff, TransportState.RegistrationFailed,
     TransportState.Unsupported, TransportState.PermissionRequired -> MaterialTheme.colorScheme.error
     else -> MaterialTheme.colorScheme.onSurfaceVariant
@@ -252,6 +255,7 @@ private fun TransportState.describeShort(): String = when (this) {
     TransportState.Ready -> stringResource(R.string.state_short_ready)
     is TransportState.Connecting -> stringResource(R.string.state_connecting, device.displayName())
     is TransportState.Connected -> stringResource(R.string.state_connected, device.displayName())
+    is TransportState.Resyncing -> stringResource(R.string.state_short_resyncing, device.displayName())
 }
 
 /** The full explanation shown under Details. */
@@ -266,6 +270,7 @@ private fun TransportState.describe(): String = when (this) {
     TransportState.Ready -> stringResource(R.string.state_ready)
     is TransportState.Connecting -> stringResource(R.string.state_connecting, device.displayName())
     is TransportState.Connected -> stringResource(R.string.state_connected_details, device.displayName())
+    is TransportState.Resyncing -> stringResource(R.string.state_resyncing, device.displayName())
 }
 
 @Preview(showBackground = true)

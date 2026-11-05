@@ -9,11 +9,14 @@ package org.ghostsinthelab.app.ringomote.diagnostics
  *
  * Keeps the newest [capacity] entries; older ones are dropped. Pure Kotlin and thread-safe,
  * because the transport records from binder threads and the UI reads from the main thread.
- * [clock] is injectable so tests get stable timestamps.
+ * [clock] is injectable so tests get stable timestamps. [mirror] receives every message as
+ * well; the app passes a logcat writer so `adb logcat -s Ringomote` shows the same sequence
+ * live, which is how link problems get debugged with the phone on a cable.
  */
 class EventLog(
     private val capacity: Int = DEFAULT_CAPACITY,
     private val clock: () -> Long = System::currentTimeMillis,
+    private val mirror: (String) -> Unit = {},
 ) {
     /** One recorded event, with the wall-clock time it was recorded at. */
     data class Entry(val timeMillis: Long, val message: String)
@@ -25,6 +28,7 @@ class EventLog(
     fun record(message: String) {
         if (entries.size >= capacity) entries.removeFirst()
         entries.addLast(Entry(clock(), message))
+        mirror(message)
     }
 
     /** The entries recorded so far, oldest first. */

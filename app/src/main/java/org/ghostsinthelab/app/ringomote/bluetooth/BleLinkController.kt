@@ -48,6 +48,15 @@ interface BlePeripheralPort {
 
     /** Describes the host at [address] for display. */
     fun hostDevice(address: String): HostDevice
+
+    /** The GATT handle layout saved when a host last subscribed, or null if none was saved. */
+    fun pairedLayout(): List<Int>?
+
+    /** Persists [handles] as the layout the subscribed host knows. */
+    fun savePairedLayout(handles: List<Int>)
+
+    /** The server came up with [actual] handles instead of the saved [expected]; for the log. */
+    fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>, reopening: Boolean)
 }
 
 /**
@@ -74,6 +83,23 @@ interface BlePeripheralPort {
  *   to Ready, so a failed phone-side connect cannot leave the UI stuck on Connecting.
  * - The state never becomes [TransportState.Ready] or [TransportState.Connected] while
  *   Bluetooth is off, whatever order the platform delivers events in.
+ * - Handle layout: Android hands out GATT attribute handles from a pool shared with other
+ *   apps, so the services can land on different handles each time the server opens, while a
+ *   bonded Apple TV keeps using the handles it saw at pairing time and never rediscovers
+ *   (verified 2026-11-05: keys stop working after an app restart moved the HID service).
+ *   The layout at subscription time is saved through the port; when a later server comes up
+ *   with a different one, the server is closed and reopened up to [MAX_LAYOUT_REOPENS] times
+ *   to try for the saved handles, and if that fails a bonded host is shown as
+ *   [TransportState.Resyncing] instead of Connected. A host that writes its subscription
+ *   again has rediscovered, so that saves the new layout and clears the condition.
+ * - A host connected before the services existed (this process came up under a link the
+ *   previous one left open) is also shown as [TransportState.Resyncing]: when the old
+ *   process died the stack sent Service Changed, and tvOS then drops the keyboard and does
+ *   not rediscover it on the same link, even with identical handles (verified 2026-11-05).
+ *   The phone cannot drop the link (a server-side disconnect only detaches this server, the
+ *   TV as central keeps the link), so the UI tells the user to toggle Bluetooth; after that
+ *   the TV reconnects, re-checks and subscribes again on its own, without re-pairing.
+ *   [org.ghostsinthelab.app.ringomote.service.RemoteService] exists so this rarely happens.
  *
  * Thread-safe: every method is synchronized, because platform events arrive on binder threads
  * and the main thread.
@@ -93,13 +119,32 @@ class BleLinkController(private val port: BlePeripheralPort) {
     private var host: String? = null
     private var subscribed = false
 
+    /** Whether [subscribed] came from a descriptor write this session, not from the bond. */
+    private var subscribedByWrite = false
+
+    /** Handles of this server's services, once added. */
+    private var layout: List<Int>? = null
+
+    /** True when [layout] differs from the saved one and reopening did not fix it. */
+    private var layoutStale = false
+    private var layoutReopens = 0
+
+    /** A host connected before the services were added, waiting for them. */
+    private var hostBeforeServices: String? = null
+
+    /** True when the current host saw the services change under it; see the class doc. */
+    private var hostNeedsResync = false
+
     /** A host the phone asked to connect to and has not heard back from yet. */
     private var pendingConnect: String? = null
 
     /** Address of the host subscribed to input reports, or null while reports cannot be sent. */
     @get:Synchronized
     val connectedHost: String?
-        get() = host?.takeIf { subscribed }
+        get() = host?.takeIf { subscribed && !cachedSubscriptionIsStale() }
+
+    /** A bonded host trusting a cache this server no longer matches cannot receive reports. */
+    private fun cachedSubscriptionIsStale() = (layoutStale || hostNeedsResync) && !subscribedByWrite
 
     /** Starts the link, or retries whatever step is missing. Idempotent. */
     @Synchronized
@@ -143,11 +188,39 @@ class BleLinkController(private val port: BlePeripheralPort) {
         return true
     }
 
-    /** The server opened by [BlePeripheralPort.openServer] has all its services. */
+    /**
+     * The server opened by [BlePeripheralPort.openServer] has all its services, at [handles]
+     * (one per service, in the order added; empty when the platform does not say).
+     */
     @Synchronized
-    fun onServicesAdded() {
+    fun onServicesAdded(handles: List<Int> = emptyList()) {
         if (!started || server != Server.Opening) return
+        layout = handles
+        val expected = port.pairedLayout()
+        if (expected != null && handles.isNotEmpty() && handles != expected) {
+            val reopening = layoutReopens < MAX_LAYOUT_REOPENS
+            port.noteLayoutMismatch(expected, handles, reopening)
+            if (reopening) {
+                layoutReopens++
+                port.closeServer()
+                server = Server.None
+                host = null
+                hostBeforeServices = null
+                subscribed = false
+                subscribedByWrite = false
+                advertising = false
+                advance()
+                return
+            }
+            layoutStale = true
+        } else {
+            layoutStale = false
+        }
+        layoutReopens = 0
         server = Server.Open
+        val early = hostBeforeServices
+        hostBeforeServices = null
+        if (early != null && early == host) hostNeedsResync = true
         advance()
     }
 
@@ -187,11 +260,13 @@ class BleLinkController(private val port: BlePeripheralPort) {
         host = address
         pendingConnect = null
         subscribed = port.isBonded(address)
+        subscribedByWrite = false
+        hostNeedsResync = false
         if (advertising) {
             port.stopAdvertising()
             advertising = false
         }
-        if (server == Server.Open) showHost() // else: Registering until the services exist
+        if (server == Server.Open) showHost() else hostBeforeServices = address // Registering until the services exist
     }
 
     /** The host wrote the input report's client configuration (notifications on). */
@@ -199,6 +274,10 @@ class BleLinkController(private val port: BlePeripheralPort) {
     fun onHostSubscribed(address: String) {
         if (host != address) return
         subscribed = true
+        subscribedByWrite = true
+        // A fresh subscription means the host discovered this layout: remember it.
+        layout?.takeIf { it.isNotEmpty() }?.let(port::savePairedLayout)
+        layoutStale = false
         showHost()
     }
 
@@ -209,6 +288,8 @@ class BleLinkController(private val port: BlePeripheralPort) {
         else if (host != address) return
         host = null
         subscribed = false
+        if (hostBeforeServices == address) hostBeforeServices = null
+        hostNeedsResync = false
         if (!started || server == Server.None) return
         advance()
     }
@@ -252,6 +333,7 @@ class BleLinkController(private val port: BlePeripheralPort) {
         val address = host ?: return
         _state.value = when {
             !port.isBluetoothOn() -> TransportState.BluetoothOff
+            subscribed && cachedSubscriptionIsStale() -> TransportState.Resyncing(port.hostDevice(address))
             subscribed -> TransportState.Connected(port.hostDevice(address))
             else -> TransportState.Connecting(port.hostDevice(address))
         }
@@ -266,6 +348,17 @@ class BleLinkController(private val port: BlePeripheralPort) {
         advertising = false
         host = null
         subscribed = false
+        subscribedByWrite = false
         pendingConnect = null
+        layout = null
+        layoutStale = false
+        layoutReopens = 0
+        hostBeforeServices = null
+        hostNeedsResync = false
+    }
+
+    companion object {
+        /** How many times to reopen the server hoping for the saved handle layout. */
+        const val MAX_LAYOUT_REOPENS = 3
     }
 }

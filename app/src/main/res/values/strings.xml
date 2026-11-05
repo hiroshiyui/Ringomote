@@ -19,6 +19,15 @@
     <string name="state_connecting">Connecting to %1$s…</string>
     <string name="state_connected">Connected to %1$s.</string>
     <string name="state_connected_details">Connected to %1$s. To disconnect, remove this phone in the Apple TV’s Bluetooth settings; the phone cannot end the link itself.</string>
+    <string name="state_short_resyncing">%1$s needs to reconnect</string>
+    <string name="state_resyncing">%1$s is connected, but it has not looked at the remote again since Ringomote’s Bluetooth services were recreated, so keys would go nowhere. Turn the phone’s Bluetooth off and on (or let the Apple TV sleep and wake); it then reconnects and picks the remote up again. No re-pairing is needed.</string>
+    <string name="notification_channel">Remote link</string>
+    <string name="notification_channel_description">Shows that Ringomote is keeping the Bluetooth remote available for the Apple TV.</string>
+    <string name="notification_waiting">Ready for the Apple TV to connect.</string>
+    <string name="notification_connected">Connected to %1$s.</string>
+    <string name="notification_resyncing">%1$s needs to reconnect: turn Bluetooth off and on.</string>
+    <string name="notification_bluetooth_off">Bluetooth is off.</string>
+    <string name="notification_stop">Stop</string>
     <string name="state_short_stopped">Starting…</string>
     <string name="state_short_unsupported">Not supported</string>
     <string name="state_short_permission_required">Permission needed</string>

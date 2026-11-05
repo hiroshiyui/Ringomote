@@ -2,6 +2,7 @@ package org.ghostsinthelab.app.ringomote
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,7 @@ import org.ghostsinthelab.app.ringomote.network.companion.SharedPreferencesCompa
  * kept as an alternative) without touching the UI.
  */
 class AppContainer(context: Context) {
-    val eventLog: EventLog by lazy { EventLog() }
+    val eventLog: EventLog by lazy { EventLog(mirror = { Log.i("Ringomote", it) }) }
     val transport: HidTransport by lazy { BleHidTransport(context, eventLog) }
     val diagnosticsReport: DiagnosticsReport by lazy { DiagnosticsReport(context, transport, eventLog) }
     val session: RemoteSession by lazy { RemoteSession(transport) }

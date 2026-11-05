@@ -28,6 +28,13 @@ import org.ghostsinthelab.app.ringomote.ui.remote.AppleTvSelector
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import kotlinx.coroutines.delay
+import org.ghostsinthelab.app.ringomote.service.RemoteService
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -83,8 +90,21 @@ fun RingomoteApp(
     }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { vm.releaseAll() }
 
-    // start() is idempotent, so it is safe on entry, after a grant and after recreation.
-    LaunchedEffect(granted) { if (granted) vm.start() }
+    // start() is idempotent, so it is safe on entry, after a grant and after recreation. The
+    // foreground service keeps the transport alive once the screen is gone; its notification
+    // needs POST_NOTIFICATIONS on Android 13+, asked once here (the service runs regardless).
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
+    LaunchedEffect(granted) {
+        if (granted) {
+            vm.start()
+            RemoteService.start(context)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+            ) {
+                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
 
     var tab by rememberSaveable { mutableStateOf(AppTab.Remote) }
     var showDiagnostics by rememberSaveable { mutableStateOf(false) }

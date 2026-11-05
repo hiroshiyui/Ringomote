@@ -67,4 +67,14 @@ sealed interface TransportState {
 
     /** Connected to [device]; reports can be sent. */
     data class Connected(val device: HostDevice) : TransportState
+
+    /**
+     * [device] is connected as a bonded host, but has not looked at this server's services
+     * since they were (re)created: either it was already connected when this process came up
+     * and the services were re-added under it, or the services now sit on other handles than
+     * when it paired. tvOS keeps its cached picture until the link is made afresh, so keys
+     * would go nowhere. A new link (Bluetooth off and on, or the TV sleeping and waking)
+     * makes it re-check and subscribe again; no re-pairing is needed.
+     */
+    data class Resyncing(val device: HostDevice) : TransportState
 }

@@ -22,9 +22,10 @@ class BleLinkControllerTest {
     private val port = FakeBlePort()
     private val controller = BleLinkController(port)
 
-    /** Drives the controller to Ready: start, services added, advertising on. */
+    /** Drives the controller to Ready: start, grace elapsed, services added, advertising on. */
     private fun startAdvertising() {
         controller.start()
+        port.fireTimers()
         controller.onServicesAdded()
         controller.onAdvertisingStarted()
     }
@@ -33,6 +34,7 @@ class BleLinkControllerTest {
     @Test
     fun subscriptionSavesLayout() {
         controller.start()
+        port.fireTimers()
         controller.onServicesAdded(listOf(50, 55, 59))
         controller.onAdvertisingStarted()
         controller.onHostConnected(tv)
@@ -46,6 +48,7 @@ class BleLinkControllerTest {
     fun movedLayoutIsLoggedOnly() {
         port.savedLayout = listOf(50, 55, 59)
         controller.start()
+        port.fireTimers()
         controller.onServicesAdded(listOf(60, 65, 69))
         assertEquals(0, port.closeServerCalls) // never reopened under a possible link
         assertEquals(1, port.mismatches.size)
@@ -59,10 +62,47 @@ class BleLinkControllerTest {
         assertEquals(listOf(60, 65, 69), port.savedLayout)
     }
 
+    /**
+     * A bonded host attached before the services exist is dropped first; the services are
+     * added only once it is gone, so its reconnection finds the complete table.
+     */
+    @Test
+    fun earlyHostIsDroppedBeforeServicesAreAdded() {
+        port.bonded += tv
+        controller.start()
+        controller.onHostConnected(tv)
+        assertEquals(listOf(tv), port.droppedLinks)
+        assertEquals(0, port.addServicesCalls)
+        port.fireTimers() // grace elapses with the host still attached: still no services
+        assertEquals(0, port.addServicesCalls)
+
+        controller.onHostDisconnected(tv)
+        assertEquals(1, port.addServicesCalls)
+        controller.onServicesAdded(listOf(55, 60, 64))
+        controller.onAdvertisingStarted()
+        assertEquals(TransportState.Ready, controller.state.value)
+
+        controller.onHostConnected(tv)
+        assertEquals(TransportState.Connected(HostDevice(tv, "Apple TV")), controller.state.value)
+        assertEquals(tv, controller.connectedHost)
+    }
+
+    /** With no early host, the services are added when the grace period ends. */
+    @Test
+    fun servicesAreAddedAfterGraceWithoutEarlyHost() {
+        controller.start()
+        assertEquals(0, port.addServicesCalls)
+        port.fireTimers()
+        assertEquals(1, port.addServicesCalls)
+        controller.onServicesAdded()
+        assertEquals(1, port.startAdvertisingCalls)
+    }
+
     /** Happy path: start opens the server, advertises once the services exist, and ends Ready. */
     @Test
     fun startOpensServerAdvertisesAndBecomesReady() {
         controller.start()
+        port.fireTimers()
         assertEquals(TransportState.Registering, controller.state.value)
         assertEquals(1, port.openServerCalls)
         assertEquals(0, port.startAdvertisingCalls)
@@ -80,16 +120,19 @@ class BleLinkControllerTest {
     fun startReportsMissingPreconditions() {
         port.hasAdapter = false
         controller.start()
+        port.fireTimers()
         assertEquals(TransportState.Unsupported, controller.state.value)
 
         port.hasAdapter = true
         port.hasPermission = false
         controller.start()
+        port.fireTimers()
         assertEquals(TransportState.PermissionRequired, controller.state.value)
 
         port.hasPermission = true
         port.bluetoothOn = false
         controller.start()
+        port.fireTimers()
         assertEquals(TransportState.BluetoothOff, controller.state.value)
         assertEquals(0, port.openServerCalls)
     }
@@ -98,7 +141,9 @@ class BleLinkControllerTest {
     @Test
     fun startWhileOpeningDoesNotOpenTwice() {
         controller.start()
+        port.fireTimers()
         controller.start()
+        port.fireTimers()
         assertEquals(1, port.openServerCalls)
         assertEquals(TransportState.Registering, controller.state.value)
     }
@@ -108,6 +153,7 @@ class BleLinkControllerTest {
     fun refusedServerIsUnsupported() {
         port.openServerResult = false
         controller.start()
+        port.fireTimers()
         assertEquals(TransportState.Unsupported, controller.state.value)
     }
 
@@ -115,11 +161,13 @@ class BleLinkControllerTest {
     @Test
     fun serviceFailureClosesServerAndRetryReopens() {
         controller.start()
+        port.fireTimers()
         controller.onServicesFailed()
         assertEquals(1, port.closeServerCalls)
         assertEquals(TransportState.RegistrationFailed, controller.state.value)
 
         controller.start()
+        port.fireTimers()
         assertEquals(2, port.openServerCalls)
         assertEquals(TransportState.Registering, controller.state.value)
     }
@@ -128,11 +176,13 @@ class BleLinkControllerTest {
     @Test
     fun advertisingFailureIsRetryable() {
         controller.start()
+        port.fireTimers()
         controller.onServicesAdded()
         controller.onAdvertisingFailed()
         assertEquals(TransportState.RegistrationFailed, controller.state.value)
 
         controller.start()
+        port.fireTimers()
         assertEquals(2, port.startAdvertisingCalls)
         assertEquals(1, port.openServerCalls)
         controller.onAdvertisingStarted()
@@ -217,6 +267,7 @@ class BleLinkControllerTest {
     fun hostConnectingBeforeServicesAddedIsKept() {
         port.bonded += tv
         controller.start()
+        port.fireTimers()
         controller.onHostConnected(tv)
         assertEquals(TransportState.Registering, controller.state.value)
 
@@ -232,6 +283,7 @@ class BleLinkControllerTest {
     @Test
     fun earlyHostLeavingBeforeServicesAdded() {
         controller.start()
+        port.fireTimers()
         controller.onHostConnected(tv)
         controller.onHostDisconnected(tv)
         assertNull(controller.connectedHost)
@@ -268,6 +320,7 @@ class BleLinkControllerTest {
     @Test
     fun stopStopsAdvertisingOnlyWhenOn() {
         controller.start()
+        port.fireTimers()
         controller.onServicesAdded()
         controller.stop()
         assertEquals(0, port.stopAdvertisingCalls)
@@ -281,6 +334,7 @@ class BleLinkControllerTest {
     @Test
     fun lateEventsAfterStopAreIgnored() {
         controller.start()
+        port.fireTimers()
         controller.stop()
         controller.onServicesAdded()
         controller.onAdvertisingStarted()
@@ -338,6 +392,7 @@ class BleLinkControllerTest {
     fun startWhileReadyChangesNothing() {
         startAdvertising()
         controller.start()
+        port.fireTimers()
         assertEquals(1, port.openServerCalls)
         assertEquals(1, port.startAdvertisingCalls)
         assertEquals(TransportState.Ready, controller.state.value)
@@ -360,6 +415,11 @@ class BleLinkControllerTest {
         override fun hasPermission() = hasPermission
         override fun isBluetoothOn() = bluetoothOn
         override fun openServer(): Boolean { openServerCalls++; return openServerResult }
+        var addServicesCalls = 0
+        override fun addServices(): Boolean { addServicesCalls++; return true }
+        val timers = mutableListOf<Pair<Long, () -> Unit>>()
+        override fun after(delayMillis: Long, action: () -> Unit) { timers += delayMillis to action }
+        fun fireTimers() { val due = timers.toList(); timers.clear(); due.forEach { it.second() } }
         override fun closeServer() { closeServerCalls++ }
         override fun startAdvertising(): Boolean { startAdvertisingCalls++; return true }
         override fun stopAdvertising() { stopAdvertisingCalls++ }
@@ -374,6 +434,8 @@ class BleLinkControllerTest {
         override fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>) {
             mismatches += expected to actual
         }
+        val droppedLinks = mutableListOf<String>()
+        override fun dropLink(address: String) { droppedLinks += address }
 
     }
 }

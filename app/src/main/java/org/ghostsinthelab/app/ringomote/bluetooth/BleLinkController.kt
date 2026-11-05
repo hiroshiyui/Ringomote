@@ -25,8 +25,14 @@ interface BlePeripheralPort {
     /** Whether the adapter is on. */
     fun isBluetoothOn(): Boolean
 
-    /** Opens the GATT server and starts adding the HID services; false if refused outright. */
+    /** Opens the GATT server, without services yet; false if refused outright. */
     fun openServer(): Boolean
+
+    /** Starts adding the HID services to the open server; false if refused outright. */
+    fun addServices(): Boolean
+
+    /** Runs [action] after [delayMillis], on any thread. */
+    fun after(delayMillis: Long, action: () -> Unit)
 
     /** Closes the GATT server opened by [openServer], disconnecting any host. */
     fun closeServer()
@@ -54,6 +60,13 @@ interface BlePeripheralPort {
 
     /** The server came up with [actual] handles instead of the saved [expected]; for the log. */
     fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>)
+
+    /**
+     * Takes the whole Bluetooth link to [address] down, not just this server's attachment,
+     * so that the host reconnects and reads the services afresh. Best effort: the outcome
+     * shows up as [BleLinkController.onHostDisconnected], or does not.
+     */
+    fun dropLink(address: String)
 }
 
 /**
@@ -106,7 +119,7 @@ interface BlePeripheralPort {
  */
 class BleLinkController(private val port: BlePeripheralPort) {
 
-    private enum class Server { None, Opening, Open }
+    private enum class Server { None, Opening, Adding, Open }
 
     private val _state = MutableStateFlow<TransportState>(TransportState.Stopped)
 
@@ -128,6 +141,9 @@ class BleLinkController(private val port: BlePeripheralPort) {
 
     /** A host connected before the services were added, waiting for them. */
     private var hostBeforeServices: String? = null
+
+    /** Bumped whenever the server is (re)opened, so a stale grace timer is ignored. */
+    private var serverGeneration = 0
 
     /** True when the current host saw the services change under it; see the class doc. */
     private var hostNeedsResync = false
@@ -172,8 +188,19 @@ class BleLinkController(private val port: BlePeripheralPort) {
      * (one per service, in the order added; empty when the platform does not say).
      */
     @Synchronized
+    private fun onGraceElapsed(generation: Int) {
+        if (generation != serverGeneration || server != Server.Opening) return
+        if (host == null) startAddingServices()
+        // else: an early host is being dropped; the services follow its disconnect.
+    }
+
+    private fun startAddingServices() {
+        if (port.addServices()) server = Server.Adding else onServicesFailed()
+    }
+
+    @Synchronized
     fun onServicesAdded(handles: List<Int> = emptyList()) {
-        if (!started || server != Server.Opening) return
+        if (!started || server != Server.Adding) return
         layout = handles
         val expected = port.pairedLayout()
         if (expected != null && handles.isNotEmpty() && handles != expected) port.noteLayoutMismatch(expected, handles)
@@ -225,7 +252,19 @@ class BleLinkController(private val port: BlePeripheralPort) {
             port.stopAdvertising()
             advertising = false
         }
-        if (server == Server.Open) showHost() else hostBeforeServices = address // Registering until the services exist
+        when (server) {
+            Server.Open -> showHost()
+            Server.Opening -> {
+                // The host attached before the services exist (this process came up, or the
+                // adapter did, under a link the TV keeps). Drop the link now, and add the
+                // services only once it is down, so that the TV's reconnection finds the
+                // complete table, as a first pairing does; see the class doc.
+                hostBeforeServices = address
+                if (port.isBonded(address)) port.dropLink(address) else startAddingServices()
+            }
+            Server.Adding -> hostBeforeServices = address // raced the adds; Resyncing later
+            Server.None -> Unit
+        }
     }
 
     /** The host wrote the input report's client configuration (notifications on). */
@@ -248,6 +287,11 @@ class BleLinkController(private val port: BlePeripheralPort) {
         if (hostBeforeServices == address) hostBeforeServices = null
         hostNeedsResync = false
         if (!started || server == Server.None) return
+        if (server == Server.Opening) {
+            // The early host is gone: add the services now, before it comes back.
+            startAddingServices()
+            return
+        }
         advance()
     }
 
@@ -272,13 +316,17 @@ class BleLinkController(private val port: BlePeripheralPort) {
             !port.hasPermission() -> TransportState.PermissionRequired
             !port.isBluetoothOn() -> TransportState.BluetoothOff
             server == Server.None -> if (port.openServer()) {
+                // Open and empty: give a host that was attached before a moment to show up,
+                // so it can be dropped before the services exist; else add them.
                 server = Server.Opening
+                val generation = ++serverGeneration
+                port.after(EARLY_HOST_GRACE_MILLIS) { onGraceElapsed(generation) }
                 TransportState.Registering
             } else {
                 TransportState.Unsupported
             }
 
-            server == Server.Opening -> TransportState.Registering
+            server == Server.Opening || server == Server.Adding -> TransportState.Registering
             host != null -> return showHost()
             advertising -> TransportState.Ready
             port.startAdvertising() -> TransportState.Registering
@@ -309,5 +357,11 @@ class BleLinkController(private val port: BlePeripheralPort) {
         layout = null
         hostBeforeServices = null
         hostNeedsResync = false
+        serverGeneration++
+    }
+
+    companion object {
+        /** How long after opening the server to wait for a host that was attached before. */
+        const val EARLY_HOST_GRACE_MILLIS = 500L
     }
 }

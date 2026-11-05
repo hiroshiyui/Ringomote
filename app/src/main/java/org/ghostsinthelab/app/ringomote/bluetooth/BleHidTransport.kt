@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattServer
@@ -68,6 +69,9 @@ class BleHidTransport(
     /** Handles of the services added to the current server, in order. */
     private val addedHandles = mutableListOf<Int>()
 
+    /** For the controller's short timers; the main looper is fine for them. */
+    private val timer = android.os.Handler(android.os.Looper.getMainLooper())
+
     /** Where the layout a host subscribed to is remembered across restarts. */
     private val layoutPrefs = appContext.getSharedPreferences("ble_layout", Context.MODE_PRIVATE)
 
@@ -88,9 +92,20 @@ class BleHidTransport(
             server = opened
             services = built
             addedHandles.clear()
-            eventLog.record("GATT server: opened, adding services")
+            eventLog.record("GATT server: opened")
+            return true
+        }
+
+        override fun addServices(): Boolean {
+            val open = server ?: return false
+            val built = services ?: return false
+            eventLog.record("GATT server: adding services")
             // Services are added one at a time; onServiceAdded adds the next.
-            return opened.addService(built.pending.removeFirst())
+            return open.addService(built.pending.removeFirst())
+        }
+
+        override fun after(delayMillis: Long, action: () -> Unit) {
+            timer.postDelayed(action, delayMillis)
         }
 
         override fun closeServer() {
@@ -135,6 +150,26 @@ class BleHidTransport(
         override fun savePairedLayout(handles: List<Int>) {
             layoutPrefs.edit().putString(KEY_LAYOUT, handles.joinToString(",")).apply()
             eventLog.record("Layout: host subscribed at handles $handles, saved")
+        }
+
+        override fun dropLink(address: String) {
+            val device = remoteDevice(address) ?: return
+            eventLog.record("Drop link $address: opening a client connection to close it")
+            // Over LE explicitly: the TV is dual-mode, and the default transport would dial
+            // a classic link instead of attaching to the LE one that exists.
+            device.connectGatt(
+                appContext, false,
+                object : BluetoothGattCallback() {
+                    override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+                        eventLog.record("Drop link $address: client ${connectionState(newState)}, status $status")
+                        when (newState) {
+                            BluetoothProfile.STATE_CONNECTED -> gatt.disconnect()
+                            BluetoothProfile.STATE_DISCONNECTED -> gatt.close()
+                        }
+                    }
+                },
+                BluetoothDevice.TRANSPORT_LE,
+            )
         }
 
         override fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>) {

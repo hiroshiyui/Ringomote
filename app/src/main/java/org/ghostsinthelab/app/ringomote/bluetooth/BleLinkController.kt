@@ -53,7 +53,7 @@ interface BlePeripheralPort {
     fun savePairedLayout(handles: List<Int>)
 
     /** The server came up with [actual] handles instead of the saved [expected]; for the log. */
-    fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>, reopening: Boolean)
+    fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>)
 }
 
 /**
@@ -81,18 +81,22 @@ interface BlePeripheralPort {
  *   apps, so the services can land on different handles each time the server opens, while a
  *   bonded Apple TV keeps using the handles it saw at pairing time and never rediscovers
  *   (verified 2026-11-05: keys stop working after an app restart moved the HID service).
- *   The layout at subscription time is saved through the port; when a later server comes up
- *   with a different one, the server is closed and reopened up to [MAX_LAYOUT_REOPENS] times
- *   to try for the saved handles, and if that fails a bonded host is shown as
- *   [TransportState.Resyncing] instead of Connected. A host that writes its subscription
- *   again has rediscovered, so that saves the new layout and clears the condition.
+ *   The layout at subscription time is saved through the port and a later mismatch is
+ *   logged, for diagnostics only: on a fresh link the TV rediscovers the services (seen in
+ *   the stack log 2026-11-05) and, being bonded, need not write its subscription again. The
+ *   server is never closed and reopened to chase old handles: a host may already be attached,
+ *   and deleting services under its link is exactly what makes tvOS drop the keyboard.
  * - A host connected before the services existed (this process came up under a link the
  *   previous one left open) is also shown as [TransportState.Resyncing]: when the old
  *   process died the stack sent Service Changed, and tvOS then drops the keyboard and does
  *   not rediscover it on the same link, even with identical handles (verified 2026-11-05).
- *   The phone cannot drop the link (a server-side disconnect only detaches this server, the
- *   TV as central keeps the link), so the UI tells the user to toggle Bluetooth; after that
- *   the TV reconnects, re-checks and subscribes again on its own, without re-pairing.
+ *   The phone cannot fix this by itself: a server-side disconnect only detaches this server,
+ *   and a GATT-client disconnect does take the link down (tried 2026-11-05) but the TV then
+ *   reconnects without re-enumerating, so the keys stay dead while the link looks fine. The
+ *   UI therefore tells the user to toggle Bluetooth, after which the TV has been seen to
+ *   drop and re-make the link itself and subscribe again; failing that, Forget and re-pair
+ *   on the TV. The same race happens after a Bluetooth toggle: the TV connects within
+ *   milliseconds of the adapter coming up, before the services exist.
  *   [org.ghostsinthelab.app.ringomote.service.RemoteService] exists so this rarely happens.
  *
  * Thread-safe: every method is synchronized, because platform events arrive on binder threads
@@ -119,9 +123,6 @@ class BleLinkController(private val port: BlePeripheralPort) {
     /** Handles of this server's services, once added. */
     private var layout: List<Int>? = null
 
-    /** True when [layout] differs from the saved one and reopening did not fix it. */
-    private var layoutStale = false
-    private var layoutReopens = 0
 
     /** A host connected before the services were added, waiting for them. */
     private var hostBeforeServices: String? = null
@@ -134,8 +135,8 @@ class BleLinkController(private val port: BlePeripheralPort) {
     val connectedHost: String?
         get() = host?.takeIf { subscribed && !cachedSubscriptionIsStale() }
 
-    /** A bonded host trusting a cache this server no longer matches cannot receive reports. */
-    private fun cachedSubscriptionIsStale() = (layoutStale || hostNeedsResync) && !subscribedByWrite
+    /** A bonded host that saw the services appear under its link cannot receive reports. */
+    private fun cachedSubscriptionIsStale() = hostNeedsResync && !subscribedByWrite
 
     /** Starts the link, or retries whatever step is missing. Idempotent. */
     @Synchronized
@@ -173,26 +174,7 @@ class BleLinkController(private val port: BlePeripheralPort) {
         if (!started || server != Server.Opening) return
         layout = handles
         val expected = port.pairedLayout()
-        if (expected != null && handles.isNotEmpty() && handles != expected) {
-            val reopening = layoutReopens < MAX_LAYOUT_REOPENS
-            port.noteLayoutMismatch(expected, handles, reopening)
-            if (reopening) {
-                layoutReopens++
-                port.closeServer()
-                server = Server.None
-                host = null
-                hostBeforeServices = null
-                subscribed = false
-                subscribedByWrite = false
-                advertising = false
-                advance()
-                return
-            }
-            layoutStale = true
-        } else {
-            layoutStale = false
-        }
-        layoutReopens = 0
+        if (expected != null && handles.isNotEmpty() && handles != expected) port.noteLayoutMismatch(expected, handles)
         server = Server.Open
         val early = hostBeforeServices
         hostBeforeServices = null
@@ -252,7 +234,6 @@ class BleLinkController(private val port: BlePeripheralPort) {
         subscribedByWrite = true
         // A fresh subscription means the host discovered this layout: remember it.
         layout?.takeIf { it.isNotEmpty() }?.let(port::savePairedLayout)
-        layoutStale = false
         showHost()
     }
 
@@ -324,14 +305,7 @@ class BleLinkController(private val port: BlePeripheralPort) {
         subscribed = false
         subscribedByWrite = false
         layout = null
-        layoutStale = false
-        layoutReopens = 0
         hostBeforeServices = null
         hostNeedsResync = false
-    }
-
-    companion object {
-        /** How many times to reopen the server hoping for the saved handle layout. */
-        const val MAX_LAYOUT_REOPENS = 3
     }
 }

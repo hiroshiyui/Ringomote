@@ -20,7 +20,7 @@
     <string name="state_connected">Connected to %1$s.</string>
     <string name="state_connected_details">Connected to %1$s. To disconnect, remove this phone in the Apple TV’s Bluetooth settings; the phone cannot end the link itself.</string>
     <string name="state_short_resyncing">%1$s needs to reconnect</string>
-    <string name="state_resyncing">%1$s is connected, but it has not looked at the remote again since Ringomote’s Bluetooth services were recreated, so keys would go nowhere. Turn the phone’s Bluetooth off and on (or let the Apple TV sleep and wake); it then reconnects and picks the remote up again. No re-pairing is needed.</string>
+    <string name="state_resyncing">%1$s is connected, but it has not looked at the remote again since Ringomote’s Bluetooth services were recreated, so keys would go nowhere. Turn the phone’s Bluetooth off and on and wait a minute; the Apple TV usually reconnects and picks the remote up again. If it does not, forget this phone under Settings › Remotes and Devices › Bluetooth on the Apple TV and pair again.</string>
     <string name="notification_channel">Remote link</string>
     <string name="notification_channel_description">Shows that Ringomote is keeping the Bluetooth remote available for the Apple TV.</string>
     <string name="notification_waiting">Ready for the Apple TV to connect.</string>

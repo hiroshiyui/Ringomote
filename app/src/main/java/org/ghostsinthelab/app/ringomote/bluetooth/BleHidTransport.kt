@@ -137,11 +137,8 @@ class BleHidTransport(
             eventLog.record("Layout: host subscribed at handles $handles, saved")
         }
 
-        override fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>, reopening: Boolean) {
-            eventLog.record(
-                "Layout: services at $actual, host expects $expected; " +
-                    if (reopening) "reopening server" else "giving up; host must reconnect to re-check",
-            )
+        override fun noteLayoutMismatch(expected: List<Int>, actual: List<Int>) {
+            eventLog.record("Layout: services at $actual, host last subscribed at $expected; it must re-check on a fresh link")
         }
     }
 

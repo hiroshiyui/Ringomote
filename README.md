@@ -73,12 +73,12 @@ tvOS 本來就知道如何用藍牙鍵盤操作介面，所以 Apple TV 那一�
 1. Open Ringomote and allow the Bluetooth permissions it asks for (on Android 13 and later it also asks to show notifications, for the one that keeps the remote available). The phone starts advertising itself as a remote right away (the pairing details open by themselves until the first connection; otherwise tap **Details**).
 2. On the Apple TV, open **Settings > Remotes and Devices > Bluetooth** and pick your phone.
 3. On the phone, accept the pairing request. A second prompt follows: open the notification shade, tap the Bluetooth pairing notification, check that the 6-digit code matches the one on the TV and tap **Pair**. The Apple TV then shows the phone as connected.
-4. Once paired, the Apple TV reconnects by itself whenever it is awake and the remote is running (the app open, or its notification present). If the app ever says the Apple TV *needs to reconnect*, turn the phone's Bluetooth off and on; the Apple TV then re-checks the remote on a fresh link. Pairing again is only needed if the Apple TV has forgotten the phone.
+4. Once paired, the Apple TV reconnects by itself whenever it is awake and the remote is running (the app open, or its notification present). If the app ever says the Apple TV *needs to reconnect* (after an app update or a force stop, for instance), turn the phone's Bluetooth off and on and give it a minute; the Apple TV usually re-checks the remote on a fresh link. If it still does not react, forget the phone on the Apple TV and pair again.
 
 1. 開啟 Ringomote，並允許它要求的藍牙權限（Android 13 以上還會詢問是否允許顯示通知，用於讓遙控器保持可用的那則通知）。手機會立刻以遙控器的身分開始廣播（首次連線前，配對說明會自動展開；否則請點選「詳細資訊」）。
 2. 到 Apple TV 開啟「設定 > 遙控器與裝置 > 藍牙」，選擇您的手機。
 3. 在手機上接受配對要求。接著還有第二個提示：請拉下通知列，點選藍牙配對通知，確認 6 位數的配對碼與電視上顯示的一致，然後點選「配對」。Apple TV 隨即會顯示手機已連線。
-4. 配對完成後，只要 Apple TV 醒著且遙控器仍在執行（程式開啟中，或其通知仍在），Apple TV 就會自動重新連線。若程式顯示 Apple TV「需要重新連線」，請將手機的藍牙關閉再開啟，Apple TV 就會在新的連線上重新讀取遙控器。只有在 Apple TV 已清除這支手機時才需要重新配對。
+4. 配對完成後，只要 Apple TV 醒著且遙控器仍在執行（程式開啟中，或其通知仍在），Apple TV 就會自動重新連線。若程式顯示 Apple TV「需要重新連線」（例如在程式更新或強制停止之後），請將手機的藍牙關閉再開啟並稍等一分鐘，Apple TV 通常會在新的連線上重新讀取遙控器。若仍沒有反應，請在 Apple TV 清除這支手機後重新配對。
 
 ## Permissions and privacy 權限與隱私
 

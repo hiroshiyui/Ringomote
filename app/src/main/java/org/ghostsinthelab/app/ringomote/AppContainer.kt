@@ -16,9 +16,12 @@ import org.ghostsinthelab.app.ringomote.remote.RemoteSession
 import org.ghostsinthelab.app.ringomote.settings.AppearanceSettings
 import org.ghostsinthelab.app.ringomote.settings.SharedPreferencesAppearanceSettings
 import org.ghostsinthelab.app.ringomote.network.AppleTvDiscovery
+import org.ghostsinthelab.app.ringomote.network.LocalNetwork
 import org.ghostsinthelab.app.ringomote.network.NetworkSettings
 import org.ghostsinthelab.app.ringomote.network.NsdAppleTvDiscovery
 import org.ghostsinthelab.app.ringomote.network.SharedPreferencesNetworkSettings
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentialsStore
+import org.ghostsinthelab.app.ringomote.network.companion.SharedPreferencesCompanionCredentialsStore
 
 /**
  * Manual dependency wiring: one place that decides which implementations the app uses.
@@ -37,6 +40,8 @@ class AppContainer(context: Context) {
     val appearanceSettings: AppearanceSettings by lazy { SharedPreferencesAppearanceSettings(context) }
     val networkSettings: NetworkSettings by lazy { SharedPreferencesNetworkSettings(context) }
     val appleTvDiscovery: AppleTvDiscovery by lazy { NsdAppleTvDiscovery(context) }
+    val localNetwork: LocalNetwork by lazy { LocalNetwork(context) }
+    val companionCredentials: CompanionCredentialsStore by lazy { SharedPreferencesCompanionCredentialsStore(context) }
 
     /**
      * The one serial dispatcher for everything that talks to the transport: input, connect,

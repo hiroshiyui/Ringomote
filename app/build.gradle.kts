@@ -51,6 +51,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    // Lightweight API only (org.bouncycastle.crypto.*): Ed25519, X25519, HKDF, ChaCha20-Poly1305
+    // for the Companion Link pairing. The JCA provider is not registered.
+    implementation(libs.bouncycastle.provider)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(platform(libs.androidx.compose.bom))

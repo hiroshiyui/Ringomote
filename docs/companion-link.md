@@ -9,6 +9,20 @@ protocol documentation (https://pyatv.dev/documentation/protocols/); pyatv's sou
 reference implementation, and tvOS 26.5 added a session-start step to the handshake that
 broke older clients (pyatv issue #2847), so expect churn.
 
+## Status (2026-11-05)
+
+Implemented in `network/companion/` and verified on hardware: the phone paired with the
+Apple TV 4K (AppleTV6,2) from Settings > Network, entering the PIN the TV showed, and the Wake
+button turned the sleeping TV on. The reference client (pyatv 0.18.0 with srptools 0.2.0) did
+the same from a laptop first, which is the quickest way to tell a protocol change from a bug
+in this code. Note `_sessionStart` in pyatv 0.18.0 sends the local id under `_sid` (the older
+docs say `sid`), and the client does the same.
+
+Field note: the phone must be able to reach the TV with unicast IP, not only see it in
+Bonjour (mDNS is multicast and gets through where unicast between two Wi-Fi clients does
+not). On this LAN the phone could not ping the TV from one access point but could from the
+living-room one; check with ping before suspecting the pairing code.
+
 ## Discovery
 
 Service `_companion-link._tcp.local.` TXT keys: `rpMd` model (`AppleTV14,1`), `rpVr` version,
@@ -71,7 +85,17 @@ the table of previously seen strings/data/multi-byte values (0xC1â€“0xC4 with 1â
 
 ## Crypto on Android 9+
 
-Ed25519, X25519, HKDF-SHA512, ChaCha20-Poly1305 and SRP-6a with SHA-512 are not all in the
-platform JCA on API 28, so plan on Bouncy Castle's lightweight API (`org.bouncycastle.crypto`,
-not the JCA provider, which clashes with Android's bundled copy) and a hand-written SRP client
-(HAP's M1 is the RFC 2945 form, which Bouncy Castle's SRP6Client does not produce).
+Ed25519, X25519, HKDF-SHA512 and ChaCha20-Poly1305 come from Bouncy Castle's lightweight API
+(`org.bouncycastle.crypto`, not the JCA provider, which clashes with Android's bundled copy).
+SRP-6a is hand-written in `HapSrpClient`, because HAP's M1 is the RFC 2945 form, which Bouncy
+Castle's SRP6Client does not produce. Byte conventions that matter for interop, taken from
+srptools 0.2.0 (which real Apple TVs accept): `k = H(N | pad(g))`, `u = H(pad(A) | pad(B))`,
+A, B and S hashed as minimal big-endian integers, `x = H(salt | H("Pair-Setup:" + PIN))` with
+the PIN as a 4-digit string (leading zeros kept), `K = H(S)`,
+`M1 = H(H(N) xor H(g) | H("Pair-Setup") | salt | A | B | K)`, `M2 = H(A | M1 | K)`.
+Pair-setup M5/M6 keys: HKDF-SHA512, 32 bytes, salt/info `Pair-Setup-Encrypt-Salt`/`-Info`
+(cipher key), `Pair-Setup-Controller-Sign-Salt`/`-Info` (our signing prefix),
+`Pair-Setup-Accessory-Sign-Salt`/`-Info` (the TV's, which this client verifies in M6);
+nonces `PS-Msg05`/`PS-Msg06`, left-padded to 12 bytes, no AAD. Pair-verify:
+`Pair-Verify-Encrypt-Salt`/`-Info`, nonces `PV-Msg02`/`PV-Msg03`. Session: salt empty,
+`ClientEncrypt-main`/`ServerEncrypt-main`, 12-byte little-endian counter nonces, header as AAD.

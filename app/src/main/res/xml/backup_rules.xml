@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!--
    Backup rules for Android 11 and below (data_extraction_rules.xml covers 12+).
-   Everything the app stores is small and non-sensitive, so the defaults apply.
+   The Companion Link pairings hold this phone's private key, so they stay on the phone.
 -->
-<full-backup-content />
+<full-backup-content>
+    <exclude domain="sharedpref" path="companion.xml"/>
+</full-backup-content>

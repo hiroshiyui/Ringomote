@@ -86,6 +86,21 @@
     <string name="settings_apple_tvs_title">Apple TVs on this network</string>
     <string name="settings_apple_tvs_searching">Searching…</string>
     <string name="settings_apple_tvs_none">No Apple TV found. Check that the phone is on the same Wi-Fi network as the Apple TV.</string>
+    <string name="settings_apple_tv_pair">Pair</string>
+    <string name="settings_apple_tv_wake">Wake</string>
+    <string name="settings_apple_tv_forget">Forget pairing</string>
+    <string name="settings_apple_tv_pin_prompt">The Apple TV is showing a 4-digit code. Enter it here.</string>
+    <string name="settings_apple_tv_pin_label">Code</string>
+    <string name="settings_apple_tv_pin_confirm">Confirm</string>
+    <string name="settings_apple_tv_pin_cancel">Cancel</string>
+    <string name="settings_apple_tv_status_unpaired">Not paired for waking. Pairing lets Ringomote turn this Apple TV on when it sleeps; the Bluetooth remote pairs separately, on the Apple TV.</string>
+    <string name="settings_apple_tv_status_pairing">Connecting…</string>
+    <string name="settings_apple_tv_status_waking">Waking…</string>
+    <string name="settings_apple_tv_status_paired">Paired for waking.</string>
+    <string name="settings_apple_tv_outcome_wake_sent">Wake-up sent.</string>
+    <string name="settings_apple_tv_outcome_wake_failed">Could not reach the Apple TV.</string>
+    <string name="settings_apple_tv_outcome_unreachable">Could not connect to the Apple TV.</string>
+    <string name="settings_apple_tv_outcome_rejected">The Apple TV rejected the pairing. Check the code and try again, or remove Ringomote under Settings › Remotes and Devices on the Apple TV and pair afresh.</string>
     <string name="diagnostics_title">Bluetooth diagnostics</string>
     <string name="diagnostics_back">Back</string>
     <string name="diagnostics_refresh">Refresh</string>
@@ -99,13 +114,13 @@
     <string name="about_tagline">Use your phone as a remote for Apple TV, compatible with the Siri Remote (1st generation).</string>
     <string name="about_copyright" translatable="false">Copyright © 2026 Hui-Hong You</string>
     <string name="about_privacy_title">Privacy</string>
-    <string name="about_privacy_body">Ringomote collects no data and connects to no server. Button presses go only to your Apple TV, directly over Bluetooth. The app stores only your settings and whether it has connected before. If you turn on “Use the local network” in Settings, it looks for Apple TVs on your Wi-Fi network with Bonjour; nothing is sent beyond that network. The Bluetooth diagnostics report in Settings names your paired devices and their addresses; it leaves the phone only when you share or save it.</string>
+    <string name="about_privacy_body">Ringomote collects no data and connects to no server. Button presses go only to your Apple TV, directly over Bluetooth. The app stores only your settings and whether it has connected before. If you turn on “Use the local network” in Settings, it looks for Apple TVs on your Wi-Fi network with Bonjour and, once you pair one for waking, talks to that Apple TV directly; the pairing keys stay on the phone and are excluded from backups. Nothing is sent beyond your network. The Bluetooth diagnostics report in Settings names your paired devices and their addresses; it leaves the phone only when you share or save it.</string>
     <string name="about_license_title">License</string>
     <string name="about_license_body">Ringomote is free software, released under the GNU General Public License, version 3 or later. You may use, study, share and change it under the terms of that license.</string>
     <string name="about_license_link">Read the license</string>
     <string name="about_source_link">Source code on GitHub</string>
     <string name="about_oss_title">Open-source software</string>
-    <string name="about_oss_body">Ringomote is built with AndroidX, Jetpack Compose, Material 3, Kotlin and kotlinx.coroutines, all under the Apache License 2.0. Its Bluetooth status icons and the Menu, TV and Mute button icons use Google’s Material Icons (Apache License 2.0).</string>
+    <string name="about_oss_body">Ringomote is built with AndroidX, Jetpack Compose, Material 3, Kotlin and kotlinx.coroutines, all under the Apache License 2.0. Its Bluetooth status icons and the Menu, TV and Mute button icons use Google’s Material Icons (Apache License 2.0). Waking an Apple TV over the network uses the Bouncy Castle crypto library (MIT-style Bouncy Castle License), following the protocol notes of the pyatv project.</string>
     <string name="about_notices_link">All third-party notices</string>
     <string name="about_trademarks_title">Trademarks</string>
     <string name="about_trademarks_body">Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc., registered in the U.S. and other countries. Android is a trademark of Google LLC. The Bluetooth® word mark and logos are registered trademarks owned by Bluetooth SIG, Inc. Ringomote is an independent project and is not affiliated with, sponsored or endorsed by any of them; these names are used only to describe compatibility and the technologies the app uses.</string>

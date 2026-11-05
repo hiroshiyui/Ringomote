@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?><!--
    Backup rules for Android 12 and above (backup_rules.xml covers 11 and below).
-   Everything the app stores is small and non-sensitive, so the defaults apply.
+   The Companion Link pairings hold this phone's private key, so they stay on the phone.
 -->
 <data-extraction-rules>
-    <cloud-backup />
-    <device-transfer />
+    <cloud-backup>
+        <exclude domain="sharedpref" path="companion.xml"/>
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="companion.xml"/>
+    </device-transfer>
 </data-extraction-rules>

@@ -23,6 +23,24 @@ Their transitive dependencies are also under the Apache License 2.0: other Andro
 
 上述函式庫的間接相依套件同樣以 Apache License 2.0 授權：其他 AndroidX 函式庫、kotlinx.coroutines、kotlinx.serialization、JetBrains Java Annotations（`org.jetbrains:annotations`）、JSpecify 與 Guava ListenableFuture。
 
+### Bouncy Castle
+
+The Companion Link pairing (Ed25519, X25519, HKDF, ChaCha20-Poly1305) uses the [Bouncy Castle](https://www.bouncycastle.org/) lightweight crypto API, `org.bouncycastle:bcprov-jdk18on` 1.79, under the [Bouncy Castle License](https://www.bouncycastle.org/licence.html) (an MIT-style license):
+
+> Copyright (c) 2000-2024 The Legion of the Bouncy Castle Inc. (https://www.bouncycastle.org)
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Companion Link 配對（Ed25519、X25519、HKDF、ChaCha20-Poly1305）使用 [Bouncy Castle](https://www.bouncycastle.org/) 的輕量級密碼學 API（`org.bouncycastle:bcprov-jdk18on` 1.79），以 [Bouncy Castle License](https://www.bouncycastle.org/licence.html)（MIT 式授權）釋出，全文如上。
+
+The protocol itself was worked out from the [pyatv](https://pyatv.dev/) project's documentation (MIT License); no pyatv code is included.
+
+通訊協定內容參考自 [pyatv](https://pyatv.dev/) 專案的文件（MIT 授權）；本程式不包含 pyatv 的程式碼。
+
 ### Build and test tools 建置與測試工具
 
 These are used only to build or test the app and are not included in the distributed APK.

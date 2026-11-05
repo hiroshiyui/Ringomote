@@ -16,7 +16,18 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.SegmentedButton
@@ -61,7 +72,8 @@ import org.ghostsinthelab.app.ringomote.network.AppleTv
  * The Network section is the only place the app touches the local network, so it is opt-in:
  * a switch ([networkEnabled]), and once it is on, the Apple TVs found through Bonjour
  * ([appleTvs], with a progress bar while [browsing]). The caller starts and stops the browse;
- * this screen only shows the result.
+ * this screen only shows the result. Each Apple TV row carries its Companion Link state
+ * ([linkStateOf]): Pair, then a PIN field while the Apple TV shows one, then Wake and Forget.
  */
 @Composable
 fun SettingsScreen(
@@ -75,6 +87,12 @@ fun SettingsScreen(
     onNetworkEnabledChange: (Boolean) -> Unit,
     appleTvs: List<AppleTv>,
     browsing: Boolean,
+    linkStateOf: (AppleTv) -> AppleTvLinkState,
+    onPair: (AppleTv) -> Unit,
+    onSubmitPin: (AppleTv, String) -> Unit,
+    onCancelPairing: (AppleTv) -> Unit,
+    onWake: (AppleTv) -> Unit,
+    onForget: (AppleTv) -> Unit,
     modifier: Modifier = Modifier,
     showDynamicColor: Boolean = supportsDynamicColor,
 ) {
@@ -229,15 +247,114 @@ fun SettingsScreen(
                     )
                 }
                 appleTvs.forEach { tv ->
-                    ListItem(
-                        headlineContent = { Text(tv.name) },
-                        supportingContent = { Text("${tv.modelName} · ${tv.host}") },
-                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
+                    AppleTvRow(
+                        tv = tv,
+                        state = linkStateOf(tv),
+                        onPair = { onPair(tv) },
+                        onSubmitPin = { onSubmitPin(tv, it) },
+                        onCancelPairing = { onCancelPairing(tv) },
+                        onWake = { onWake(tv) },
+                        onForget = { onForget(tv) },
                     )
                 }
             }
         }
     }
+}
+
+/**
+ * One discovered Apple TV with its Companion Link actions. The PIN field is kept here, not
+ * in the ViewModel, since it is transient input; it survives rotation through
+ * [rememberSaveable].
+ */
+@Composable
+private fun AppleTvRow(
+    tv: AppleTv,
+    state: AppleTvLinkState,
+    onPair: () -> Unit,
+    onSubmitPin: (String) -> Unit,
+    onCancelPairing: () -> Unit,
+    onWake: () -> Unit,
+    onForget: () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        ListItem(
+            headlineContent = { Text(tv.name) },
+            supportingContent = {
+                Column {
+                    Text("${tv.modelName} · ${tv.host}")
+                    statusText(state)?.let {
+                        Text(it, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            },
+            trailingContent = {
+                when (state) {
+                    is AppleTvLinkState.Busy -> CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    is AppleTvLinkState.Paired -> Button(onClick = onWake) { Text(stringResource(R.string.settings_apple_tv_wake)) }
+                    is AppleTvLinkState.Unpaired, is AppleTvLinkState.Failed ->
+                        OutlinedButton(onClick = onPair) { Text(stringResource(R.string.settings_apple_tv_pair)) }
+                    AppleTvLinkState.AwaitingPin -> Unit
+                }
+            },
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
+        )
+        when (state) {
+            AppleTvLinkState.AwaitingPin -> {
+                var pin by rememberSaveable(tv.id) { mutableStateOf("") }
+                Text(
+                    text = stringResource(R.string.settings_apple_tv_pin_prompt),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    OutlinedTextField(
+                        value = pin,
+                        onValueChange = { pin = it.filter(Char::isDigit).take(4) },
+                        label = { Text(stringResource(R.string.settings_apple_tv_pin_label)) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                        modifier = Modifier.weight(1f),
+                    )
+                    Button(onClick = { onSubmitPin(pin) }, enabled = pin.length == 4) {
+                        Text(stringResource(R.string.settings_apple_tv_pin_confirm))
+                    }
+                    TextButton(onClick = onCancelPairing) { Text(stringResource(R.string.settings_apple_tv_pin_cancel)) }
+                }
+            }
+            is AppleTvLinkState.Paired -> TextButton(onClick = onForget, modifier = Modifier.padding(horizontal = 8.dp)) {
+                Text(stringResource(R.string.settings_apple_tv_forget))
+            }
+            else -> Unit
+        }
+    }
+}
+
+@Composable
+private fun statusText(state: AppleTvLinkState): String? = when (state) {
+    AppleTvLinkState.Unpaired -> stringResource(R.string.settings_apple_tv_status_unpaired)
+    AppleTvLinkState.AwaitingPin -> null
+    is AppleTvLinkState.Busy -> stringResource(
+        when (state.what) {
+            AppleTvLinkState.Work.Pairing -> R.string.settings_apple_tv_status_pairing
+            AppleTvLinkState.Work.Waking -> R.string.settings_apple_tv_status_waking
+        },
+    )
+    is AppleTvLinkState.Paired -> state.note?.let { stringResource(outcomeText(it)) }
+        ?: stringResource(R.string.settings_apple_tv_status_paired)
+    is AppleTvLinkState.Failed -> stringResource(outcomeText(state.reason))
+}
+
+@StringRes
+private fun outcomeText(outcome: AppleTvLinkState.Outcome): Int = when (outcome) {
+    AppleTvLinkState.Outcome.WakeSent -> R.string.settings_apple_tv_outcome_wake_sent
+    AppleTvLinkState.Outcome.WakeFailed -> R.string.settings_apple_tv_outcome_wake_failed
+    AppleTvLinkState.Outcome.Unreachable -> R.string.settings_apple_tv_outcome_unreachable
+    AppleTvLinkState.Outcome.Rejected -> R.string.settings_apple_tv_outcome_rejected
 }
 
 @get:StringRes
@@ -270,6 +387,12 @@ private fun SettingsScreenPreview() {
             onNetworkEnabledChange = {},
             appleTvs = listOf(AppleTv("keting", "keting", "AppleTV14,1", "192.168.50.48", 49152)),
             browsing = true,
+            linkStateOf = { AppleTvLinkState.AwaitingPin },
+            onPair = {},
+            onSubmitPin = { _, _ -> },
+            onCancelPairing = {},
+            onWake = {},
+            onForget = {},
             showDynamicColor = true,
         )
     }

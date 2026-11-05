@@ -28,7 +28,7 @@ Left to right: the remote in the compact and spread-out layouts and in the dark 
 
 ## How it works 運作方式
 
-The phone talks to the Apple TV directly over Bluetooth Low Energy, presenting itself as a Bluetooth input device (a HID over GATT keyboard), just as the physical remote does. No Wi-Fi network, Apple account or bridge device is involved. The one exception is opt-in: Settings > Network can look for Apple TVs on the local network with Bonjour, groundwork for waking a sleeping Apple TV, which does not listen for Bluetooth and ignores Wake-on-LAN packets. It is off by default, and the app never contacts anything beyond the local network.
+The phone talks to the Apple TV directly over Bluetooth Low Energy, presenting itself as a Bluetooth input device (a HID over GATT keyboard), just as the physical remote does. No Wi-Fi network, Apple account or bridge device is involved. The one exception is opt-in and exists because a sleeping Apple TV does not listen for Bluetooth (and ignores Wake-on-LAN packets): Settings > Network can find Apple TVs on the local network with Bonjour and pair with one over Apple's Companion Link protocol, the same link the iOS remote uses, after which a Wake button turns it on. It is off by default, the pairing is a separate PIN step on the Apple TV, and the app never contacts anything beyond the local network.
 
 In more detail:
 
@@ -42,7 +42,7 @@ In more detail:
 
 tvOS already knows how to drive its interface from a Bluetooth keyboard, so the phone needs no companion app or special protocol on the Apple TV side. Siri voice input is not reproduced, because the Siri Remote streams voice over its own protocol.
 
-手機透過藍牙低功耗直接與 Apple TV 連線，像實體遙控器一樣以藍牙輸入裝置（HID over GATT 鍵盤）的身分出現，不需經過 Wi-Fi 網路、Apple 帳號或其他橋接裝置。唯一的例外需要您自行開啟：「設定 > 網路」可以用 Bonjour 在區域網路上尋找 Apple TV，這是喚醒睡眠中 Apple TV 的前置作業（Apple TV 睡眠時不接收藍牙，也不理會 Wake-on-LAN 封包）。此功能預設關閉，本程式也絕不會連線到區域網路以外的任何地方。
+手機透過藍牙低功耗直接與 Apple TV 連線，像實體遙控器一樣以藍牙輸入裝置（HID over GATT 鍵盤）的身分出現，不需經過 Wi-Fi 網路、Apple 帳號或其他橋接裝置。唯一的例外需要您自行開啟，原因是 Apple TV 睡眠時不接收藍牙（也不理會 Wake-on-LAN 封包）：「設定 > 網路」可以用 Bonjour 在區域網路上尋找 Apple TV，並透過 Apple 的 Companion Link 協定（iOS 遙控器使用的同一條連線）與它配對，之後就有「喚醒」按鈕可以把它開啟。此功能預設關閉，配對是在 Apple TV 上另外輸入 PIN 的步驟，本程式也絕不會連線到區域網路以外的任何地方。
 
 詳細一點來說：
 

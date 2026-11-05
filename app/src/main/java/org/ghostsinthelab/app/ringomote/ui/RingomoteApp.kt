@@ -22,6 +22,7 @@ import org.ghostsinthelab.app.ringomote.settings.AppearanceSettings
 import org.ghostsinthelab.app.ringomote.network.AppleTvDiscovery
 import org.ghostsinthelab.app.ringomote.network.NetworkSettings
 import androidx.compose.runtime.DisposableEffect
+import org.ghostsinthelab.app.ringomote.ui.settings.AppleTvViewModel
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -114,6 +115,8 @@ fun RingomoteApp(
                 val networkEnabled by networkSettings.enabled.collectAsStateWithLifecycle()
                 val appleTvs by appleTvDiscovery.appleTvs.collectAsStateWithLifecycle()
                 val browsing by appleTvDiscovery.browsing.collectAsStateWithLifecycle()
+                val appleTvVm: AppleTvViewModel = viewModel(factory = AppleTvViewModel.Factory)
+                val linkStates by appleTvVm.states.collectAsStateWithLifecycle()
                 val launchSystemScreen = rememberSystemScreenLauncher()
                 // Browse only while the Settings tab shows the list and the user has opted in.
                 DisposableEffect(networkEnabled) {
@@ -131,6 +134,12 @@ fun RingomoteApp(
                     onNetworkEnabledChange = networkSettings::setEnabled,
                     appleTvs = appleTvs,
                     browsing = browsing,
+                    linkStateOf = { tv -> linkStates[tv.id] ?: appleTvVm.stateOf(tv) },
+                    onPair = appleTvVm::startPairing,
+                    onSubmitPin = appleTvVm::submitPin,
+                    onCancelPairing = appleTvVm::cancelPairing,
+                    onWake = appleTvVm::wake,
+                    onForget = appleTvVm::forget,
                     modifier = content,
                 )
             }

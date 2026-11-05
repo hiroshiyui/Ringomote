@@ -15,6 +15,10 @@ import kotlinx.coroutines.flow.asStateFlow
 interface NetworkSettings {
     val enabled: StateFlow<Boolean>
     fun setEnabled(enabled: Boolean)
+
+    /** The Apple TV the Remote tab is aimed at, by name; null until the user picks one. */
+    val selectedAppleTv: StateFlow<String?>
+    fun setSelectedAppleTv(name: String?)
 }
 
 /** [NetworkSettings] in [android.content.SharedPreferences]: one boolean, nothing private. */
@@ -28,8 +32,17 @@ class SharedPreferencesNetworkSettings(context: Context) : NetworkSettings {
         prefs.edit { putBoolean(KEY_ENABLED, enabled) }
     }
 
+    private val _selected = MutableStateFlow(prefs.getString(KEY_SELECTED, null))
+    override val selectedAppleTv: StateFlow<String?> = _selected.asStateFlow()
+
+    override fun setSelectedAppleTv(name: String?) {
+        _selected.value = name
+        prefs.edit { putString(KEY_SELECTED, name) }
+    }
+
     private companion object {
         const val PREFS_NAME = "network"
         const val KEY_ENABLED = "enabled"
+        const val KEY_SELECTED = "selected_apple_tv"
     }
 }

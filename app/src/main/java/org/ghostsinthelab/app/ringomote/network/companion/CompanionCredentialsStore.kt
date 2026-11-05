@@ -22,6 +22,12 @@ interface CompanionCredentialsStore {
 
     /** This phone's device id on the link, generated once. */
     val deviceId: String
+
+    /** Last address and port Bonjour reported for [appleTvId], so Wake works without a browse. */
+    fun endpoint(appleTvId: String): Endpoint?
+    fun putEndpoint(appleTvId: String, endpoint: Endpoint)
+
+    data class Endpoint(val host: String, val port: Int)
 }
 
 class SharedPreferencesCompanionCredentialsStore(context: Context) : CompanionCredentialsStore {
@@ -40,8 +46,19 @@ class SharedPreferencesCompanionCredentialsStore(context: Context) : CompanionCr
     }
 
     override fun remove(appleTvId: String) {
-        prefs.edit { remove(PREFIX + appleTvId) }
+        prefs.edit { remove(PREFIX + appleTvId); remove(ENDPOINT_PREFIX + appleTvId) }
         _credentials.value = load()
+    }
+
+    override fun endpoint(appleTvId: String): CompanionCredentialsStore.Endpoint? =
+        prefs.getString(ENDPOINT_PREFIX + appleTvId, null)?.let { stored ->
+            val host = stored.substringBeforeLast(':')
+            val port = stored.substringAfterLast(':').toIntOrNull() ?: return null
+            CompanionCredentialsStore.Endpoint(host, port)
+        }
+
+    override fun putEndpoint(appleTvId: String, endpoint: CompanionCredentialsStore.Endpoint) {
+        prefs.edit { putString(ENDPOINT_PREFIX + appleTvId, "${endpoint.host}:${endpoint.port}") }
     }
 
     private fun load(): Map<String, CompanionCredentials> =
@@ -53,6 +70,7 @@ class SharedPreferencesCompanionCredentialsStore(context: Context) : CompanionCr
     companion object {
         const val PREFS_NAME = "companion"
         private const val PREFIX = "credentials."
+        private const val ENDPOINT_PREFIX = "endpoint."
         private const val KEY_DEVICE_ID = "device_id"
     }
 }

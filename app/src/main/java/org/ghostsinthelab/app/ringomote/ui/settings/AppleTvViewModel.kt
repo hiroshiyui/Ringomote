@@ -19,6 +19,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ghostsinthelab.app.ringomote.RingomoteApplication
 import org.ghostsinthelab.app.ringomote.network.AppleTv
+import org.ghostsinthelab.app.ringomote.network.AppleTvDiscovery
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.launchIn
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionClient
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentials
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentialsStore
@@ -56,11 +60,43 @@ sealed interface AppleTvLinkState {
  */
 class AppleTvViewModel(
     private val store: CompanionCredentialsStore,
+    private val discovery: AppleTvDiscovery,
     private val bindSocket: (Socket) -> Unit = {},
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
     private val _states = MutableStateFlow<Map<String, AppleTvLinkState>>(emptyMap())
     val states: StateFlow<Map<String, AppleTvLinkState>> = _states.asStateFlow()
+
+    /** Names of the Apple TVs with a stored pairing; the Remote tab's selector draws on it. */
+    val pairedNames: StateFlow<Set<String>> get() = pairedNamesFlow
+    private val pairedNamesFlow = MutableStateFlow(store.credentials.value.keys)
+
+    init {
+        // Remember where each paired Apple TV was last seen, so Wake needs no fresh browse.
+        discovery.appleTvs.onEach { tvs ->
+            tvs.filter { store.get(it.id) != null }
+                .forEach { store.putEndpoint(it.id, CompanionCredentialsStore.Endpoint(it.host, it.port)) }
+        }.launchIn(viewModelScope)
+        store.credentials.onEach { pairedNamesFlow.value = it.keys }.launchIn(viewModelScope)
+    }
+
+    /** State for a TV known only by name (Remote tab), falling back to the stored pairing. */
+    fun stateOf(name: String): AppleTvLinkState =
+        _states.value[name] ?: if (store.get(name) != null) AppleTvLinkState.Paired() else AppleTvLinkState.Unpaired
+
+    /**
+     * Wakes the paired Apple TV called [name] at the address Bonjour last reported for it,
+     * preferring a live discovery result when there is one.
+     */
+    fun wake(name: String) {
+        val live = discovery.appleTvs.value.firstOrNull { it.id == name }
+        val endpoint = live?.let { CompanionCredentialsStore.Endpoint(it.host, it.port) } ?: store.endpoint(name)
+        if (endpoint == null) {
+            set(name, AppleTvLinkState.Paired(AppleTvLinkState.Outcome.WakeFailed))
+            return
+        }
+        wake(AppleTv(id = name, name = name, model = live?.model ?: "", host = endpoint.host, port = endpoint.port))
+    }
 
     private class Pending(val client: CompanionClient, val setup: PairSetup)
     private var pending: Pending? = null
@@ -162,7 +198,8 @@ class AppleTvViewModel(
         pending = null
     }
 
-    private fun set(tv: AppleTv, state: AppleTvLinkState) = _states.update { it + (tv.id to state) }
+    private fun set(tv: AppleTv, state: AppleTvLinkState) = set(tv.id, state)
+    private fun set(id: String, state: AppleTvLinkState) = _states.update { it + (id to state) }
 
     override fun onCleared() {
         pending?.client?.close()
@@ -178,7 +215,7 @@ class AppleTvViewModel(
         val Factory = viewModelFactory {
             initializer {
                 val container = (this[APPLICATION_KEY] as RingomoteApplication).container
-                AppleTvViewModel(container.companionCredentials, container.localNetwork::bind)
+                AppleTvViewModel(container.companionCredentials, container.appleTvDiscovery, container.localNetwork::bind)
             }
         }
     }

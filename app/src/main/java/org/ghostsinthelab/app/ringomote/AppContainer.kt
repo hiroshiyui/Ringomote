@@ -16,7 +16,7 @@ import org.ghostsinthelab.app.ringomote.network.NsdAppleTvDiscovery
 import org.ghostsinthelab.app.ringomote.network.SharedPreferencesNetworkSettings
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentialsStore
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionSession
-import org.ghostsinthelab.app.ringomote.ui.settings.AppleTvViewModel
+import org.ghostsinthelab.app.ringomote.network.companion.DeviceName
 import org.ghostsinthelab.app.ringomote.network.companion.SharedPreferencesCompanionCredentialsStore
 
 /**
@@ -26,6 +26,8 @@ import org.ghostsinthelab.app.ringomote.network.companion.SharedPreferencesCompa
  * outlive any single screen. Swap implementations here without touching the UI.
  */
 class AppContainer(context: Context) {
+    /** The name the Apple TV lists this phone under. */
+    val displayName: String by lazy { DeviceName.forPairing(context) }
     val appearanceSettings: AppearanceSettings by lazy { SharedPreferencesAppearanceSettings(context) }
     val networkSettings: NetworkSettings by lazy { SharedPreferencesNetworkSettings(context) }
     val appleTvDiscovery: AppleTvDiscovery by lazy { NsdAppleTvDiscovery(context) }
@@ -35,7 +37,7 @@ class AppContainer(context: Context) {
     /** The remote session over Wi-Fi; process lifetime, held only while the remote wants it. */
     val companionSession: CompanionSession by lazy {
         CompanionSession(
-            CompanionSession.ClientPort(companionCredentials, appleTvDiscovery, localNetwork::bind, AppleTvViewModel.DISPLAY_NAME, Build.MODEL),
+            CompanionSession.ClientPort(companionCredentials, appleTvDiscovery, localNetwork::bind, displayName, Build.MODEL),
             applicationScope,
             Dispatchers.IO,
         )

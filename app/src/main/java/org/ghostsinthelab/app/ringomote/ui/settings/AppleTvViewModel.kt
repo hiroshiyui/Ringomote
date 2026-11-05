@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.launchIn
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionClient
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCommand
+import org.ghostsinthelab.app.ringomote.network.companion.DeviceName
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentials
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentialsStore
 import org.ghostsinthelab.app.ringomote.network.companion.PairSetup
@@ -63,6 +64,7 @@ class AppleTvViewModel(
     private val store: CompanionCredentialsStore,
     private val discovery: AppleTvDiscovery,
     private val bindSocket: (Socket) -> Unit = {},
+    private val displayName: String = DeviceName.APP_NAME,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
     private val _states = MutableStateFlow<Map<String, AppleTvLinkState>>(emptyMap())
@@ -114,7 +116,7 @@ class AppleTvViewModel(
                     val client = CompanionClient(tv.host, tv.port, bindSocket)
                     try {
                         client.connect()
-                        val setup = client.startPairing(DISPLAY_NAME)
+                        val setup = client.startPairing(displayName)
                         pending = Pending(client, setup)
                     } catch (e: Exception) {
                         client.close()
@@ -189,7 +191,7 @@ class AppleTvViewModel(
         CompanionClient(tv.host, tv.port, bindSocket).use { client ->
             client.connect()
             client.verify(credentials)
-            client.startSession(credentials, name = DISPLAY_NAME, model = Build.MODEL, deviceId = store.deviceId)
+            client.startSession(credentials, name = displayName, model = Build.MODEL, deviceId = store.deviceId)
             client.hidPress(CompanionCommand.Wake)
         }
     }
@@ -210,13 +212,10 @@ class AppleTvViewModel(
     companion object {
         private const val TAG = "Companion"
 
-        /** How this phone appears under Settings > Remotes and Devices on the Apple TV. */
-        const val DISPLAY_NAME = "Ringomote"
-
         val Factory = viewModelFactory {
             initializer {
                 val container = (this[APPLICATION_KEY] as RingomoteApplication).container
-                AppleTvViewModel(container.companionCredentials, container.appleTvDiscovery, container.localNetwork::bind)
+                AppleTvViewModel(container.companionCredentials, container.appleTvDiscovery, container.localNetwork::bind, container.displayName)
             }
         }
     }

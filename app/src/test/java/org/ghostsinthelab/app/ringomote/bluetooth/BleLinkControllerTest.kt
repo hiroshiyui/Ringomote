@@ -263,54 +263,6 @@ class BleLinkControllerTest {
         assertEquals(TransportState.Ready, controller.state.value)
     }
 
-    /** connect() asks the port only once the server is open, and shows Connecting. */
-    @Test
-    fun connectNeedsOpenServer() {
-        controller.start()
-        assertFalse(controller.connect(tv))
-        assertEquals(emptyList<String>(), port.connects)
-
-        controller.onServicesAdded()
-        assertTrue(controller.connect(tv))
-        assertEquals(listOf(tv), port.connects)
-        assertEquals(TransportState.Connecting(port.hostDevice(tv)), controller.state.value)
-    }
-
-    /** A phone-side connect that the host drops before connecting returns to Ready (seen on hardware). */
-    @Test
-    fun pendingConnectDroppedReturnsToReady() {
-        startAdvertising()
-        assertTrue(controller.connect(tv))
-        assertEquals(TransportState.Connecting(port.hostDevice(tv)), controller.state.value)
-
-        controller.onHostDisconnected(tv)
-        assertEquals(TransportState.Ready, controller.state.value)
-        assertNull(controller.connectedHost)
-    }
-
-    /** Disconnect while a phone-side connect is pending cancels it and returns to Ready. */
-    @Test
-    fun disconnectCancelsPendingConnect() {
-        startAdvertising()
-        controller.connect(tv)
-        assertTrue(controller.disconnect())
-        assertEquals(listOf(tv), port.disconnects)
-        assertEquals(TransportState.Ready, controller.state.value)
-        assertFalse(controller.disconnect())
-    }
-
-    /** A pending connect that succeeds is forgotten once the host connects. */
-    @Test
-    fun pendingConnectSucceeds() {
-        port.bonded += tv
-        startAdvertising()
-        controller.connect(tv)
-        controller.onHostConnected(tv)
-        assertEquals(TransportState.Connected(port.hostDevice(tv)), controller.state.value)
-        controller.onHostDisconnected(tv)
-        assertEquals(TransportState.Registering, controller.state.value) // advertising again
-    }
-
     /**
      * A bonded host that connects before the services are added (seen on hardware) is kept
      * through Registering and shown as Resyncing once the services exist; advertising starts
@@ -340,15 +292,6 @@ class BleLinkControllerTest {
         assertNull(controller.connectedHost)
         controller.onServicesAdded()
         assertEquals(1, port.startAdvertisingCalls)
-    }
-
-    /** A refused connect request leaves the state alone. */
-    @Test
-    fun refusedConnectKeepsState() {
-        startAdvertising()
-        port.connectResult = false
-        assertFalse(controller.connect(tv))
-        assertEquals(TransportState.Ready, controller.state.value)
     }
 
     /** disconnect() drops the current host and is false without one. */
@@ -461,14 +404,12 @@ class BleLinkControllerTest {
         var hasPermission = true
         var bluetoothOn = true
         var openServerResult = true
-        var connectResult = true
         val bonded = mutableSetOf<String>()
 
         var openServerCalls = 0
         var closeServerCalls = 0
         var startAdvertisingCalls = 0
         var stopAdvertisingCalls = 0
-        val connects = mutableListOf<String>()
         val disconnects = mutableListOf<String>()
 
         override fun hasPermission() = hasPermission
@@ -477,7 +418,6 @@ class BleLinkControllerTest {
         override fun closeServer() { closeServerCalls++ }
         override fun startAdvertising(): Boolean { startAdvertisingCalls++; return true }
         override fun stopAdvertising() { stopAdvertisingCalls++ }
-        override fun connect(address: String): Boolean { connects += address; return connectResult }
         override fun disconnect(address: String) { disconnects += address }
         override fun isBonded(address: String) = address in bonded
         override fun hostDevice(address: String) = HostDevice(address, "Apple TV")

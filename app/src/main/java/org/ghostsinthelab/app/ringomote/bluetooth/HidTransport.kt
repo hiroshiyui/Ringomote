@@ -29,9 +29,6 @@ interface HidTransport : HidReportSink {
     /** Devices already paired with the phone; empty without permission. */
     fun bondedDevices(): List<HostDevice>
 
-    /** Asks to connect to the paired host at [address]; returns false if the request failed. */
-    fun connect(address: String): Boolean
-
     /** Disconnects the current host, if any. */
     fun disconnect(): Boolean
 }

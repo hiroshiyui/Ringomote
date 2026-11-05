@@ -117,18 +117,6 @@ class BleHidTransport(
             eventLog.record("Advertising: stopped")
         }
 
-        override fun connect(address: String): Boolean {
-            val device = remoteDevice(address) ?: return false
-            // Direct, not autoConnect: a direct connect attaches this server to a link the
-            // stack already has with the host (seen when the TV kept the link after a
-            // server-side disconnect), while autoConnect only arms the accept list and the
-            // Apple TV never dials in. If no link exists, the TV closes the new one within a
-            // second and the controller falls back to Ready.
-            val requested = server?.connect(device, false) == true
-            eventLog.record("Connect to $address: ${if (requested) "requested" else "refused"}")
-            return requested
-        }
-
         override fun disconnect(address: String) {
             val device = remoteDevice(address) ?: return
             if (hasPermission()) server?.cancelConnection(device)
@@ -194,9 +182,6 @@ class BleHidTransport(
             .map { it.toHostDevice() }
             .sortedBy { it.name ?: it.address }
     }
-
-    override fun connect(address: String): Boolean =
-        BluetoothAdapter.checkBluetoothAddress(address) && controller.connect(address)
 
     override fun disconnect(): Boolean = controller.disconnect()
 

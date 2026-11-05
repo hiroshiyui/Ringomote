@@ -126,7 +126,8 @@ class BluetoothHidDeviceTransport(context: Context) : HidTransport {
             .sortedBy { it.name ?: it.address }
     }
 
-    override fun connect(address: String): Boolean =
+    /** Classic HID can dial a bonded host; kept for this alternative transport, unused by the UI. */
+    fun connect(address: String): Boolean =
         BluetoothAdapter.checkBluetoothAddress(address) && controller.connect(address)
 
     override fun disconnect(): Boolean = controller.disconnect()

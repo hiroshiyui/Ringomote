@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * Asynchronous results come back through the controller's `on…` methods:
  * [openServer] → [BleLinkController.onServicesAdded] / [BleLinkController.onServicesFailed],
  * [startAdvertising] → [BleLinkController.onAdvertisingStarted] /
- * [BleLinkController.onAdvertisingFailed], [connect] and the host's own connections →
+ * [BleLinkController.onAdvertisingFailed], the host's own connections →
  * [BleLinkController.onHostConnected] / [BleLinkController.onHostDisconnected], and the host's
  * subscription to the input reports → [BleLinkController.onHostSubscribed].
  */
@@ -36,9 +36,6 @@ interface BlePeripheralPort {
 
     /** Stops advertising. */
     fun stopAdvertising()
-
-    /** Asks the server to connect to the bonded host at [address]; false if refused. */
-    fun connect(address: String): Boolean
 
     /** Drops the connection to the host at [address]. */
     fun disconnect(address: String)
@@ -78,9 +75,6 @@ interface BlePeripheralPort {
  * - A bonded host may connect the instant the server exists, before its services are added
  *   (seen on hardware: 3 ms after the app restarted). Such a host is kept and shown as
  *   Connecting until [onServicesAdded], then as Connected; advertising is not started for it.
- * - A connection the phone asked for ([connect]) is pending until the host reports
- *   connected; if the host disconnects or the user cancels before that, the link goes back
- *   to Ready, so a failed phone-side connect cannot leave the UI stuck on Connecting.
  * - The state never becomes [TransportState.Ready] or [TransportState.Connected] while
  *   Bluetooth is off, whatever order the platform delivers events in.
  * - Handle layout: Android hands out GATT attribute handles from a pool shared with other
@@ -135,9 +129,6 @@ class BleLinkController(private val port: BlePeripheralPort) {
     /** True when the current host saw the services change under it; see the class doc. */
     private var hostNeedsResync = false
 
-    /** A host the phone asked to connect to and has not heard back from yet. */
-    private var pendingConnect: String? = null
-
     /** Address of the host subscribed to input reports, or null while reports cannot be sent. */
     @get:Synchronized
     val connectedHost: String?
@@ -165,26 +156,11 @@ class BleLinkController(private val port: BlePeripheralPort) {
         _state.value = TransportState.Stopped
     }
 
-    /** Asks the bonded host at [address] to connect; false unless the server is open. */
-    @Synchronized
-    fun connect(address: String): Boolean {
-        if (!started || server != Server.Open || !port.hasPermission()) return false
-        if (!port.connect(address)) return false
-        if (host == null) {
-            pendingConnect = address
-            _state.value = TransportState.Connecting(port.hostDevice(address))
-        }
-        return true
-    }
-
-    /** Disconnects the current host, or cancels a pending connect; false if there is neither. */
+    /** Disconnects the current host; false if there is none. */
     @Synchronized
     fun disconnect(): Boolean {
-        host?.let { port.disconnect(it); return true }
-        val pending = pendingConnect ?: return false
-        port.disconnect(pending)
-        pendingConnect = null
-        if (started && server == Server.Open) advance()
+        val current = host ?: return false
+        port.disconnect(current)
         return true
     }
 
@@ -258,7 +234,6 @@ class BleLinkController(private val port: BlePeripheralPort) {
             return
         }
         host = address
-        pendingConnect = null
         subscribed = port.isBonded(address)
         subscribedByWrite = false
         hostNeedsResync = false
@@ -284,8 +259,7 @@ class BleLinkController(private val port: BlePeripheralPort) {
     /** The host at [address] disconnected. */
     @Synchronized
     fun onHostDisconnected(address: String) {
-        if (pendingConnect == address) pendingConnect = null
-        else if (host != address) return
+        if (host != address) return
         host = null
         subscribed = false
         if (hostBeforeServices == address) hostBeforeServices = null
@@ -349,7 +323,6 @@ class BleLinkController(private val port: BlePeripheralPort) {
         host = null
         subscribed = false
         subscribedByWrite = false
-        pendingConnect = null
         layout = null
         layoutStale = false
         layoutReopens = 0

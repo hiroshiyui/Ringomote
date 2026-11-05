@@ -198,7 +198,6 @@ class RemoteViewModelTest {
         override fun start() { calls += "start" }
         override fun stop() { calls += "stop" }
         override fun bondedDevices(): List<HostDevice> { calls += "bondedDevices"; return emptyList() }
-        override fun connect(address: String): Boolean { calls += "connect"; return true }
         override fun disconnect(): Boolean { calls += "disconnect"; return true }
         override fun send(report: HidReport): Boolean {
             reports += report

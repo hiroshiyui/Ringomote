@@ -41,10 +41,6 @@
     <string name="state_collapsed">折りたたみ</string>
     <string name="action_turn_on_bluetooth">Bluetooth をオンにする</string>
     <string name="pairing_hint">Apple TV で「設定 &gt; リモコンとデバイス &gt; Bluetooth」を開き、このスマートフォンを選んでください。スマートフォンでペアリング要求を承認したら、通知シェードを開いて Bluetooth のペアリング通知をタップし、6 桁のコードを確認してください。</string>
-    <string name="paired_devices_title">ペアリング済みのデバイス</string>
-    <string name="paired_devices_empty">ペアリング済みのデバイスはまだありません。</string>
-    <string name="action_connect">接続</string>
-    <string name="action_connect_to">%1$s に接続</string>
     <string name="action_retry">再試行</string>
     <string name="error_no_system_screen">このスマートフォンには、その Bluetooth 設定の画面がありません。</string>
 

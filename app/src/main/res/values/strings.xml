@@ -41,10 +41,6 @@
     <string name="state_collapsed">Collapsed</string>
     <string name="action_turn_on_bluetooth">Turn on Bluetooth</string>
     <string name="pairing_hint">On the Apple TV, open Settings &gt; Remotes and Devices &gt; Bluetooth and choose this phone. Accept the pairing request on the phone, then open the notification shade, tap the Bluetooth pairing notification and confirm the 6-digit code.</string>
-    <string name="paired_devices_title">Paired devices</string>
-    <string name="paired_devices_empty">No paired devices yet.</string>
-    <string name="action_connect">Connect</string>
-    <string name="action_connect_to">Connect to %1$s</string>
     <string name="action_retry">Retry</string>
     <string name="error_no_system_screen">This phone has no screen for that Bluetooth setting.</string>
 

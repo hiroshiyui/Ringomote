@@ -87,12 +87,6 @@ class RemoteViewModel(
     /** Re-reads the phone's paired devices into [pairedDevices]; empty without permission. */
     fun refreshPairedDevices() = serial { _pairedDevices.value = transport.bondedDevices() }
 
-    /**
-     * Asks the transport to connect to [device]. The outcome arrives through [transportState]
-     * (Connecting, then Connected or back to Ready).
-     */
-    fun connect(device: HostDevice) = serial { transport.connect(device.address) }
-
     /** Finger down on [control]: held until [release]. */
     fun press(control: RemoteControl) = serial { session.press(control) }
 

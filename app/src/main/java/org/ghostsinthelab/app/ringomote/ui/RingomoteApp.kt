@@ -262,9 +262,7 @@ private fun RemoteHome(
                 )
                 ConnectionPanel(
                     state = state,
-                    pairedDevices = pairedDevices,
                     expandDetailsByDefault = !hasConnectedBefore,
-                    onConnect = vm::connect,
                     onRetry = vm::start,
                 )
             }

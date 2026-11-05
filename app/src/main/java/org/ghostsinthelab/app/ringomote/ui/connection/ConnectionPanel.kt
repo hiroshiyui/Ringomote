@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,7 +31,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,7 +57,9 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
  *
  * Details, for the states that have any ([hasDetails]), hold the full explanation and, when
  * [TransportState.Ready], the pairing steps: the phone is already advertising, so pick it on
- * the Apple TV and confirm the two pairing prompts, or connect to one of [pairedDevices]. Neither the icon's shape nor its colour is the
+ * the Apple TV and confirm the two pairing prompts. There is no Connect button: the Apple TV
+ * owns the link and reconnects by itself, and a phone-side connect opens a classic link the
+ * TV closes at once (see the link rules in CLAUDE.md). Neither the icon's shape nor its colour is the
  * only signal; the label always says the same in words, so the icon is decorative to TalkBack.
  *
  * Details start expanded when [expandDetailsByDefault] is true (first use, before any Apple TV
@@ -73,8 +73,6 @@ import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
 @Composable
 fun ConnectionPanel(
     state: TransportState,
-    pairedDevices: List<HostDevice>,
-    onConnect: (HostDevice) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     expandDetailsByDefault: Boolean = false,
@@ -141,7 +139,6 @@ fun ConnectionPanel(
                     text = stringResource(R.string.pairing_hint),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                PairedDeviceList(devices = pairedDevices, onConnect = onConnect)
             }
         }
     }
@@ -178,45 +175,6 @@ private fun TransportState.indicatorColor(): Color = when (this) {
     TransportState.BluetoothOff, TransportState.RegistrationFailed,
     TransportState.Unsupported, TransportState.PermissionRequired -> MaterialTheme.colorScheme.error
     else -> MaterialTheme.colorScheme.onSurfaceVariant
-}
-
-/** Paired hosts, each with a Connect button whose spoken name includes the device name. */
-@Composable
-private fun PairedDeviceList(devices: List<HostDevice>, onConnect: (HostDevice) -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(R.string.paired_devices_title),
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.semantics { heading() },
-        )
-        if (devices.isEmpty()) {
-            Text(stringResource(R.string.paired_devices_empty), style = MaterialTheme.typography.bodyMedium)
-        }
-        devices.forEach { device ->
-            val name = device.displayName()
-            val connectTo = stringResource(R.string.action_connect_to, name)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Text(
-                    text = name,
-                    modifier = Modifier.weight(1f),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 2,
-                )
-                // The description goes on the label, not the button, so TalkBack reads the
-                // merged button once ("Connect to <name>") instead of description plus label.
-                OutlinedButton(onClick = { onConnect(device) }) {
-                    Text(
-                        text = stringResource(R.string.action_connect),
-                        modifier = Modifier.semantics { contentDescription = connectTo },
-                    )
-                }
-            }
-        }
-    }
 }
 
 /**
@@ -279,11 +237,6 @@ private fun ConnectionPanelReadyPreview() {
     RingomoteTheme {
         ConnectionPanel(
             state = TransportState.Ready,
-            pairedDevices = listOf(
-                HostDevice("00:11:22:33:44:55", "Living Room"),
-                HostDevice("66:77:88:99:AA:BB", null),
-            ),
-            onConnect = {},
             onRetry = {},
         )
     }

@@ -1,19 +1,17 @@
 Hello, it's me, Ringomote.
 
-I turn your phone into a remote for Apple TV, compatible with the Siri Remote (1st generation). I talk to the Apple TV directly over Bluetooth Low Energy, presenting myself as a Bluetooth input device, just as the physical remote does. No Wi-Fi network, Apple account or bridge device is involved, I connect to no server, and I collect no data.
+I turn your phone into a remote for Apple TV, compatible with the Siri Remote (1st generation). I talk to the Apple TV over your Wi-Fi network with the same protocol the iPhone and iPad Remote use: find it with Bonjour, pair once with the code it shows, and I control it from then on. No Apple account, bridge device or server is involved, I connect to no server, and I collect no data.
 
 What I offer:
 
 * A touch surface: swipe to move the highlight, tap to select.
-* Menu, TV (tap for Home, hold for Control Center), Play/Pause, Volume up/down and Mute buttons.
-* Pairing from the Apple TV's own Bluetooth settings, with the steps shown on screen.
-* Optionally, your Wi-Fi network as a second way in, like an iPad: find the Apple TV with Bonjour, pair once with the code it shows, and I can wake it when it sleeps and control it over Wi-Fi, which I then prefer whenever it is reachable, with Bluetooth as the fallback (Mute goes over Bluetooth only).
-* A quiet notification that keeps the remote available in the background, so the Apple TV keeps reconnecting after you leave the app.
+* Menu, TV (tap for Home, hold for Control Center), Play/Pause and Volume up/down buttons.
+* Waking the Apple TV when it sleeps.
 * TalkBack support, keyboard and D-pad control, and layouts that survive large fonts.
 * English, 台灣漢語 and 日本語.
 
-What I can't do: Siri voice input.
+What I can't do: Siri voice input, and Mute, which the protocol has no command for.
 
-Requirements: a phone running Android 9 or later with Bluetooth Low Energy, and an Apple TV that works with the Siri Remote (1st generation) or Bluetooth input devices.
+Requirements: a phone running Android 9 or later on the same Wi-Fi network as the Apple TV, and an Apple TV that works with the iPhone or iPad Remote.
 
 Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc. Ringomote is an independent project and is not affiliated with, sponsored or endorsed by Apple Inc.; these names are used only to describe compatibility.

@@ -1,48 +1,7 @@
 <resources>
     <string name="app_name">Ringomote</string>
 
-    <!-- Permission gate -->
-    <string name="permission_title">Bluetooth access needed</string>
-    <string name="permission_rationale">Ringomote acts as a Bluetooth remote for your Apple TV. To do that, it needs permission to connect to and be found by nearby devices. Nothing leaves your phone except the button presses sent to your Apple TV.</string>
-    <string name="permission_grant">Allow Bluetooth access</string>
-    <string name="permission_denied">Permission was not granted. If the system no longer asks, allow “Nearby devices” in the app settings.</string>
-    <string name="permission_open_settings">Open app settings</string>
-
     <!-- Connection panel -->
-    <string name="state_stopped">Starting Bluetooth…</string>
-    <string name="state_unsupported">This phone cannot act as a Bluetooth Low Energy input device, so it cannot control an Apple TV.</string>
-    <string name="state_permission_required">Ringomote needs Bluetooth permission.</string>
-    <string name="state_bluetooth_off">Bluetooth is off.</string>
-    <string name="state_registering">Preparing the remote…</string>
-    <string name="state_registration_failed">Ringomote could not start advertising as a Bluetooth remote. Another app may be using all of the phone’s Bluetooth advertising. Close that app and try again.</string>
-    <string name="state_ready">Not connected. A paired Apple TV reconnects by itself once it is awake; to pair a new one, pick this phone in its Bluetooth settings.</string>
-    <string name="state_connecting">Connecting to %1$s…</string>
-    <string name="state_connected">Connected to %1$s.</string>
-    <string name="state_connected_details">Connected to %1$s. To disconnect, remove this phone in the Apple TV’s Bluetooth settings; the phone cannot end the link itself.</string>
-    <string name="state_short_resyncing">%1$s needs to reconnect</string>
-    <string name="state_resyncing">%1$s is connected, but it has not looked at the remote again since Ringomote’s Bluetooth services were recreated, so keys would go nowhere. Give it a minute; the Apple TV sometimes re-makes the link by itself and picks the remote up again. If the keys stay dead, forget this phone under Settings › Remotes and Devices › Bluetooth on the Apple TV and pair again. This happens after an app update or a force stop, not in everyday use.</string>
-    <string name="notification_channel">Remote link</string>
-    <string name="notification_channel_description">Shows that Ringomote is keeping the Bluetooth remote available for the Apple TV.</string>
-    <string name="notification_waiting">Ready for the Apple TV to connect.</string>
-    <string name="notification_connected">Connected to %1$s.</string>
-    <string name="notification_resyncing">%1$s needs to look at the remote again; if the keys stay dead, pair again on the Apple TV.</string>
-    <string name="notification_bluetooth_off">Bluetooth is off.</string>
-    <string name="notification_stop">Stop</string>
-    <string name="state_short_stopped">Starting…</string>
-    <string name="state_short_unsupported">Not supported</string>
-    <string name="state_short_permission_required">Permission needed</string>
-    <string name="state_short_bluetooth_off">Bluetooth off</string>
-    <string name="state_short_registering">Preparing…</string>
-    <string name="state_short_registration_failed">Registration failed</string>
-    <string name="state_short_ready">Not connected</string>
-    <string name="action_show_details">Details</string>
-    <string name="action_hide_details">Hide</string>
-    <string name="state_expanded">Expanded</string>
-    <string name="state_collapsed">Collapsed</string>
-    <string name="action_turn_on_bluetooth">Turn on Bluetooth</string>
-    <string name="pairing_hint">On the Apple TV, open Settings &gt; Remotes and Devices &gt; Bluetooth and choose this phone. Accept the pairing request on the phone, then open the notification shade, tap the Bluetooth pairing notification and confirm the 6-digit code.</string>
-    <string name="action_retry">Retry</string>
-    <string name="error_no_system_screen">This phone has no screen for that Bluetooth setting.</string>
 
     <!-- Remote -->
     <string name="touch_surface_label">Swipe to move\nTap to select</string>
@@ -61,8 +20,6 @@
     <string name="button_play_pause_description">Play or pause</string>
     <string name="button_volume_up_label">+</string>
     <string name="button_volume_up_description">Volume up</string>
-    <string name="button_mute_label">Mute</string>
-    <string name="button_mute_description">Mute the TV</string>
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">Volume down</string>
     <!-- Tabs, Settings and About -->
@@ -79,16 +36,8 @@
     <string name="settings_layout_description">How the remote fills the screen.</string>
     <string name="settings_layout_compact">Compact</string>
     <string name="settings_layout_spread">Spread out</string>
-    <string name="settings_bluetooth_title">Bluetooth</string>
-    <string name="settings_bluetooth_description">Pairing with an Apple TV happens on the TV. To remove a paired Apple TV from this phone, open the phone’s Bluetooth settings and forget it there.</string>
-    <string name="settings_bluetooth_open">Open Bluetooth settings</string>
-    <string name="settings_advanced_title">Advanced</string>
-    <string name="settings_diagnostics_description">A Bluetooth diagnostics report helps developers find out why pairing or input fails. It lists this phone, its Bluetooth state, the devices paired with it (names and addresses) and what the app saw on the link. It leaves the phone only if you share or save it.</string>
-    <string name="settings_diagnostics_open">Bluetooth diagnostics</string>
-    <string name="settings_network_title">Network</string>
-    <string name="settings_network_label">Use the local network</string>
-    <string name="settings_network_description">Lets Ringomote look for Apple TVs on your Wi-Fi network with Bonjour. The remote itself works over Bluetooth only; this is for features that need the network, such as waking a sleeping Apple TV. Nothing is sent beyond your network.</string>
     <string name="settings_apple_tvs_title">Apple TVs on this network</string>
+    <string name="settings_apple_tvs_description">Ringomote finds Apple TVs on your Wi-Fi network with Bonjour and pairs with one the way an iPad does: it shows a code, you type it here. Nothing is sent beyond your network.</string>
     <string name="settings_apple_tvs_searching">Searching…</string>
     <string name="settings_apple_tvs_none">No Apple TV found. Check that the phone is on the same Wi-Fi network as the Apple TV.</string>
     <string name="settings_apple_tv_pair">Pair</string>
@@ -98,16 +47,16 @@
     <string name="settings_apple_tv_pin_label">Code</string>
     <string name="settings_apple_tv_pin_confirm">Confirm</string>
     <string name="settings_apple_tv_pin_cancel">Cancel</string>
-    <string name="settings_apple_tv_status_unpaired">Not paired for waking. Pairing lets Ringomote turn this Apple TV on when it sleeps; the Bluetooth remote pairs separately, on the Apple TV.</string>
+    <string name="settings_apple_tv_status_unpaired">Not paired. Pairing lets Ringomote control this Apple TV and turn it on when it sleeps.</string>
     <string name="settings_apple_tv_status_pairing">Connecting…</string>
     <string name="settings_apple_tv_status_waking">Waking…</string>
-    <string name="settings_apple_tv_status_paired">Paired for waking.</string>
+    <string name="settings_apple_tv_status_paired">Paired.</string>
     <string name="settings_apple_tv_outcome_wake_sent">Wake-up sent.</string>
     <string name="settings_apple_tv_outcome_wake_failed">Could not reach the Apple TV.</string>
     <string name="settings_apple_tv_outcome_unreachable">Could not connect to the Apple TV.</string>
     <string name="settings_apple_tv_outcome_rejected">The Apple TV rejected the pairing. Check the code and try again, or remove Ringomote under Settings › Remotes and Devices on the Apple TV and pair afresh.</string>
     <string name="remote_wake_button">Wake</string>
-    <string name="remote_wake_hint">%1$s is not connected. If it is asleep, wake it over the network.</string>
+    <string name="remote_wake_hint">%1$s is not connected. If it is asleep, wake it.</string>
     <string name="remote_wake_sending">Waking %1$s…</string>
     <string name="remote_wake_sent">Wake-up sent to %1$s. It should connect in a moment.</string>
     <string name="remote_wake_failed">Could not reach %1$s over the network.</string>
@@ -116,32 +65,23 @@
     <string name="remote_wifi_connecting">Connecting to %1$s over Wi-Fi…</string>
     <string name="remote_wifi_unreachable">Could not reach %1$s over Wi-Fi. Trying again.</string>
     <string name="remote_wifi_rejected">%1$s rejected the Wi-Fi pairing. Pair again under Settings › Network.</string>
-    <string name="remote_wifi_mute_hint">Mute is not available over Wi-Fi.</string>
-    <string name="remote_pair_network_hint">Pair Ringomote with %1$s over the network, as an iPad is, and it controls the Apple TV over Wi-Fi, with Bluetooth as the fallback.</string>
+    <string name="action_open_settings">Settings</string>
+    <string name="remote_wifi_off">Not connected. Pair Ringomote with an Apple TV under Settings.</string>
+    <string name="remote_pair_network_hint">Pair Ringomote with %1$s, as an iPad is, and it can control the Apple TV.</string>
     <string name="remote_pair_network_button">Pair</string>
-    <string name="remote_network_off_hint">Turn on the local network in Settings and Ringomote can wake and control the Apple TV over Wi-Fi as well.</string>
-    <string name="remote_network_off_button">Settings</string>
-    <string name="diagnostics_title">Bluetooth diagnostics</string>
-    <string name="diagnostics_back">Back</string>
-    <string name="diagnostics_refresh">Refresh</string>
-    <string name="diagnostics_copy">Copy</string>
-    <string name="diagnostics_share">Share</string>
-    <string name="diagnostics_save">Save</string>
-    <string name="diagnostics_copied">Report copied.</string>
-    <string name="diagnostics_saved">Report saved.</string>
     <string name="tab_about">About</string>
     <string name="about_version">Version %1$s (%2$d)</string>
     <string name="about_tagline">Use your phone as a remote for Apple TV, compatible with the Siri Remote (1st generation).</string>
     <string name="about_copyright" translatable="false">Copyright © 2026 Hui-Hong You</string>
     <string name="about_privacy_title">Privacy</string>
-    <string name="about_privacy_body">Ringomote collects no data and connects to no server. Button presses go only to your Apple TV, directly over Bluetooth. The app stores only your settings and whether it has connected before. If you turn on “Use the local network” in Settings, it looks for Apple TVs on your Wi-Fi network with Bonjour and, once you pair one for waking, talks to that Apple TV directly, and while the remote is open, button presses go to that Apple TV over Wi-Fi, encrypted with the pairing keys, with Bluetooth as the fallback; the keys stay on the phone and are excluded from backups. Nothing is sent beyond your network. The Bluetooth diagnostics report in Settings names your paired devices and their addresses; it leaves the phone only when you share or save it.</string>
+    <string name="about_privacy_body">Ringomote collects no data and connects to no server. It looks for Apple TVs on your Wi-Fi network with Bonjour, and once you pair one, button presses go only to that Apple TV, directly over your network, encrypted with the pairing keys. The app stores only your settings and the pairing keys; the keys stay on the phone and are excluded from backups. Nothing is sent beyond your network.</string>
     <string name="about_license_title">License</string>
     <string name="about_license_body">Ringomote is free software, released under the GNU General Public License, version 3 or later. You may use, study, share and change it under the terms of that license.</string>
     <string name="about_license_link">Read the license</string>
     <string name="about_source_link">Source code on GitHub</string>
     <string name="about_oss_title">Open-source software</string>
-    <string name="about_oss_body">Ringomote is built with AndroidX, Jetpack Compose, Material 3, Kotlin and kotlinx.coroutines, all under the Apache License 2.0. Its Bluetooth and Wi-Fi status icons and the Menu, TV and Mute button icons use Google’s Material Icons (Apache License 2.0). Waking an Apple TV over the network uses the Bouncy Castle crypto library (MIT-style Bouncy Castle License), following the protocol notes of the pyatv project.</string>
+    <string name="about_oss_body">Ringomote is built with AndroidX, Jetpack Compose, Material 3, Kotlin and kotlinx.coroutines, all under the Apache License 2.0. Its Wi-Fi status icon and the Menu and TV button icons use Google’s Material Icons (Apache License 2.0). Talking to the Apple TV over the network uses the Bouncy Castle crypto library (MIT-style Bouncy Castle License), following the protocol notes of the pyatv project.</string>
     <string name="about_notices_link">All third-party notices</string>
     <string name="about_trademarks_title">Trademarks</string>
-    <string name="about_trademarks_body">Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc., registered in the U.S. and other countries. Android is a trademark of Google LLC. The Bluetooth® word mark and logos are registered trademarks owned by Bluetooth SIG, Inc. Ringomote is an independent project and is not affiliated with, sponsored or endorsed by any of them; these names are used only to describe compatibility and the technologies the app uses.</string>
+    <string name="about_trademarks_body">Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc., registered in the U.S. and other countries. Android is a trademark of Google LLC. Ringomote is an independent project and is not affiliated with, sponsored or endorsed by any of them; these names are used only to describe compatibility and the technologies the app uses.</string>
 </resources>

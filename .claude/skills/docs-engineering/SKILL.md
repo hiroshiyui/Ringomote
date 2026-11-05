@@ -6,7 +6,7 @@ argument-hint: task description
 
 # Document Engineering
 
-You are performing documentation tasks for Ringomote, an Android app that lets a phone act as a 1st-generation Siri Remote for an Apple TV over Bluetooth.
+You are performing documentation tasks for Ringomote, an Android app that lets a phone act as a 1st-generation Siri Remote for an Apple TV over the local Wi-Fi network (Apple's Companion Link protocol, the one the iPhone and iPad Remote use).
 
 ## Bilingual Convention
 
@@ -35,14 +35,14 @@ Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc. Ringomote is 
 
 - Any README, store listing or NOTICES text that names these products must say the app is not affiliated with or endorsed by Apple, and use the names only to describe compatibility ("works with Apple TV", "compatible with the Siri Remote (1st generation)").
 - Do not use Apple logos, product imagery or Apple's remote artwork in store screenshots or graphics.
-- Describe how the app works accurately: it presents itself to the Apple TV as a Bluetooth input device. Do not claim it is a genuine Siri Remote or that it supports features it cannot reproduce (e.g. Siri voice input, unless implemented).
+- Describe how the app works accurately: it pairs with the Apple TV over the local network like an iPad's Remote and sends button presses over that encrypted session. Do not claim it is a genuine Siri Remote or that it supports features it cannot reproduce (e.g. Siri voice input, unless implemented).
 
 ## Privacy
 
 Re-check `AndroidManifest.xml` and the code before stating any of this, and keep `PRIVACY-POLICY.md`, the README and the store listing consistent:
 
-- Which Bluetooth permissions the app requests and why (`BLUETOOTH_CONNECT` / `BLUETOOTH_ADVERTISE` on Android 12+, `BLUETOOTH` / `BLUETOOTH_ADMIN` on older versions; location only if a scan path really needs it).
-- That control happens directly between phone and Apple TV over Bluetooth; whether the app uses the network at all (`INTERNET` permission).
+- Which permissions the app requests and why (`INTERNET`, `ACCESS_NETWORK_STATE`, `CHANGE_WIFI_MULTICAST_STATE`; no runtime permissions).
+- That control happens directly between phone and Apple TV on the local network, encrypted with the pairing keys, and that the app contacts no server.
 - What the app stores locally (e.g. the paired Apple TV's address or name) and whether it is included in backups (`backup_rules.xml`, `data_extraction_rules.xml`).
 - That nothing is collected or sent anywhere, if that is still true.
 
@@ -73,7 +73,7 @@ fastlane/metadata/android/
 
 - `full_description.txt` is written in first person from the app's perspective ("Hello, it's me, Ringomote.").
 - Use `*` for bullet points in en-US, `＊` (fullwidth asterisk) in zh-TW.
-- Include the trademark/affiliation disclaimer (see above) and the requirements: Android 9 or later with Bluetooth, and an Apple TV that accepts the Siri Remote (1st gen) / Bluetooth input devices.
+- Include the trademark/affiliation disclaimer (see above) and the requirements: Android 9 or later on the same Wi-Fi network as the Apple TV, and an Apple TV that works with the iPhone or iPad Remote.
 
 ## Writing Style
 
@@ -89,10 +89,10 @@ fastlane/metadata/android/
 
 Human maintainers must be able to understand the design from the source alone, so the critical and primary classes and methods carry KDoc, and so do the test classes.
 
-- **What gets a comment.** Every public or primary class and object (the Bluetooth HID service/peripheral, the HID report descriptor and report encoders, the connection/pairing state holder, any foreground service, `MainActivity`, the main screens), every public entry point (e.g. connect, disconnect, send a button press, send a touch/swipe), state enums and sealed classes, and private functions whose purpose or rule is not obvious from their body. Trivial getters and self-explanatory one-liners need none.
-- **What a comment says.** The role of the class in the app and the contract of the method: inputs, what happens when not connected or when permission is missing, which thread or callback it runs on (Bluetooth callbacks arrive on binder threads), and the protocol detail behind it — HID usage page and usage ID for each control, report ID and byte layout, GATT service/characteristic UUIDs, why a press is followed by a release report, and why an alternative was rejected. Do not restate the code line by line.
-- **Report descriptors.** Annotate the descriptor byte array item by item (`// Usage Page (Consumer)`, `// Report ID (1)`, …) so it can be checked against the HID spec without a decoder.
-- **Tests.** Each test class states what it covers and where its expected values come from (HID Usage Tables, a captured report from a real Siri Remote, a hand-encoded byte layout). Each test method gets a one-line note on the property it pins down, so a failure can be read without reverse-engineering the assertions.
+- **What gets a comment.** Every public or primary class and object (the Companion Link client and session, the pairing state machines, the command table, `MainActivity`, the main screens), every public entry point (e.g. connect, disconnect, send a button press, send a touch/swipe), state enums and sealed classes, and private functions whose purpose or rule is not obvious from their body. Trivial getters and self-explanatory one-liners need none.
+- **What a comment says.** The role of the class in the app and the contract of the method: inputs, what happens when not connected or when permission is missing, which thread it runs on (socket I/O on `Dispatchers.IO`, input on the serial dispatcher), and the protocol detail behind it — the `_hidC` code for each control, the message and TLV layout, why a press is followed by a release, and why an alternative was rejected. Do not restate the code line by line.
+- **Wire formats.** Annotate hand-built byte layouts (OPACK, TLV8, HAP frames) item by item so they can be checked against the protocol notes without a decoder.
+- **Tests.** Each test class states what it covers and where its expected values come from (pyatv's protocol notes, srptools vectors, a captured exchange with a real Apple TV, a hand-encoded byte layout). Each test method gets a one-line note on the property it pins down, so a failure can be read without reverse-engineering the assertions.
 - **When to update.** Adding a class, public method or test, or changing a contract, includes writing or revising its KDoc in the same change. Check new comments for the naming rules above (漢文 not 中文, Han script not Chinese) before finishing.
 - **Form.** KDoc (`/** … */`) on declarations; `//` line comments inside bodies for a specific step. Write the prose in English. Use `[Name]` links for symbols in scope.
 

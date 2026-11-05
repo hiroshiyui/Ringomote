@@ -70,26 +70,26 @@ Buttons: `_i: _hidC`, `_c: {_hidC: <command>, _hBtS: 1 press / 2 release}`. Comm
 11 Screensaver, 12 Sleep, **13 Wake**, 14 PlayPause, 15/16 channel, 17 Guide, 18/19 page.
 pyatv's `turn_on` is a press/release of 13. There is no mute command: the media-control
 message `_mcc` (1 Play, 2 Pause, 3/4 tracks, 5 GetVolume, 6 SetVolume with `_vol` 0.0–1.0,
-7 SkipBy, 8–11 fast-forward/rewind, 12/13 captions) only sets an absolute level, so Mute is
-unavailable over Wi-Fi. `_sessionStop` with the same `_srvT`/`_sid` ends the remote session.
+7 SkipBy, 8–11 fast-forward/rewind, 12/13 captions) only sets an absolute level, so the remote
+has no Mute. `_sessionStop` with the same `_srvT`/`_sid` ends the remote session.
 
-## Wi-Fi remote mode (2026-11-06)
+## Remote session (2026-11-06)
 
-`CompanionSession` keeps one verified session open while the Remote tab is on screen, and
-`RemoteRouter` sends each button there as `_hidC` down/up (`CompanionKeyMap` maps
-`RemoteControl` to the codes above). Wi-Fi is the first link and Bluetooth the fallback (only
-Mute, which has no `_hidC` code, goes over Bluetooth): a hardware pass on 2026-11-06 showed the
-Bluetooth link coming back subscribed after a Bluetooth toggle yet swallowing every key (the
-stale-keyboard caching described in CLAUDE.md), whereas the Companion session is owned by the
-phone and simply reconnects. Keeping the socket: there is no documented ping, and
+`CompanionSession` keeps one verified session open while the Remote tab is on screen in the
+foreground, and `RemoteViewModel` sends each button there as `_hidC` down/up (`CompanionKeyMap`
+maps `RemoteControl` to the codes above). Keeping the socket: there is no documented ping, and
 the client only reads while waiting for a reply, so a peer close shows up as an `IOException`
 on the next send; the session then drops the link, reports the press as failed, and reconnects
 with a back-off of 1, 2, 5, 10 s. A refused pair-verify stops the retries until a new pairing
 is stored. The link lingers 10 s after the remote leaves the screen so a tab switch is free.
 Events the TV pushes (`_t` = 1) between requests are skipped by `request()`.
 
-Power state: `FetchAttentionState` returns `{state: 1 asleep, 2 screensaver, 3 awake}`;
-subscribe with `_interest` `_regEvents: ["SystemStatus"]`.
+Why this is the only link (2026-11-06): until 0.5.0 the app was a BLE HID keyboard. That link
+is owned by the Apple TV, cannot wake it, and tvOS caches "no keyboard" for good whenever the
+app's process dies under an open link; a hardware pass showed the Bluetooth link coming back
+subscribed after a toggle yet swallowing every key, while the Companion session simply
+reconnected. The Bluetooth implementation and its findings live in the `bluetooth-archive`
+branch.
 
 ## OPACK
 

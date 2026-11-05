@@ -15,10 +15,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.ghostsinthelab.app.ringomote.network.AppleTvDiscovery
-import org.ghostsinthelab.app.ringomote.remote.CompanionInput
 import org.ghostsinthelab.app.ringomote.remote.RemoteControl
 
-/** Where the Wi-Fi remote link stands, shown next to the Bluetooth state. */
+/** Where the remote link stands, shown in the connection panel. */
 sealed interface CompanionState {
     /** No Apple TV to hold a session with, or the remote is not on screen. */
     data object Off : CompanionState
@@ -55,12 +54,11 @@ fun interface CompanionLinkPort {
 }
 
 /**
- * Keeps a Companion Link remote session open with one Apple TV while the remote needs it, so
- * button presses can travel over Wi-Fi when the Bluetooth link is not usable (TV asleep,
- * Bluetooth off, or tvOS holding a stale picture of the phone's services).
+ * Keeps a Companion Link remote session open with one Apple TV while the remote needs it; it
+ * is the one path button presses take, the same link the iOS Remote uses.
  *
  * The session has a [target] (the paired Apple TV the Remote tab is aimed at) and is
- * [wanted][setWanted] while the remote is on screen without a Bluetooth link. It connects when
+ * [wanted][setWanted] while the remote is on screen in the foreground. It connects when
  * both hold, keeps the socket open, and closes it [GRACE_MILLIS] after it stops being wanted,
  * so a quick tab switch does not cost a reconnect. Failures to reach the TV back off
  * ([BACKOFF_MILLIS]) and retry while wanted; a refused pairing stops retries ([CompanionState.Rejected])
@@ -68,9 +66,8 @@ fun interface CompanionLinkPort {
  *
  * Input: [press] and [release] send `_hidC` down/up for the control's [CompanionKeyMap]
  * command; a send that fails drops the link, which reconnects by itself, and reports false.
- * Held commands are tracked so [releaseAll] can lift them when input stops, the same
- * invariant as [org.ghostsinthelab.app.ringomote.remote.RemoteSession]. Sends run on
- * [ioDispatcher] under a mutex, in call order.
+ * Held commands are tracked so [releaseAll] can lift them when input stops, so the Apple TV
+ * never sees a stuck key. Sends run on [ioDispatcher] under a mutex, in call order.
  *
  * Pure Kotlin behind [CompanionLinkPort]: [ClientPort] is the real one, tests use a fake.
  */
@@ -78,13 +75,13 @@ class CompanionSession(
     private val port: CompanionLinkPort,
     scope: CoroutineScope,
     private val ioDispatcher: CoroutineDispatcher,
-) : CompanionInput {
+) {
     private data class Desire(val target: String? = null, val wanted: Boolean = false, val epoch: Int = 0)
 
     private val desire = MutableStateFlow(Desire())
     private val _state = MutableStateFlow<CompanionState>(CompanionState.Off)
 
-    /** The link state, for the connection panel and the router. */
+    /** The link state, for the connection panel and the remote's enabled flag. */
     val state: StateFlow<CompanionState> = _state.asStateFlow()
 
     private val lock = Mutex()
@@ -104,24 +101,29 @@ class CompanionSession(
     /** Tries again after [CompanionState.Rejected], e.g. once a new pairing is stored. */
     fun retry() = desire.update { it.copy(epoch = it.epoch + 1) }
 
-    /** Whether [control] can go over this link at all (Mute cannot). */
-    override fun supports(control: RemoteControl) = CompanionKeyMap.supports(control)
-
-    /** Sends the control's button-down; false when not connected, unsupported or the send failed. */
-    override suspend fun press(control: RemoteControl): Boolean {
-        val command = CompanionKeyMap.commandFor(control) ?: return false
+    /** Sends the control's button-down; false when not connected or the send failed. */
+    suspend fun press(control: RemoteControl): Boolean {
+        val command = CompanionKeyMap.commandFor(control)
+        if (lock.withLock { command in held }) return true
         return send(command, down = true).also { if (it) lock.withLock { held += command } }
     }
 
     /** Sends the control's button-up; true when nothing was held. */
-    override suspend fun release(control: RemoteControl): Boolean {
-        val command = CompanionKeyMap.commandFor(control) ?: return true
+    suspend fun release(control: RemoteControl): Boolean {
+        val command = CompanionKeyMap.commandFor(control)
         if (!lock.withLock { held.remove(command) }) return true
         return send(command, down = false)
     }
 
+    /** A single click: down then up. */
+    suspend fun tap(control: RemoteControl): Boolean {
+        val pressed = press(control)
+        val released = release(control)
+        return pressed && released
+    }
+
     /** Lifts every command still held, for when input stops unexpectedly. */
-    override suspend fun releaseAll() {
+    suspend fun releaseAll() {
         val pending = lock.withLock { held.toList().also { held.clear() } }
         pending.forEach { send(it, down = false) }
     }

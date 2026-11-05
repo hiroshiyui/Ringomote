@@ -22,7 +22,7 @@ There is no version-bump Gradle task in this project. Edit `versionCode` (+1) an
 2. **Bump version** — edit `versionCode` and `versionName` in `app/build.gradle.kts`.
 3. **Write changelogs** for F-Droid (see Changelog section below).
 4. **Run the tests** — `./gradlew :app:test`, so the tag lands on a known good state.
-5. **Check on real hardware** — the emulator cannot act as a Bluetooth HID peripheral. Ask the user to confirm the release candidate pairs with an Apple TV and that every remote button works (see Hardware Check below) before tagging.
+5. **Check on real hardware** — the emulator is not on the TV's network. Ask the user to confirm the release candidate pairs with an Apple TV and that every remote button works (see Hardware Check below) before tagging.
 6. **Create release commit** — commit message format: `Release <versionName>` with `Signed-off-by` trailer.
 7. **Tag the release** — lightweight tag matching versionName (e.g. `1.0.1`). Tags are NOT annotated.
 8. **Build signed APKs** — only now, after the commit and tag: F-Droid builds reproducibly from the tagged commit, so the published APKs have to be built from exactly that commit. Signing requires a keystore passphrase, so **do not run the build automatically**. Prompt the user to build the signed APKs manually in Android Studio (Build > Generate Signed APK) or via the command line. Output goes to `app/build/outputs/apk/release/` (debug builds to `app/build/outputs/apk/debug/`). Android Studio may also leave copies in `app/release/` and `app/debug/`, but the user signs the ones under `app/build/outputs/apk/`. Wait for the user to confirm the build is complete before proceeding.
@@ -46,9 +46,8 @@ There is no version-bump Gradle task in this project. Edit `versionCode` (+1) an
 
 Before tagging, the user should confirm on a physical phone and Apple TV:
 
-- Fresh pairing from the Apple TV's Bluetooth settings works, and reconnection after the phone's Bluetooth is toggled, the app is restarted, and the Apple TV wakes from sleep.
+- Fresh pairing from Settings (Bonjour discovery, PIN) works, and reconnection after the app is restarted, the phone's Wi-Fi is toggled, and the Apple TV wakes from sleep (Wake button).
 - Every Siri Remote (1st gen) control the app offers does what the real remote does: touch surface (swipe and click), Menu, TV/Home, Play/Pause, Volume up/down.
-- The runtime permission flow works on Android 12+ and on an Android 9–11 device if one is available.
 
 Record any control the app cannot reproduce (e.g. Siri voice input) in the changelog rather than hiding it.
 

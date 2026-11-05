@@ -41,7 +41,7 @@ private const val HEADER_MAX_FRACTION = 0.4f
 
 /**
  * The remote itself, laid out like the 1st-generation Siri Remote: the [TouchSurface], then
- * Menu and TV (Home), Play/Pause, and Volume up, Mute and down, with [header] (the connection panel)
+ * Menu and TV (Home), Play/Pause, and Volume up and down, with [header] (the connection panel)
  * above it.
  *
  * The whole remote always fits on one screen, because scrolling it is unreliable: drags that
@@ -64,8 +64,6 @@ private const val HEADER_MAX_FRACTION = 0.4f
  * middle; [RemoteLayout.Spread] lets the touch surface fill the width and stretches the
  * buttons into a grid that reaches the screen edges, with wider gaps.
  *
- * [disabledControls] are shown but disabled while the rest is enabled: the active link cannot
- * carry them (Mute over Wi-Fi).
  */
 @Composable
 fun RemoteScreen(
@@ -76,7 +74,6 @@ fun RemoteScreen(
     onHold: (RemoteControl) -> Unit,
     modifier: Modifier = Modifier,
     layout: RemoteLayout = RemoteLayout.Compact,
-    disabledControls: Set<RemoteControl> = emptySet(),
     header: @Composable () -> Unit = {},
 ) {
     val spread = layout == RemoteLayout.Spread
@@ -92,7 +89,7 @@ fun RemoteScreen(
     )
 
     @Composable
-    fun Buttons() = RemoteButtons(enabled, spread, disabledControls, onPress, onRelease, onTap, onHold)
+    fun Buttons() = RemoteButtons(enabled, spread, onPress, onRelease, onTap, onHold)
 
     @Composable
     fun Remote(modifier: Modifier = Modifier, content: @Composable () -> Unit) =
@@ -176,14 +173,13 @@ private fun RemoteFade(visible: Boolean, modifier: Modifier = Modifier, content:
 }
 
 /**
- * Menu | TV, Play/Pause, and Volume + | Mute | −, as on the physical remote. With [spread] each row
+ * Menu | TV, Play/Pause, and Volume + | −, as on the physical remote. With [spread] each row
  * fills the width and its buttons share it equally, so the grid reaches the screen edges.
  */
 @Composable
 private fun RemoteButtons(
     enabled: Boolean,
     spread: Boolean,
-    disabledControls: Set<RemoteControl>,
     onPress: (RemoteControl) -> Unit,
     onRelease: (RemoteControl) -> Unit,
     onTap: (RemoteControl) -> Unit,
@@ -202,7 +198,7 @@ private fun RemoteButtons(
         control = control,
         label = stringResource(label),
         contentDescription = stringResource(description),
-        enabled = enabled && control !in disabledControls,
+        enabled = enabled,
         onPress = onPress,
         onRelease = onRelease,
         onTap = onTap,
@@ -254,13 +250,6 @@ private fun RemoteButtons(
                 R.string.button_volume_up_label,
                 R.string.button_volume_up_description,
                 symbolStyle,
-                modifier = cell(),
-            )
-            ControlButton(
-                RemoteControl.Mute,
-                R.string.button_mute_label,
-                R.string.button_mute_description,
-                icon = R.drawable.ic_volume_off,
                 modifier = cell(),
             )
             ControlButton(

@@ -1,34 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-feature
-        android:name="android.hardware.bluetooth"
-        android:required="true" />
+        android:name="android.hardware.wifi"
+        android:required="false" />
 
-    <!-- Android 9-11: install-time permissions for the HID device profile. -->
-    <uses-permission
-        android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" />
-    <!-- Android 12+: register as a HID device, connect, send reports. -->
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <!-- Android 12+: make the phone discoverable so the Apple TV can find it. -->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-    <!-- Network features, all opt-in under Settings > Network. Bonjour browsing for Apple TVs
-         needs the multicast lock permission (normal); INTERNET gates every socket on Android
-         and is needed for the Companion Link connection. The app contacts no server. -->
+    <!-- Bonjour browsing for Apple TVs needs the multicast lock permission (normal); INTERNET
+         gates every socket on Android and is needed for the Companion Link connection to the
+         Apple TV on the local network. The app contacts no server. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
-    <!-- RemoteService keeps the HID device registered while the app is off screen; see its doc. -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <!-- BootReceiver restarts RemoteService after a reboot, if it was running before. -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".RingomoteApplication"
@@ -52,24 +34,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service
-            android:name=".service.RemoteService"
-            android:exported="false"
-            android:foregroundServiceType="connectedDevice" />
-        <receiver
-            android:name=".service.BootReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".service.PackageReplacedReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

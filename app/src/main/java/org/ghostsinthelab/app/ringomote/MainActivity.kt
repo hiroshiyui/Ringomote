@@ -10,11 +10,11 @@ import org.ghostsinthelab.app.ringomote.ui.RingomoteApp
 import org.ghostsinthelab.app.ringomote.ui.theme.RingomoteTheme
 
 /**
- * The single activity: hosts [RingomoteApp], which handles the permission gate, the
- * connection panel and the remote. All state lives in
- * [org.ghostsinthelab.app.ringomote.ui.remote.RemoteViewModel], so recreation (rotation,
- * theme change) keeps the Bluetooth link. The theme follows
- * [org.ghostsinthelab.app.ringomote.settings.AppearanceSettings] from the [AppContainer].
+ * The single activity: hosts [RingomoteApp], which shows the connection panel and the remote.
+ * All state lives in [org.ghostsinthelab.app.ringomote.ui.remote.RemoteViewModel] and the
+ * process-lifetime session, so recreation (rotation, theme change) keeps the link. The theme
+ * follows [org.ghostsinthelab.app.ringomote.settings.AppearanceSettings] from the
+ * [AppContainer].
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +27,6 @@ class MainActivity : ComponentActivity() {
             RingomoteTheme(appearance = appearance) {
                 RingomoteApp(
                     appearanceSettings = settings,
-                    diagnosticsReport = container.diagnosticsReport,
                     networkSettings = container.networkSettings,
                     appleTvDiscovery = container.appleTvDiscovery,
                 )

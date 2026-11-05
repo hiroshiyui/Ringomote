@@ -58,20 +58,18 @@ These are used only to build or test the app and are not included in the distrib
 
 ### Material Icons
 
-The Bluetooth and Wi-Fi status icons (`app/src/main/res/drawable/ic_bluetooth*.xml`, `ic_wifi.xml`) and the Menu, TV and Mute button icons (`ic_menu.xml`, `ic_tv.xml`, `ic_volume_off.xml`) use path data from Google's [Material Icons](https://github.com/google/material-design-icons), licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+The Wi-Fi status icon (`app/src/main/res/drawable/ic_wifi.xml`) and the Menu and TV button icons (`ic_menu.xml`, `ic_tv.xml`) use path data from Google's [Material Icons](https://github.com/google/material-design-icons), licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
-藍牙與 Wi-Fi 狀態圖示（`app/src/main/res/drawable/ic_bluetooth*.xml`、`ic_wifi.xml`）與 Menu、TV、靜音按鍵圖示（`ic_menu.xml`、`ic_tv.xml`、`ic_volume_off.xml`）使用 Google [Material Icons](https://github.com/google/material-design-icons) 的路徑資料，以 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) 授權。
+Wi-Fi 狀態圖示（`app/src/main/res/drawable/ic_wifi.xml`）與 Menu、TV 按鍵圖示（`ic_menu.xml`、`ic_tv.xml`）使用 Google [Material Icons](https://github.com/google/material-design-icons) 的路徑資料，以 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) 授權。
 
 ## Trademarks 商標
 
 - Apple, Apple TV, Siri and Siri Remote are trademarks of Apple Inc., registered in the U.S. and other countries.
 - Android is a trademark of Google LLC.
-- The Bluetooth® word mark and logos are registered trademarks owned by Bluetooth SIG, Inc.
 
-Ringomote is an independent project and is not affiliated with, sponsored or endorsed by Apple Inc., Google LLC or Bluetooth SIG, Inc. These names are used only to describe compatibility and the technologies the app uses.
+Ringomote is an independent project and is not affiliated with, sponsored or endorsed by Apple Inc. or Google LLC These names are used only to describe compatibility and the technologies the app uses.
 
 - Apple、Apple TV、Siri 與 Siri Remote 為 Apple Inc. 在美國及其他國家註冊的商標。
 - Android 為 Google LLC 的商標。
-- Bluetooth® 文字商標與標誌為 Bluetooth SIG, Inc. 所有的註冊商標。
 
-Ringomote 為獨立專案，與 Apple Inc.、Google LLC 或 Bluetooth SIG, Inc. 並無關聯，亦未獲其贊助或認可；上述名稱僅用於說明相容性及本程式使用的技術。
+Ringomote 為獨立專案，與 Apple Inc. 或 Google LLC 並無關聯，亦未獲其贊助或認可；上述名稱僅用於說明相容性及本程式使用的技術。

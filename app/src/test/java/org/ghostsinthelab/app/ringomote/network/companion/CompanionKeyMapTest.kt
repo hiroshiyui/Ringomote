@@ -10,7 +10,7 @@ import org.junit.Test
 /**
  * Pins the Companion Link button table to pyatv's `HidCommand` values (the codes the iOS
  * Remote sends) and checks the [RemoteControl] mapping: every control has a command except
- * Mute, which the protocol lacks.
+ * every control has one.
  */
 class CompanionKeyMapTest {
 
@@ -30,15 +30,11 @@ class CompanionKeyMapTest {
         expected.forEach { (command, code) -> assertEquals(command.name, code, command.code) }
     }
 
-    /** Every remote control maps to a distinct command, except Mute. */
+    /** Every remote control maps to a distinct command. */
     @Test
-    fun everyControlButMuteHasACommand() {
-        val mapped = RemoteControl.entries.filter { it != RemoteControl.Mute }.map { CompanionKeyMap.commandFor(it) }
-        assertTrue(mapped.none { it == null })
+    fun everyControlHasADistinctCommand() {
+        val mapped = RemoteControl.entries.map { CompanionKeyMap.commandFor(it) }
         assertEquals(mapped.size, mapped.toSet().size)
-        assertNull(CompanionKeyMap.commandFor(RemoteControl.Mute))
-        assertFalse(CompanionKeyMap.supports(RemoteControl.Mute))
-        assertTrue(CompanionKeyMap.supports(RemoteControl.Home))
     }
 
     /** The arrows and Select are what the touch surface sends; they must be the HID arrows. */

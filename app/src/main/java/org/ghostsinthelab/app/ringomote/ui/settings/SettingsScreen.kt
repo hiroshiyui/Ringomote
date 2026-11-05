@@ -53,8 +53,7 @@ import org.ghostsinthelab.app.ringomote.ui.theme.supportsDynamicColor
 import org.ghostsinthelab.app.ringomote.network.AppleTv
 
 /**
- * The Settings tab: appearance, the remote's layout, a shortcut to the phone's Bluetooth
- * settings, and an Advanced section with Bluetooth diagnostics.
+ * The Settings tab: appearance, the remote's layout, and the Apple TVs on the network.
  *
  * Theme mode is a single-choice segmented row (System / Light / Dark); dynamic colour is a
  * switch whose whole row toggles, with [Role.Switch] semantics so TalkBack reads it as one
@@ -62,18 +61,10 @@ import org.ghostsinthelab.app.ringomote.network.AppleTv
  * 12+), so the setting never promises what the phone cannot do. Changes apply immediately
  * through [RingomoteTheme]; nothing needs a restart.
  *
- * The Bluetooth section only opens the system screen via [onOpenBluetoothSettings]: a paired
- * Apple TV is removed from the phone there (Forget), which the app cannot do itself. Android
- * offers no Disconnect for a GATT-only link, so the text does not promise one.
- *
- * The Advanced section opens the Bluetooth diagnostics report ([onOpenDiagnostics]), meant
- * for attaching to a bug report; its text says what the report contains.
- *
- * The Network section is the only place the app touches the local network, so it is opt-in:
- * a switch ([networkEnabled]), and once it is on, the Apple TVs found through Bonjour
- * ([appleTvs], with a progress bar while [browsing]). The caller starts and stops the browse;
- * this screen only shows the result. Each Apple TV row carries its Companion Link state
- * ([linkStateOf]): Pair, then a PIN field while the Apple TV shows one, then Wake and Forget.
+ * The Apple TV section lists the Apple TVs found through Bonjour ([appleTvs], with a progress
+ * bar while [browsing]). The caller starts and stops the browse; this screen only shows the
+ * result. Each Apple TV row carries its Companion Link state ([linkStateOf]): Pair, then a
+ * PIN field while the Apple TV shows one, then Wake and Forget.
  */
 @Composable
 fun SettingsScreen(
@@ -81,10 +72,6 @@ fun SettingsScreen(
     onModeChange: (ThemeMode) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
     onLayoutChange: (RemoteLayout) -> Unit,
-    onOpenBluetoothSettings: () -> Unit,
-    onOpenDiagnostics: () -> Unit,
-    networkEnabled: Boolean,
-    onNetworkEnabledChange: (Boolean) -> Unit,
     appleTvs: List<AppleTv>,
     browsing: Boolean,
     linkStateOf: (AppleTv) -> AppleTvLinkState,
@@ -178,85 +165,34 @@ fun SettingsScreen(
                 }
             }
             Text(
-                text = stringResource(R.string.settings_bluetooth_title),
+                text = stringResource(R.string.settings_apple_tvs_title),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.semantics { heading() }.padding(top = 16.dp),
             )
             Text(
-                text = stringResource(R.string.settings_bluetooth_description),
+                text = stringResource(R.string.settings_apple_tvs_description),
                 style = MaterialTheme.typography.bodyMedium,
             )
-            OutlinedButton(onClick = onOpenBluetoothSettings) {
-                Text(stringResource(R.string.settings_bluetooth_open))
-            }
-            Text(
-                text = stringResource(R.string.settings_advanced_title),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.semantics { heading() }.padding(top = 16.dp),
-            )
-            Text(
-                text = stringResource(R.string.settings_diagnostics_description),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            OutlinedButton(onClick = onOpenDiagnostics) {
-                Text(stringResource(R.string.settings_diagnostics_open))
-            }
-            Text(
-                text = stringResource(R.string.settings_network_title),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.semantics { heading() }.padding(top = 16.dp),
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .toggleable(
-                        value = networkEnabled,
-                        role = Role.Switch,
-                        onValueChange = onNetworkEnabledChange,
-                    )
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.settings_network_label),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                    Text(
-                        text = stringResource(R.string.settings_network_description),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Switch(checked = networkEnabled, onCheckedChange = null)
-            }
-            if (networkEnabled) {
+            if (browsing) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            if (appleTvs.isEmpty()) {
                 Text(
-                    text = stringResource(R.string.settings_apple_tvs_title),
-                    style = MaterialTheme.typography.titleSmall,
+                    text = stringResource(
+                        if (browsing) R.string.settings_apple_tvs_searching else R.string.settings_apple_tvs_none,
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                if (browsing) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                if (appleTvs.isEmpty()) {
-                    Text(
-                        text = stringResource(
-                            if (browsing) R.string.settings_apple_tvs_searching else R.string.settings_apple_tvs_none,
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                appleTvs.forEach { tv ->
-                    AppleTvRow(
-                        tv = tv,
-                        state = linkStateOf(tv),
-                        onPair = { onPair(tv) },
-                        onSubmitPin = { onSubmitPin(tv, it) },
-                        onCancelPairing = { onCancelPairing(tv) },
-                        onWake = { onWake(tv) },
-                        onForget = { onForget(tv) },
-                    )
-                }
+            }
+            appleTvs.forEach { tv ->
+                AppleTvRow(
+                    tv = tv,
+                    state = linkStateOf(tv),
+                    onPair = { onPair(tv) },
+                    onSubmitPin = { onSubmitPin(tv, it) },
+                    onCancelPairing = { onCancelPairing(tv) },
+                    onWake = { onWake(tv) },
+                    onForget = { onForget(tv) },
+                )
             }
         }
     }
@@ -381,10 +317,6 @@ private fun SettingsScreenPreview() {
             onModeChange = {},
             onDynamicColorChange = {},
             onLayoutChange = {},
-            onOpenBluetoothSettings = {},
-            onOpenDiagnostics = {},
-            networkEnabled = true,
-            onNetworkEnabledChange = {},
             appleTvs = listOf(AppleTv("keting", "keting", "AppleTV14,1", "192.168.50.48", 49152)),
             browsing = true,
             linkStateOf = { AppleTvLinkState.AwaitingPin },

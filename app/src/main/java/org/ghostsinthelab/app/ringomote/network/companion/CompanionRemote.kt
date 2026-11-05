@@ -14,16 +14,14 @@ enum class CompanionCommand(val code: Int) {
 }
 
 /**
- * Maps each [RemoteControl] to its [CompanionCommand], the Wi-Fi counterpart of
- * [org.ghostsinthelab.app.ringomote.remote.HidKeyMap].
+ * Maps each [RemoteControl] to its [CompanionCommand].
  *
- * [RemoteControl.Mute] has no counterpart: Companion Link's HID table has no mute button and
- * its media-control message (`_mcc`) only sets an absolute volume, so Mute is unavailable over
- * Wi-Fi and the remote shows it disabled then. Home over Companion is the TV button: a tap
- * goes Home, a hold opens Control Center, like the Bluetooth usage.
+ * Home is the TV button: a tap goes Home, a hold opens Control Center. There is no Mute:
+ * Companion Link's HID table has no mute button and its media-control message (`_mcc`) only
+ * sets an absolute volume, which is why [RemoteControl] has no Mute either.
  */
 object CompanionKeyMap {
-    fun commandFor(control: RemoteControl): CompanionCommand? = when (control) {
+    fun commandFor(control: RemoteControl): CompanionCommand = when (control) {
         RemoteControl.Up -> CompanionCommand.Up
         RemoteControl.Down -> CompanionCommand.Down
         RemoteControl.Left -> CompanionCommand.Left
@@ -34,9 +32,5 @@ object CompanionKeyMap {
         RemoteControl.PlayPause -> CompanionCommand.PlayPause
         RemoteControl.VolumeUp -> CompanionCommand.VolumeUp
         RemoteControl.VolumeDown -> CompanionCommand.VolumeDown
-        RemoteControl.Mute -> null
     }
-
-    /** Whether [control] can be sent over Companion Link at all. */
-    fun supports(control: RemoteControl): Boolean = commandFor(control) != null
 }

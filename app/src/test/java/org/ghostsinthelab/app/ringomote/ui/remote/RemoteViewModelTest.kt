@@ -1,6 +1,7 @@
 package org.ghostsinthelab.app.ringomote.ui.remote
 
 import androidx.lifecycle.ViewModelStore
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,49 +12,31 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.ghostsinthelab.app.ringomote.bluetooth.HidTransport
-import org.ghostsinthelab.app.ringomote.bluetooth.HostDevice
-import org.ghostsinthelab.app.ringomote.bluetooth.TransportState
-import org.ghostsinthelab.app.ringomote.hid.HidReport
-import org.ghostsinthelab.app.ringomote.history.ConnectionHistory
 import org.ghostsinthelab.app.ringomote.network.NetworkSettings
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionCommand
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentials
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentialsStore
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionLink
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionLinkPort
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionSession
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionState
-import org.ghostsinthelab.app.ringomote.network.companion.PairingException
-import org.ghostsinthelab.app.ringomote.remote.RemoteRouter
-import org.ghostsinthelab.app.ringomote.hid.HidReports
-import org.ghostsinthelab.app.ringomote.hid.KeyboardUsage
 import org.ghostsinthelab.app.ringomote.remote.RemoteControl
-import org.ghostsinthelab.app.ringomote.remote.RemoteSession
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
 /**
- * Tests [RemoteViewModel]'s lifecycle rules with a [FakeTransport] and a real [RemoteSession],
- * on a virtual-time test dispatcher standing in for the app-wide serial dispatcher.
- *
- * Covers review items 4 (teardown runs off the main thread, in order with the next start) and
- * 6 (held controls are released when the link leaves Connected). Expected reports are built
- * with [HidReports], whose byte layout is pinned down by its own tests.
+ * Tests [RemoteViewModel]'s lifecycle rules with a real [CompanionSession] over a fake
+ * [CompanionLinkPort], on a virtual-time test dispatcher standing in for the app-wide serial
+ * dispatcher. Expected values are the `_hidC` down/up pairs the session sends per control.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class RemoteViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
     private val scope = TestScope(dispatcher)
-    private val tv = HostDevice("00:11:22:33:44:55", "TV")
-    private val transport = FakeTransport()
-    private val session = RemoteSession(transport)
-
-    private val upDown = HidReports.keyboard(listOf(KeyboardUsage.UP_ARROW))
-    private val allUp = HidReports.keyboard(emptyList())
-    private val consumerUp = HidReports.consumer(0)
 
     @Before
     fun setUp() = Dispatchers.setMain(dispatcher)
@@ -61,19 +44,23 @@ class RemoteViewModelTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-    private val history = FakeHistory()
-
+    private val port = FakePort()
     private val networkSettings = FakeNetworkSettings()
     private val credentials = FakeCredentialsStore()
-    private val companion = CompanionSession({ throw PairingException("none") }, scope.backgroundScope, dispatcher)
-    private val router = RemoteRouter(
-        session, companion,
-        bluetoothConnected = { transport.state.value is TransportState.Connected },
-        companionConnected = { companion.state.value is CompanionState.Connected },
-    )
+    private val session = CompanionSession(port, scope.backgroundScope, dispatcher)
 
     private fun newViewModel() =
-        RemoteViewModel(transport, router, companion, networkSettings, credentials, history, dispatcher, scope)
+        RemoteViewModel(session, networkSettings, credentials, dispatcher, scope)
+
+    /** A ViewModel whose remote is shown in the foreground, with "TV" paired and connected. */
+    private fun connectedViewModel(): RemoteViewModel {
+        credentials.credentials.value = mapOf("TV" to CompanionCredentials(ByteArray(32), ByteArray(32), ByteArray(32), ByteArray(32)))
+        val vm = newViewModel()
+        vm.setRemoteShown(true)
+        scope.runCurrent()
+        assertEquals(CompanionState.Connected("TV"), session.state.value)
+        return vm
+    }
 
     /** Clears [vm] the way the framework does when its screen is finished. */
     private fun clear(vm: RemoteViewModel) = ViewModelStore().run {
@@ -81,134 +68,79 @@ class RemoteViewModelTest {
         clear()
     }
 
-    /** Item 6: a control held when the link drops is released, not left marked as held. */
+    /** The only pairing becomes the target, and the session connects while the remote is shown. */
     @Test
-    fun leavingConnectedReleasesHeldControls() = scope.runTest {
-        transport.state.value = TransportState.Connected(tv)
-        val vm = newViewModel()
-        runCurrent()
-        vm.press(RemoteControl.Up)
-        runCurrent()
-        assertEquals(setOf(RemoteControl.Up), session.held())
-
-        transport.state.value = TransportState.Ready
-        runCurrent()
-        assertTrue(session.held().isEmpty())
-    }
-
-    /** Item 6: after a reconnect, pressing the button that was held before is sent again. */
-    @Test
-    fun pressAfterReconnectIsNotSwallowed() = scope.runTest {
-        transport.state.value = TransportState.Connected(tv)
-        val vm = newViewModel()
-        runCurrent()
-        vm.press(RemoteControl.Up)
-        runCurrent()
-        transport.state.value = TransportState.Ready
-        runCurrent()
-        transport.state.value = TransportState.Connected(tv)
-        runCurrent()
-        transport.reports.clear()
-
-        vm.press(RemoteControl.Up)
-        runCurrent()
-        assertEquals(listOf(upDown), transport.reports)
-    }
-
-    /** Item 6: staying connected does not trigger extra release reports. */
-    @Test
-    fun stayingConnectedSendsNoReleases() = scope.runTest {
-        transport.state.value = TransportState.Connected(tv)
+    fun onlyPairingIsTargetedWhileShown() = scope.runTest {
         newViewModel()
         runCurrent()
-        transport.reports.clear()
-        transport.state.value = TransportState.Connected(tv.copy(name = "Renamed"))
+        assertEquals("no pairing, nothing to target", CompanionState.Off, session.state.value)
+        val vm = connectedViewModel()
+        vm.setRemoteShown(false)
+        advanceTimeBy(CompanionSession.GRACE_MILLIS + 1)
         runCurrent()
-        assertTrue(transport.reports.isEmpty())
+        assertEquals(CompanionState.Off, session.state.value)
     }
 
-    /**
-     * Item 4: clearing the ViewModel releases held keys but leaves the transport running:
-     * the HID device must outlive the screen (RemoteService owns stopping it).
-     */
+    /** A control held when the link drops is released, not left marked as held. */
     @Test
-    fun clearingReleasesButKeepsTransport() = scope.runTest {
-        transport.state.value = TransportState.Connected(tv)
-        val vm = newViewModel()
-        runCurrent()
+    fun leavingConnectedReleasesHeldControls() = scope.runTest {
+        val vm = connectedViewModel()
         vm.press(RemoteControl.Up)
         runCurrent()
-        transport.calls.clear()
-        transport.reports.clear()
+        assertEquals(listOf("down Up"), port.links[0].sent)
 
-        clear(vm)
-        assertTrue("teardown must not run on the caller's thread", transport.calls.isEmpty())
+        port.links[0].failNext = true
+        vm.press(RemoteControl.Select)
         runCurrent()
-        assertEquals(listOf(allUp, consumerUp), transport.reports)
-        assertTrue(transport.calls.isEmpty())
+        assertEquals(2, port.links.size)
+        vm.press(RemoteControl.Up)
+        runCurrent()
+        assertEquals(listOf("down Up"), port.links[1].sent)
     }
 
-    /** Item 4: a release queued by a closing screen runs before a start queued by the next one. */
+    /** Clearing the ViewModel releases held keys off the caller's thread and lets the session go. */
     @Test
-    fun releaseFromOldScreenRunsBeforeStartFromNewOne() = scope.runTest {
-        transport.state.value = TransportState.Connected(tv)
-        val old = newViewModel()
+    fun clearingReleasesAndStopsWanting() = scope.runTest {
+        val vm = connectedViewModel()
+        vm.press(RemoteControl.Up)
         runCurrent()
-        old.press(RemoteControl.Up)
+
+        clear(vm)
+        assertEquals("teardown must not run on the caller's thread", listOf("down Up"), port.links[0].sent)
         runCurrent()
-        transport.reports.clear()
-        transport.calls.clear()
-        clear(old)
-        newViewModel().start()
+        assertEquals(listOf("down Up", "up Up"), port.links[0].sent)
+        advanceTimeBy(CompanionSession.GRACE_MILLIS + 1)
         runCurrent()
-        assertEquals(listOf(allUp, consumerUp), transport.reports)
-        assertEquals(listOf("start", "bondedDevices"), transport.calls)
+        assertTrue(port.links[0].closed)
     }
 
     /** An accessibility long-click holds the control for LONG_PRESS_MILLIS, then releases it. */
     @Test
     fun holdReleasesAfterLongPressDuration() = scope.runTest {
-        transport.state.value = TransportState.Connected(tv)
-        val vm = newViewModel()
+        val vm = connectedViewModel()
+        vm.hold(RemoteControl.Home)
         runCurrent()
-        transport.reports.clear()
-
-        vm.hold(RemoteControl.Up)
-        runCurrent()
-        assertEquals(listOf(upDown), transport.reports)
+        assertEquals(listOf("down Home"), port.links[0].sent)
         advanceTimeBy(RemoteViewModel.LONG_PRESS_MILLIS - 1)
-        assertEquals(1, transport.reports.size)
+        assertEquals(1, port.links[0].sent.size)
         advanceTimeBy(2)
-        assertEquals(listOf(upDown, allUp), transport.reports)
+        assertEquals(listOf("down Home", "up Home"), port.links[0].sent)
     }
 
-    /** The first Connected state is recorded, so later launches start with details collapsed. */
+    /** A tap is one down/up pair. */
     @Test
-    fun connectingMarksHistory() = scope.runTest {
-        val vm = newViewModel()
+    fun tapSendsDownAndUp() = scope.runTest {
+        val vm = connectedViewModel()
+        vm.tap(RemoteControl.Right)
         runCurrent()
-        assertFalse(vm.hasConnectedBefore.value)
-        transport.state.value = TransportState.Ready
-        runCurrent()
-        assertFalse(vm.hasConnectedBefore.value)
-
-        transport.state.value = TransportState.Connected(tv)
-        runCurrent()
-        assertTrue(vm.hasConnectedBefore.value)
-        transport.state.value = TransportState.Ready
-        runCurrent()
-        assertTrue("history never resets", vm.hasConnectedBefore.value)
+        assertEquals(listOf("down Right", "up Right"), port.links[0].sent)
     }
 
-    /** Network off, nothing selected: the Wi-Fi session stays [CompanionState.Off]. */
     private class FakeNetworkSettings : NetworkSettings {
-        override val enabled = MutableStateFlow(false)
-        override fun setEnabled(enabled: Boolean) { this.enabled.value = enabled }
         override val selectedAppleTv = MutableStateFlow<String?>(null)
         override fun setSelectedAppleTv(name: String?) { selectedAppleTv.value = name }
     }
 
-    /** No pairings. */
     private class FakeCredentialsStore : CompanionCredentialsStore {
         override val credentials = MutableStateFlow<Map<String, CompanionCredentials>>(emptyMap())
         override fun put(appleTvId: String, credentials: CompanionCredentials) = Unit
@@ -218,25 +150,20 @@ class RemoteViewModelTest {
         override fun putEndpoint(appleTvId: String, endpoint: CompanionCredentialsStore.Endpoint) = Unit
     }
 
-    /** In-memory [ConnectionHistory]. */
-    private class FakeHistory : ConnectionHistory {
-        override val hasConnectedBefore = MutableStateFlow(false)
-        override fun markConnected() { hasConnectedBefore.value = true }
+    /** Opens a recording link per call; a link can be told to fail its next send. */
+    private class FakePort : CompanionLinkPort {
+        val links = mutableListOf<FakeLink>()
+        override fun open(name: String) = FakeLink(name).also { links += it }
     }
 
-    /** Records lifecycle calls and reports; reports succeed only while Connected. */
-    private class FakeTransport : HidTransport {
-        override val state = MutableStateFlow<TransportState>(TransportState.Stopped)
-        val calls = mutableListOf<String>()
-        val reports = mutableListOf<HidReport>()
-
-        override fun start() { calls += "start" }
-        override fun stop() { calls += "stop" }
-        override fun bondedDevices(): List<HostDevice> { calls += "bondedDevices"; return emptyList() }
-        override fun disconnect(): Boolean { calls += "disconnect"; return true }
-        override fun send(report: HidReport): Boolean {
-            reports += report
-            return state.value is TransportState.Connected
+    private class FakeLink(override val name: String) : CompanionLink {
+        val sent = mutableListOf<String>()
+        var failNext = false
+        var closed = false
+        override fun send(command: CompanionCommand, down: Boolean) {
+            if (failNext) { failNext = false; throw IOException("gone") }
+            sent += "${if (down) "down" else "up"} $command"
         }
+        override fun close() { closed = true }
     }
 }

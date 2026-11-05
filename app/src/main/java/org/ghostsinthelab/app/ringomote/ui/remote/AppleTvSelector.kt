@@ -27,43 +27,27 @@ import org.ghostsinthelab.app.ringomote.ui.settings.AppleTvLinkState
  * Which Apple TV the remote is aimed at, above the connection panel.
  *
  * With several known Apple TVs ([tvs]), a row of chips picks one ([selected], [onSelect]);
- * with one, the chips are not shown. Below, when the chosen TV is paired for waking and the
- * remote is not connected over Bluetooth, a Wake button ([onWake]) turns it on; its
- * [linkState] gives the progress and the outcome. The selector only names the target; the
- * Bluetooth link is still made by the Apple TV itself, so a TV that is awake and bonded
- * connects on its own.
+ * with one, the chips are not shown. Below, when the chosen TV is paired and the session is
+ * not [connected], a Wake button ([onWake]) turns it on; its [linkState] gives the progress
+ * and the outcome.
  *
- * Two reminders point at the Wi-Fi side, because pairing over the network is what makes the
- * phone work like an iPad (waking the TV and controlling it without Bluetooth): with the
- * network switch off ([networkEnabled]) and no Bluetooth link, a line offers Settings
- * ([onOpenSettings]); with it on and the selected TV not yet paired over the network, a line
- * offers Pair ([onPairOverNetwork], which also lands on Settings, where the PIN flow lives).
- * Both vanish once the pairing is stored.
+ * When the selected TV is not yet paired, a line offers Pair ([onPairOverNetwork], which lands
+ * on Settings, where the PIN flow lives); it vanishes once the pairing is stored.
  */
 @Composable
 fun AppleTvSelector(
     tvs: List<KnownAppleTv>,
     selected: KnownAppleTv?,
     linkState: AppleTvLinkState?,
-    bluetoothConnected: Boolean,
+    connected: Boolean,
     onSelect: (KnownAppleTv) -> Unit,
     onWake: (KnownAppleTv) -> Unit,
     modifier: Modifier = Modifier,
-    networkEnabled: Boolean = true,
-    onOpenSettings: () -> Unit = {},
     onPairOverNetwork: () -> Unit = {},
 ) {
-    if (!networkEnabled && !bluetoothConnected) {
-        HintRow(
-            text = stringResource(R.string.remote_network_off_hint),
-            button = stringResource(R.string.remote_network_off_button),
-            onClick = onOpenSettings,
-            modifier = modifier,
-        )
-    }
     if (tvs.isEmpty()) return
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (networkEnabled && selected != null && !selected.pairedForWaking) {
+        if (selected != null && !selected.pairedForWaking) {
             HintRow(
                 text = stringResource(R.string.remote_pair_network_hint, selected.name),
                 button = stringResource(R.string.remote_pair_network_button),
@@ -85,7 +69,7 @@ fun AppleTvSelector(
                 }
             }
         }
-        if (selected != null && selected.pairedForWaking && !bluetoothConnected) {
+        if (selected != null && selected.pairedForWaking && !connected) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,

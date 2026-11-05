@@ -1,48 +1,7 @@
 <resources>
     <string name="app_name">Ringomote</string>
 
-    <!-- Permission gate -->
-    <string name="permission_title">Bluetooth へのアクセスが必要です</string>
-    <string name="permission_rationale">Ringomote は、お使いのスマートフォンを Apple TV の Bluetooth リモコンとして使えるようにします。そのため、付近のデバイスへの接続と、付近のデバイスから見つけてもらうための権限が必要です。Apple TV に送るボタン操作以外のデータが、スマートフォンの外に送られることはありません。</string>
-    <string name="permission_grant">Bluetooth へのアクセスを許可</string>
-    <string name="permission_denied">権限が許可されませんでした。確認画面が表示されなくなった場合は、アプリの設定で「付近のデバイス」を許可してください。</string>
-    <string name="permission_open_settings">アプリの設定を開く</string>
-
     <!-- Connection panel -->
-    <string name="state_stopped">Bluetooth を起動しています…</string>
-    <string name="state_unsupported">このスマートフォンは Bluetooth Low Energy の入力デバイスとして動作できないため、Apple TV を操作できません。</string>
-    <string name="state_permission_required">Ringomote には Bluetooth の権限が必要です。</string>
-    <string name="state_bluetooth_off">Bluetooth がオフになっています。</string>
-    <string name="state_registering">リモコンを準備しています…</string>
-    <string name="state_registration_failed">Ringomote は Bluetooth リモコンとしてのアドバタイズを開始できませんでした。ほかのアプリがスマートフォンの Bluetooth アドバタイズを使い切っている可能性があります。そのアプリを終了してから、もう一度お試しください。</string>
-    <string name="state_ready">接続されていません。ペアリング済みの Apple TV は起動すると自動的に再接続します。新しく接続するには、Apple TV の Bluetooth 設定でこのスマートフォンを選んでください。</string>
-    <string name="state_connecting">%1$s に接続しています…</string>
-    <string name="state_connected">%1$s に接続しました。</string>
-    <string name="state_connected_details">%1$s に接続中です。接続を解除するには、Apple TV の Bluetooth 設定でこのスマートフォンを削除してください。スマートフォン側からは解除できません。</string>
-    <string name="state_short_resyncing">%1$s の再接続が必要</string>
-    <string name="state_resyncing">%1$s は接続されていますが、Ringomote の Bluetooth サービスが作り直されてから、まだリモコンを読み直していないため、キーは効きません。1 分ほど待ってください。Apple TV が自分でリンクを作り直し、リモコンを認識し直すことがあります。キーが効かないままなら、Apple TV の「設定 › リモコンとデバイス › Bluetooth」でこのスマートフォンを削除してからペアリングし直してください。これはアプリの更新や強制停止の後にだけ起こり、ふだんの使用では起こりません。</string>
-    <string name="notification_channel">リモコンのリンク</string>
-    <string name="notification_channel_description">Ringomote が Apple TV 向けに Bluetooth リモコンを待機させていることを示します。</string>
-    <string name="notification_waiting">Apple TV の接続を待っています。</string>
-    <string name="notification_connected">%1$s に接続中。</string>
-    <string name="notification_resyncing">%1$s がリモコンを読み直す必要があります。キーが効かないままなら Apple TV でペアリングし直してください。</string>
-    <string name="notification_bluetooth_off">Bluetooth がオフです。</string>
-    <string name="notification_stop">停止</string>
-    <string name="state_short_stopped">起動中…</string>
-    <string name="state_short_unsupported">非対応</string>
-    <string name="state_short_permission_required">権限が必要です</string>
-    <string name="state_short_bluetooth_off">Bluetooth オフ</string>
-    <string name="state_short_registering">準備中…</string>
-    <string name="state_short_registration_failed">登録に失敗しました</string>
-    <string name="state_short_ready">未接続</string>
-    <string name="action_show_details">詳細</string>
-    <string name="action_hide_details">閉じる</string>
-    <string name="state_expanded">展開</string>
-    <string name="state_collapsed">折りたたみ</string>
-    <string name="action_turn_on_bluetooth">Bluetooth をオンにする</string>
-    <string name="pairing_hint">Apple TV で「設定 &gt; リモコンとデバイス &gt; Bluetooth」を開き、このスマートフォンを選んでください。スマートフォンでペアリング要求を承認したら、通知シェードを開いて Bluetooth のペアリング通知をタップし、6 桁のコードを確認してください。</string>
-    <string name="action_retry">再試行</string>
-    <string name="error_no_system_screen">このスマートフォンには、その Bluetooth 設定の画面がありません。</string>
 
     <!-- Remote -->
     <string name="touch_surface_label">スワイプで移動\nタップで選択</string>
@@ -61,8 +20,6 @@
     <string name="button_play_pause_description">再生または一時停止</string>
     <string name="button_volume_up_label">+</string>
     <string name="button_volume_up_description">音量を上げる</string>
-    <string name="button_mute_label">消音</string>
-    <string name="button_mute_description">テレビを消音</string>
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">音量を下げる</string>
     <!-- Tabs, Settings and About -->
@@ -79,16 +36,8 @@
     <string name="settings_layout_description">リモコンを画面にどう配置するか。</string>
     <string name="settings_layout_compact">コンパクト</string>
     <string name="settings_layout_spread">画面いっぱい</string>
-    <string name="settings_bluetooth_title">Bluetooth</string>
-    <string name="settings_bluetooth_description">Apple TV とのペアリングは Apple TV 側で行います。ペアリング済みの Apple TV をこのスマートフォンから削除するには、スマートフォンの Bluetooth 設定を開いて、そこで削除してください。</string>
-    <string name="settings_bluetooth_open">Bluetooth 設定を開く</string>
-    <string name="settings_advanced_title">詳細設定</string>
-    <string name="settings_diagnostics_description">Bluetooth 診断レポートは、ペアリングや入力がうまくいかない原因を開発者が調べるのに役立ちます。このスマートフォン、その Bluetooth の状態、ペアリング済みのデバイス（名前とアドレス）、アプリが接続で観測した出来事が含まれます。共有または保存したときにだけ、レポートはスマートフォンの外に出ます。</string>
-    <string name="settings_diagnostics_open">Bluetooth 診断</string>
-    <string name="settings_network_title">ネットワーク</string>
-    <string name="settings_network_label">ローカルネットワークを使う</string>
-    <string name="settings_network_description">Ringomote が Bonjour で Wi-Fi ネットワーク上の Apple TV を探せるようにします。リモコン自体は Bluetooth だけで動きます。これは、スリープ中の Apple TV を起動するなど、ネットワークが要る機能のためのものです。ネットワークの外には何も送りません。</string>
     <string name="settings_apple_tvs_title">このネットワーク上の Apple TV</string>
+    <string name="settings_apple_tvs_description">Ringomote は Bonjour で Wi-Fi ネットワーク上の Apple TV を探し、iPad と同じようにペアリングします。Apple TV に表示されるコードをここに入力してください。ネットワークの外には何も送りません。</string>
     <string name="settings_apple_tvs_searching">検索中…</string>
     <string name="settings_apple_tvs_none">Apple TV が見つかりません。スマートフォンが Apple TV と同じ Wi-Fi ネットワークにあるか確認してください。</string>
     <string name="settings_apple_tv_pair">ペアリング</string>
@@ -98,16 +47,16 @@
     <string name="settings_apple_tv_pin_label">コード</string>
     <string name="settings_apple_tv_pin_confirm">確認</string>
     <string name="settings_apple_tv_pin_cancel">キャンセル</string>
-    <string name="settings_apple_tv_status_unpaired">起動用のペアリングはまだです。ペアリングすると、この Apple TV がスリープ中でも Ringomote から起動できます。Bluetooth リモコンのペアリングは別で、Apple TV 側で行います。</string>
+    <string name="settings_apple_tv_status_unpaired">ペアリングはまだです。ペアリングすると、Ringomote からこの Apple TV を操作でき、スリープ中でも起動できます。</string>
     <string name="settings_apple_tv_status_pairing">接続中…</string>
     <string name="settings_apple_tv_status_waking">起動中…</string>
-    <string name="settings_apple_tv_status_paired">起動用にペアリング済み。</string>
+    <string name="settings_apple_tv_status_paired">ペアリング済み。</string>
     <string name="settings_apple_tv_outcome_wake_sent">起動要求を送りました。</string>
     <string name="settings_apple_tv_outcome_wake_failed">Apple TV に届きませんでした。</string>
     <string name="settings_apple_tv_outcome_unreachable">Apple TV に接続できませんでした。</string>
     <string name="settings_apple_tv_outcome_rejected">Apple TV がペアリングを拒否しました。コードを確認してもう一度試すか、Apple TV の「設定 › リモコンとデバイス」で Ringomote を削除してからやり直してください。</string>
     <string name="remote_wake_button">起動</string>
-    <string name="remote_wake_hint">%1$s は接続されていません。スリープ中なら、ネットワーク経由で起動できます。</string>
+    <string name="remote_wake_hint">%1$s は接続されていません。スリープ中なら、起動できます。</string>
     <string name="remote_wake_sending">%1$s を起動しています…</string>
     <string name="remote_wake_sent">%1$s に起動要求を送りました。まもなく接続されるはずです。</string>
     <string name="remote_wake_failed">ネットワーク経由で %1$s に届きませんでした。</string>
@@ -116,31 +65,22 @@
     <string name="remote_wifi_connecting">Wi-Fi 経由で %1$s に接続しています…</string>
     <string name="remote_wifi_unreachable">Wi-Fi 経由で %1$s に届きませんでした。再試行しています。</string>
     <string name="remote_wifi_rejected">%1$s が Wi-Fi のペアリングを拒否しました。「設定 › ネットワーク」でペアリングし直してください。</string>
-    <string name="remote_wifi_mute_hint">Wi-Fi 経由では消音は使えません。</string>
-    <string name="remote_pair_network_hint">iPad と同じように Ringomote を %1$s とネットワーク経由でペアリングすると、Wi-Fi 経由で Apple TV を操作し、Bluetooth は予備になります。</string>
+    <string name="action_open_settings">設定</string>
+    <string name="remote_wifi_off">接続されていません。「設定」で Ringomote を Apple TV とペアリングしてください。</string>
+    <string name="remote_pair_network_hint">iPad と同じように Ringomote を %1$s とペアリングすると、この Apple TV を操作できます。</string>
     <string name="remote_pair_network_button">ペアリング</string>
-    <string name="remote_network_off_hint">「設定」でローカルネットワークを有効にすると、Ringomote は Wi-Fi 経由でも Apple TV を起動・操作できます。</string>
-    <string name="remote_network_off_button">設定</string>
-    <string name="diagnostics_title">Bluetooth 診断</string>
-    <string name="diagnostics_back">戻る</string>
-    <string name="diagnostics_refresh">更新</string>
-    <string name="diagnostics_copy">コピー</string>
-    <string name="diagnostics_share">共有</string>
-    <string name="diagnostics_save">保存</string>
-    <string name="diagnostics_copied">レポートをコピーしました。</string>
-    <string name="diagnostics_saved">レポートを保存しました。</string>
     <string name="tab_about">このアプリについて</string>
     <string name="about_version">バージョン %1$s（%2$d）</string>
     <string name="about_tagline">スマートフォンを Apple TV のリモコンとして使えます。Siri Remote（第 1 世代）互換です。</string>
     <string name="about_privacy_title">プライバシー</string>
-    <string name="about_privacy_body">Ringomote はデータを収集せず、どのサーバーにも接続しません。ボタン操作は Bluetooth で直接 Apple TV にだけ送られます。このアプリが保存するのは、設定と、以前に接続したことがあるかどうかだけです。設定で「ローカルネットワークを使う」をオンにすると、Bonjour で Wi-Fi ネットワーク上の Apple TV を探し、起動用にペアリングした Apple TV とは直接通信します。リモコンを開いているあいだ、ボタン操作はペアリングの鍵で暗号化して Wi-Fi 経由でその Apple TV に送られ、Bluetooth は予備になります。ペアリングの鍵はスマートフォンに留まり、バックアップには含まれません。ネットワークの外には何も送りません。設定の Bluetooth 診断レポートにはペアリング済みのデバイスとそのアドレスが含まれますが、共有または保存したときにだけスマートフォンの外に出ます。</string>
+    <string name="about_privacy_body">Ringomote はデータを収集せず、どのサーバーにも接続しません。Bonjour で Wi-Fi ネットワーク上の Apple TV を探し、ペアリングすると、ボタン操作はペアリングの鍵で暗号化して、ネットワーク経由でその Apple TV にだけ直接送られます。このアプリが保存するのは、設定とペアリングの鍵だけです。鍵はスマートフォンに留まり、バックアップには含まれません。ネットワークの外には何も送りません。</string>
     <string name="about_license_title">ライセンス</string>
     <string name="about_license_body">Ringomote はフリーソフトウェアで、GNU 一般公衆利用許諾書 バージョン 3 またはそれ以降のもとで公開されています。このライセンスの条件に従って、使用、研究、共有、改変ができます。</string>
     <string name="about_license_link">ライセンス全文を読む</string>
     <string name="about_source_link">GitHub のソースコード</string>
     <string name="about_oss_title">オープンソースソフトウェア</string>
-    <string name="about_oss_body">Ringomote は AndroidX、Jetpack Compose、Material 3、Kotlin、kotlinx.coroutines を使って作られており、いずれも Apache License 2.0 で提供されています。Bluetooth の状態アイコンと Menu、TV、消音ボタンのアイコンには Google の Material Icons（Apache License 2.0）を使用しています。ネットワーク経由で Apple TV を起動する機能は Bouncy Castle 暗号ライブラリ（MIT 系の Bouncy Castle License）を使い、プロトコルは pyatv プロジェクトのノートに従っています。</string>
+    <string name="about_oss_body">Ringomote は AndroidX、Jetpack Compose、Material 3、Kotlin、kotlinx.coroutines を使って作られており、いずれも Apache License 2.0 で提供されています。Wi-Fi の状態アイコンと Menu、TV ボタンのアイコンには Google の Material Icons（Apache License 2.0）を使用しています。ネットワーク経由で Apple TV と通信する機能は Bouncy Castle 暗号ライブラリ（MIT 系の Bouncy Castle License）を使い、プロトコルは pyatv プロジェクトのノートに従っています。</string>
     <string name="about_notices_link">サードパーティに関するすべての告知</string>
     <string name="about_trademarks_title">商標</string>
-    <string name="about_trademarks_body">Apple、Apple TV、Siri、Siri Remote は、米国およびその他の国で登録された Apple Inc. の商標です。Android は Google LLC の商標です。Bluetooth® のワードマークおよびロゴは Bluetooth SIG, Inc. が所有する登録商標です。Ringomote は独立したプロジェクトであり、これらの企業とは提携しておらず、後援や承認も受けていません。これらの名称は、互換性と使用している技術を説明するためにのみ使用しています。</string>
+    <string name="about_trademarks_body">Apple、Apple TV、Siri、Siri Remote は、米国およびその他の国で登録された Apple Inc. の商標です。Android は Google LLC の商標です。Ringomote は独立したプロジェクトであり、これらの企業とは提携しておらず、後援や承認も受けていません。これらの名称は、互換性と使用している技術を説明するためにのみ使用しています。</string>
 </resources>

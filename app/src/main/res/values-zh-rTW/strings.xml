@@ -1,48 +1,7 @@
 <resources>
     <string name="app_name">Ringomote</string>
 
-    <!-- Permission gate -->
-    <string name="permission_title">需要藍牙權限</string>
-    <string name="permission_rationale">Ringomote 會將您的手機當作 Apple TV 的藍牙遙控器。為此，它需要連線到附近裝置及讓附近裝置找到它的權限。除了傳送到您 Apple TV 的按鍵之外，不會有任何資料離開您的手機。</string>
-    <string name="permission_grant">允許藍牙存取</string>
-    <string name="permission_denied">尚未取得權限。若系統不再詢問，請您在應用程式設定中允許「鄰近裝置」。</string>
-    <string name="permission_open_settings">開啟應用程式設定</string>
-
     <!-- Connection panel -->
-    <string name="state_stopped">正在啟動藍牙…</string>
-    <string name="state_unsupported">這支手機無法作為藍牙低功耗輸入裝置，因此無法控制 Apple TV。</string>
-    <string name="state_permission_required">Ringomote 需要藍牙權限。</string>
-    <string name="state_bluetooth_off">藍牙已關閉。</string>
-    <string name="state_registering">正在準備遙控器…</string>
-    <string name="state_registration_failed">Ringomote 無法以藍牙遙控器的身分開始廣播。可能有其他應用程式用盡了手機的藍牙廣播，請您關閉該應用程式後再試一次。</string>
-    <string name="state_ready">尚未連線。已配對的 Apple TV 喚醒後會自行重新連線；若要配對新的 Apple TV，請您在它的藍牙設定中選擇這支手機。</string>
-    <string name="state_connecting">正在連線到 %1$s…</string>
-    <string name="state_connected">已連線到 %1$s。</string>
-    <string name="state_connected_details">已連線到 %1$s。若要中斷連線，請您在 Apple TV 的藍牙設定中移除這支手機；手機這端無法自行結束連線。</string>
-    <string name="state_short_resyncing">%1$s 需要重新連線</string>
-    <string name="state_resyncing">%1$s 已連線，但自 Ringomote 的藍牙服務重新建立後，它還沒有重新讀取遙控器，所以按鍵不會有作用。請稍等一分鐘，Apple TV 有時會自行重新建立連線並重新認得遙控器。若按鍵仍無反應，請在 Apple TV 的「設定 › 遙控器與裝置 › 藍牙」清除這支手機後重新配對。這只會在程式更新或強制停止後發生，日常使用不會。</string>
-    <string name="notification_channel">遙控器連線</string>
-    <string name="notification_channel_description">顯示 Ringomote 正為 Apple TV 保持藍牙遙控器可用。</string>
-    <string name="notification_waiting">等待 Apple TV 連線。</string>
-    <string name="notification_connected">已連線至 %1$s。</string>
-    <string name="notification_resyncing">%1$s 需要重新讀取遙控器；若按鍵仍無反應，請在 Apple TV 重新配對。</string>
-    <string name="notification_bluetooth_off">藍牙已關閉。</string>
-    <string name="notification_stop">停止</string>
-    <string name="state_short_stopped">正在啟動…</string>
-    <string name="state_short_unsupported">不支援</string>
-    <string name="state_short_permission_required">需要權限</string>
-    <string name="state_short_bluetooth_off">藍牙已關閉</string>
-    <string name="state_short_registering">準備中…</string>
-    <string name="state_short_registration_failed">註冊失敗</string>
-    <string name="state_short_ready">尚未連線</string>
-    <string name="action_show_details">詳細資訊</string>
-    <string name="action_hide_details">隱藏</string>
-    <string name="state_expanded">已展開</string>
-    <string name="state_collapsed">已收合</string>
-    <string name="action_turn_on_bluetooth">開啟藍牙</string>
-    <string name="pairing_hint">請您在 Apple TV 上開啟「設定 &gt; 遙控器與裝置 &gt; 藍牙」並選擇這支手機。在手機上接受配對要求後，請拉下通知列，點選藍牙配對通知，並確認 6 位數的配對碼。</string>
-    <string name="action_retry">重試</string>
-    <string name="error_no_system_screen">這支手機沒有這項藍牙設定的畫面。</string>
 
     <!-- Remote -->
     <string name="touch_surface_label">滑動以移動\n輕觸以選取</string>
@@ -61,8 +20,6 @@
     <string name="button_play_pause_description">播放或暫停</string>
     <string name="button_volume_up_label">+</string>
     <string name="button_volume_up_description">調高音量</string>
-    <string name="button_mute_label">靜音</string>
-    <string name="button_mute_description">將電視靜音</string>
     <string name="button_volume_down_label">−</string>
     <string name="button_volume_down_description">調低音量</string>
     <!-- Tabs, Settings and About -->
@@ -79,16 +36,8 @@
     <string name="settings_layout_description">遙控器如何佔用畫面。</string>
     <string name="settings_layout_compact">緊湊</string>
     <string name="settings_layout_spread">延伸至邊緣</string>
-    <string name="settings_bluetooth_title">藍牙</string>
-    <string name="settings_bluetooth_description">與 Apple TV 的配對在 Apple TV 上進行。若要從這支手機移除已配對的 Apple TV，請您開啟手機的藍牙設定，在那裡清除它。</string>
-    <string name="settings_bluetooth_open">開啟藍牙設定</string>
-    <string name="settings_advanced_title">進階</string>
-    <string name="settings_diagnostics_description">藍牙診斷報告可協助開發者找出配對或輸入失敗的原因。內容包含這支手機、它的藍牙狀態、與它配對的裝置（名稱與位址），以及本程式在連線上觀察到的事件。只有在您分享或儲存時，報告才會離開手機。</string>
-    <string name="settings_diagnostics_open">藍牙診斷</string>
-    <string name="settings_network_title">網路</string>
-    <string name="settings_network_label">使用區域網路</string>
-    <string name="settings_network_description">允許 Ringomote 以 Bonjour 在您的 Wi-Fi 網路上尋找 Apple TV。遙控器本身只透過藍牙運作；這是給需要網路的功能用的，例如喚醒睡眠中的 Apple TV。不會有任何資料送出您的網路。</string>
     <string name="settings_apple_tvs_title">這個網路上的 Apple TV</string>
+    <string name="settings_apple_tvs_description">Ringomote 會以 Bonjour 在您的 Wi-Fi 網路上尋找 Apple TV，並像 iPad 一樣與它配對：Apple TV 會顯示一組代碼，請您在此輸入。不會有任何資料送出您的網路。</string>
     <string name="settings_apple_tvs_searching">搜尋中…</string>
     <string name="settings_apple_tvs_none">找不到 Apple TV。請確認手機與 Apple TV 在同一個 Wi-Fi 網路。</string>
     <string name="settings_apple_tv_pair">配對</string>
@@ -98,16 +47,16 @@
     <string name="settings_apple_tv_pin_label">代碼</string>
     <string name="settings_apple_tv_pin_confirm">確認</string>
     <string name="settings_apple_tv_pin_cancel">取消</string>
-    <string name="settings_apple_tv_status_unpaired">尚未配對喚醒功能。配對後，Ringomote 可以在這台 Apple TV 睡眠時將它開啟；藍牙遙控器另外在 Apple TV 上配對。</string>
+    <string name="settings_apple_tv_status_unpaired">尚未配對。配對後，Ringomote 可以控制這台 Apple TV，並在它睡眠時將它開啟。</string>
     <string name="settings_apple_tv_status_pairing">連線中…</string>
     <string name="settings_apple_tv_status_waking">喚醒中…</string>
-    <string name="settings_apple_tv_status_paired">已配對喚醒功能。</string>
+    <string name="settings_apple_tv_status_paired">已配對。</string>
     <string name="settings_apple_tv_outcome_wake_sent">已送出喚醒。</string>
     <string name="settings_apple_tv_outcome_wake_failed">無法連上 Apple TV。</string>
     <string name="settings_apple_tv_outcome_unreachable">無法連線到 Apple TV。</string>
     <string name="settings_apple_tv_outcome_rejected">Apple TV 拒絕了配對。請檢查代碼後再試一次，或在 Apple TV 的「設定 › 遙控器與裝置」移除 Ringomote 後重新配對。</string>
     <string name="remote_wake_button">喚醒</string>
-    <string name="remote_wake_hint">%1$s 尚未連線。若它在睡眠中，可以透過網路喚醒。</string>
+    <string name="remote_wake_hint">%1$s 尚未連線。若它在睡眠中，可以將它喚醒。</string>
     <string name="remote_wake_sending">正在喚醒 %1$s…</string>
     <string name="remote_wake_sent">已向 %1$s 送出喚醒，稍後應會自動連線。</string>
     <string name="remote_wake_failed">無法透過網路連上 %1$s。</string>
@@ -116,31 +65,22 @@
     <string name="remote_wifi_connecting">正透過 Wi-Fi 連線至 %1$s…</string>
     <string name="remote_wifi_unreachable">無法透過 Wi-Fi 連上 %1$s，正在重試。</string>
     <string name="remote_wifi_rejected">%1$s 拒絕了 Wi-Fi 配對。請在「設定 › 網路」重新配對。</string>
-    <string name="remote_wifi_mute_hint">透過 Wi-Fi 時無法使用靜音。</string>
-    <string name="remote_pair_network_hint">像 iPad 一樣，將 Ringomote 與 %1$s 透過網路配對，之後就會透過 Wi-Fi 控制 Apple TV，藍牙則作為備援。</string>
+    <string name="action_open_settings">設定</string>
+    <string name="remote_wifi_off">尚未連線。請在「設定」將 Ringomote 與 Apple TV 配對。</string>
+    <string name="remote_pair_network_hint">像 iPad 一樣，將 Ringomote 與 %1$s 配對，之後就能控制這部 Apple TV。</string>
     <string name="remote_pair_network_button">配對</string>
-    <string name="remote_network_off_hint">在「設定」開啟區域網路，Ringomote 就也能透過 Wi-Fi 喚醒與控制 Apple TV。</string>
-    <string name="remote_network_off_button">設定</string>
-    <string name="diagnostics_title">藍牙診斷</string>
-    <string name="diagnostics_back">返回</string>
-    <string name="diagnostics_refresh">重新整理</string>
-    <string name="diagnostics_copy">複製</string>
-    <string name="diagnostics_share">分享</string>
-    <string name="diagnostics_save">儲存</string>
-    <string name="diagnostics_copied">已複製報告。</string>
-    <string name="diagnostics_saved">已儲存報告。</string>
     <string name="tab_about">關於</string>
     <string name="about_version">版本 %1$s（%2$d）</string>
     <string name="about_tagline">將您的手機當作 Apple TV 遙控器使用，與 Siri Remote（第 1 代）相容。</string>
     <string name="about_privacy_title">隱私</string>
-    <string name="about_privacy_body">Ringomote 不會收集任何資料，也不會連線到任何伺服器。按鍵操作只會透過藍牙直接傳送到您的 Apple TV。本程式只會儲存您的設定，以及是否曾經連線過。若您在「設定」開啟「使用區域網路」，它會以 Bonjour 在您的 Wi-Fi 網路上尋找 Apple TV，並在您為喚醒功能配對後直接與該 Apple TV 通訊；遙控器開啟時，按鍵操作會以配對金鑰加密後透過 Wi-Fi 傳送到該 Apple TV，藍牙則作為備援。配對金鑰留在手機上，且不納入備份。不會有任何資料送出您的網路。「設定」中的藍牙診斷報告會列出您已配對的裝置及其位址；只有在您分享或儲存時才會離開手機。</string>
+    <string name="about_privacy_body">Ringomote 不會收集任何資料，也不會連線到任何伺服器。它會以 Bonjour 在您的 Wi-Fi 網路上尋找 Apple TV；配對之後，按鍵操作只會以配對金鑰加密，經由您的網路直接傳送到該 Apple TV。本程式只會儲存您的設定與配對金鑰；金鑰留在手機上，且不納入備份。不會有任何資料送出您的網路。</string>
     <string name="about_license_title">授權</string>
     <string name="about_license_body">Ringomote 是自由軟體，以 GNU 通用公共授權第 3 版或其後版本釋出。您可以依該授權條款使用、研究、分享與修改本程式。</string>
     <string name="about_license_link">閱讀授權條款</string>
     <string name="about_source_link">GitHub 上的原始碼</string>
     <string name="about_oss_title">開放原始碼軟體</string>
-    <string name="about_oss_body">Ringomote 使用 AndroidX、Jetpack Compose、Material 3、Kotlin 與 kotlinx.coroutines 建置，皆以 Apache License 2.0 授權。藍牙狀態圖示與 Menu、TV、靜音按鍵圖示使用 Google 的 Material Icons（Apache License 2.0）。透過網路喚醒 Apple TV 的功能使用 Bouncy Castle 密碼學函式庫（MIT 式的 Bouncy Castle License），通訊協定參考 pyatv 專案的筆記。</string>
+    <string name="about_oss_body">Ringomote 使用 AndroidX、Jetpack Compose、Material 3、Kotlin 與 kotlinx.coroutines 建置，皆以 Apache License 2.0 授權。Wi-Fi 狀態圖示與 Menu、TV 按鍵圖示使用 Google 的 Material Icons（Apache License 2.0）。透過網路與 Apple TV 通訊的功能使用 Bouncy Castle 密碼學函式庫（MIT 式的 Bouncy Castle License），通訊協定參考 pyatv 專案的筆記。</string>
     <string name="about_notices_link">完整第三方聲明</string>
     <string name="about_trademarks_title">商標</string>
-    <string name="about_trademarks_body">Apple、Apple TV、Siri 與 Siri Remote 為 Apple Inc. 在美國及其他國家註冊的商標。Android 為 Google LLC 的商標。Bluetooth® 文字商標與標誌為 Bluetooth SIG, Inc. 所有的註冊商標。Ringomote 為獨立專案，與上述公司並無關聯，亦未獲其贊助或認可；這些名稱僅用於說明相容性及本程式使用的技術。</string>
+    <string name="about_trademarks_body">Apple、Apple TV、Siri 與 Siri Remote 為 Apple Inc. 在美國及其他國家註冊的商標。Android 為 Google LLC 的商標。Ringomote 為獨立專案，與上述公司並無關聯，亦未獲其贊助或認可；這些名稱僅用於說明相容性及本程式使用的技術。</string>
 </resources>

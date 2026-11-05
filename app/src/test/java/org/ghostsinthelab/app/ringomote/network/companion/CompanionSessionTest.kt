@@ -138,7 +138,6 @@ class CompanionSessionTest {
         session.releaseAll()
         session.releaseAll()
         assertEquals(listOf("down Up", "down Select", "up Up", "up Select"), port.links[0].sent)
-        assertFalse("Mute has no command", session.press(RemoteControl.Mute))
     }
 
     /** A failed send drops the link, reports false, and a fresh link is opened by itself. */

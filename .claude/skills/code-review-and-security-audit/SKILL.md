@@ -6,7 +6,7 @@ argument-hint: file path, component name, or scope of review
 
 # Code Review and Security Audit
 
-You are performing code review and security auditing for Ringomote, an Android app that makes the phone act as a 1st-generation Siri Remote for an Apple TV over Bluetooth.
+You are performing code review and security auditing for Ringomote, an Android app that makes the phone act as a 1st-generation Siri Remote for an Apple TV over the local Wi-Fi network (Companion Link).
 
 ## Scope
 
@@ -19,8 +19,8 @@ This skill covers two complementary concerns:
 
 ### Code Quality
 
-- Null safety: proper use of Kotlin null-safe operators; avoid `!!` unless justified (Bluetooth APIs return null for missing adapters, profiles and services).
-- Thread safety: Bluetooth callbacks (`BluetoothHidDevice.Callback`, `BluetoothGattServerCallback`, `AdvertiseCallback`) arrive on binder threads. Shared connection state must be safely published (e.g. `StateFlow`), and UI must not be touched from those callbacks.
+- Null safety: proper use of Kotlin null-safe operators; avoid `!!` unless justified (network APIs return null for missing services and endpoints).
+- Thread safety: `NsdManager` callbacks arrive on binder threads and socket I/O runs on `Dispatchers.IO`. Shared connection state must be safely published (e.g. `StateFlow`), and UI must not be touched from those threads.
 - Main thread: no blocking calls or sleeps on the main thread; timing between press and release reports must not use `Thread.sleep` on it.
 - Resource management: profile proxies are closed with `closeProfileProxy`, the GATT server is closed, advertising is stopped, and receivers are unregistered when no longer needed.
 - Error handling: return values of `sendReport`, `notifyCharacteristicChanged`, `registerApp` and `startAdvertising` are checked; no silently swallowed exceptions (`SecurityException` from missing permissions in particular).
@@ -30,31 +30,28 @@ This skill covers two complementary concerns:
 ### Code Smells
 
 - **Long methods**, **large classes**, **duplicated code** (e.g. report encoding repeated per button instead of one encoder), **deep nesting**.
-- **Magic numbers**: HID usage IDs, report IDs, UUIDs and descriptor bytes must be named constants with a comment pointing to the spec or capture they came from.
-- **Feature envy**, **inappropriate intimacy** (UI reaching into Bluetooth internals).
+- **Magic numbers**: Companion command codes, message keys, TLV types and crypto constants must be named constants with a comment pointing to the protocol notes or capture they came from.
+- **Feature envy**, **inappropriate intimacy** (UI reaching into network internals).
 - **Primitive obsession**: buttons and connection states as ints/strings instead of enums or sealed classes.
 - **Long parameter lists**, **mutable shared state** (global `var` connection fields).
 
 ### Code Refactoring Suggestions
 
-- **Extract method / class / interface**: keep the Bluetooth transport behind an interface so the UI and the report encoder can be tested without hardware.
+- **Extract method / class / interface**: keep the Companion link behind an interface (`CompanionLinkPort`) so the session and the UI can be tested without hardware.
 - **Replace conditional with polymorphism** and **introduce sealed class/enum** for connection states and remote controls.
 - **Use Kotlin idioms**: scope functions, `buildList`, `ByteArray` helpers, extension functions.
 - **Simplify lifecycle management**: `lifecycleScope`, `repeatOnLifecycle`, `LifecycleObserver`; decide deliberately whether the connection lives in the activity, a ViewModel, or a foreground service.
-- **Improve testability**: pure functions for report encoding and descriptor building that unit tests in `app/src/test/` can pin down byte by byte.
+- **Improve testability**: pure functions for message encoding (OPACK, TLV8, HAP) that unit tests in `app/src/test/` can pin down byte by byte.
 
-### Bluetooth HID Correctness
+### Companion Link Correctness
 
-This app's main risk is the Apple TV not pairing, dropping the connection, or receiving the wrong input. Check:
+This app's main risk is the Apple TV not pairing, dropping the session, or receiving the wrong input. Check:
 
-- **Transport choice**: BLE HID over GATT (`BluetoothGattServer` + `BluetoothLeAdvertiser`) or classic `BluetoothHidDevice`; the code must be consistent with the choice recorded in `CLAUDE.md`.
-- **Report descriptor**: valid item encoding, matching report IDs and sizes between descriptor and the reports actually sent, and usages for every control (Consumer page for Menu / Home / Play-Pause / Volume, keyboard or pointer/digitizer usages for the touch surface as designed).
-- **Press and release**: every press report is followed by a release (all-zero) report, including when the user's finger leaves the button, the app goes to the background, or the connection drops mid-press. A stuck key on the Apple TV is a high-severity bug.
-- **GATT details (BLE)**: required HID service characteristics (HID Information, Report Map, Report with Report Reference descriptor, Protocol Mode, Control Point), Device Information and Battery services, CCCD writes honoured before notifying, and characteristics requiring encrypted access.
-- **SDP / app registration (classic)**: `BluetoothHidDeviceAppSdpSettings` subclass and descriptor match; `registerApp` is done after the proxy connects and re-done after Bluetooth restarts.
-- **Connection lifecycle**: Bluetooth turned off/on, Apple TV sleep/wake, app process death, reconnection to the last bonded device, and behaviour when another host is connected.
-- **Permissions**: `BLUETOOTH_CONNECT` / `BLUETOOTH_ADVERTISE` checked on API 31+ before every call that needs them; legacy permissions with `maxSdkVersion="30"` in the manifest.
-- Prefer verifying report bytes with a unit test against the HID Usage Tables or a captured real report over reasoning alone.
+- **Pairing**: pair-setup (SRP-6a, HAP TLV states M1–M6) and pair-verify follow `docs/companion-link.md`; keys are stored per Apple TV and excluded from backups.
+- **Session**: `_sessionStart`/`_sessionStop` bracket the remote session; every control maps to the right `_hidC` code; frames are encrypted with the session keys in order.
+- **Press and release**: every button-down is followed by a button-up, including when the user's finger leaves the button, the app goes to the background, or the link drops mid-press. A stuck key on the Apple TV is a high-severity bug.
+- **Connection lifecycle**: Wi-Fi toggled, Apple TV sleep/wake, app restart, a refused pairing (no retry storm), and the grace/back-off rules in `CompanionSession`.
+- Prefer verifying bytes with a unit test against pyatv's notes, srptools vectors or a captured exchange over reasoning alone.
 
 ### Android-Specific Security
 
@@ -63,7 +60,7 @@ This app's main risk is the Apple TV not pairing, dropping the connection, or re
 - **Input injection risk**: the app sends input to the TV, so any path that lets another app or a broadcast trigger reports (exported services, receivers, unvalidated intents) is a security issue.
 - **Export controls**: verify that components (activities, services, receivers) are not inadvertently exported.
 - **PendingIntent**: use `FLAG_IMMUTABLE` and explicit intents (e.g. foreground-service notification actions).
-- **Privacy**: no logging of Bluetooth addresses, link keys or device names at release log levels; stored device addresses are excluded from backups or the inclusion is deliberate.
+- **Privacy**: no logging of pairing keys, session keys or device names at release log levels; stored pairings are excluded from backups.
 - **Backup**: check `backup_rules.xml` / `data_extraction_rules.xml` if any pairing data is stored.
 - **R8**: ensure keep rules (`app/src/main/keepRules/`) don't strip classes referenced from the manifest or by reflection.
 
@@ -112,12 +109,11 @@ git diff --name-only HEAD~5
 When invoked with a specific scope (file, directory, or component name), focus the review on that area.
 
 For a full audit, systematically review:
-1. Bluetooth layer (HID descriptor, report encoding, GATT server / `BluetoothHidDevice` integration, connection state)
-2. Any service keeping the connection alive (foreground service, notification actions)
-3. UI layer (`MainActivity.kt`, remote screen, permission flow, `ui/theme/`)
-4. Configuration (`AndroidManifest.xml`, keep rules, backup rules)
-5. Tests (`app/src/test/`, `app/src/androidTest/`)
-6. Dependencies (`gradle/libs.versions.toml`)
+1. Network layer (`network/companion/`: pairing, crypto, framing, session; `network/`: discovery)
+2. UI layer (`MainActivity.kt`, remote screen, settings, `ui/theme/`)
+3. Configuration (`AndroidManifest.xml`, keep rules, backup rules)
+4. Tests (`app/src/test/`, `app/src/androidTest/`)
+5. Dependencies (`gradle/libs.versions.toml`)
 
 Use `find app/src -name '*.kt'` to locate the actual files; the names above describe roles, not fixed paths.
 

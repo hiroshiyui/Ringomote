@@ -12,7 +12,7 @@ broke older clients (pyatv issue #2847), so expect churn.
 ## Status (2026-11-05)
 
 Implemented in `network/companion/` and verified on hardware: the phone paired with the
-Apple TV 4K (AppleTV6,2) from Settings > Network, entering the PIN the TV showed, and the Wake
+Apple TV 4K (AppleTV6,2) from Settings, entering the PIN the TV showed, and the Wake
 button turned the sleeping TV on. The reference client (pyatv 0.18.0 with srptools 0.2.0) did
 the same from a laptop first, which is the quickest way to tell a protocol change from a bug
 in this code. Note `_sessionStart` in pyatv 0.18.0 sends the local id under `_sid` (the older

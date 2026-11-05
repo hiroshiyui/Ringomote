@@ -53,8 +53,9 @@ private val StepDistance = 48.dp
  *
  * A drag emits one [onStep] (Up, Down, Left or Right) every [StepDistance] of travel along its
  * dominant axis, measured from where the previous step was emitted, with a haptic tick per step.
- * The Apple TV receives arrow keys rather than touch coordinates because the classic HID
- * keyboard profile tvOS accepts has no touch pad. A touch that ends before any step and without
+ * The Apple TV receives arrow steps rather than touch coordinates: Companion Link's button
+ * commands are what the app sends today, and its touch-event messages (`_hidT`) are later
+ * work. A touch that ends before any step and without
  * leaving the touch slop calls [onSelect]. Directions are physical: they do not flip in RTL.
  *
  * TalkBack intercepts swipes for its own navigation, so the surface also exposes each direction

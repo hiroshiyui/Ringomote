@@ -16,7 +16,7 @@ class KnownAppleTvTest {
         assertEquals(1, merged.size)
         val tv = merged.single()
         assertEquals("Apple TV 4K", tv.modelName)
-        assertTrue(tv.pairedForWaking && tv.onNetwork)
+        assertTrue(tv.paired && tv.onNetwork)
     }
 
     /** Pairings and discovered TVs both count even when the other source lacks them. */
@@ -25,8 +25,8 @@ class KnownAppleTvTest {
         val merged = mergeKnownAppleTvs(setOf("Bedroom"), listOf(livingRoom))
         assertEquals(listOf("Bedroom", "客廳"), merged.map { it.name })
         assertFalse(merged[0].onNetwork)
-        assertTrue(merged[0].pairedForWaking)
+        assertTrue(merged[0].paired)
         assertTrue(merged[1].onNetwork)
-        assertFalse(merged[1].pairedForWaking)
+        assertFalse(merged[1].paired)
     }
 }

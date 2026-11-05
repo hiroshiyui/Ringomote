@@ -1,0 +1,7 @@
+Hello, it's me, Ringomote. I now talk to your Apple TV over Wi-Fi, the way an iPad does; Bluetooth is gone.
+
+* Pair once in Settings with the code the Apple TV shows: no Bluetooth pairing, no permissions, no notification.
+* I reconnect by myself, wake a sleeping Apple TV, and hold TV for Control Center.
+* Name your phone in Settings, so several phones stay apart on the Apple TV.
+* If the Apple TV forgets me, I offer Pair again at once.
+* Mute is gone: the protocol has no such command.

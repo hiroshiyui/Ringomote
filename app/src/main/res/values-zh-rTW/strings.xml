@@ -62,7 +62,7 @@
     <string name="remote_wake_sending">正在喚醒 %1$s…</string>
     <string name="remote_wake_sent">已向 %1$s 送出喚醒，稍後應會自動連線。</string>
     <string name="remote_wake_failed">無法透過網路連上 %1$s。</string>
-    <string name="remote_wake_rejected">%1$s 拒絕了配對。請在「設定 › 網路」重新配對。</string>
+    <string name="remote_wake_rejected">%1$s 已不認得這組配對。請在「設定」重新配對。</string>
     <string name="remote_wifi_connected">正透過 Wi-Fi 控制 %1$s。</string>
     <string name="remote_wifi_connecting">正透過 Wi-Fi 連線至 %1$s…</string>
     <string name="remote_wifi_unreachable">無法透過 Wi-Fi 連上 %1$s，正在重試。</string>

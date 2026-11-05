@@ -37,7 +37,7 @@ class CompanionKeyMapTest {
         assertEquals(mapped.size, mapped.toSet().size)
     }
 
-    /** The arrows and Select are what the touch surface sends; they must be the HID arrows. */
+    /** The arrows and Select are what the touch surface sends; they must be the arrow commands. */
     @Test
     fun touchSurfaceControlsAreArrows() {
         assertEquals(CompanionCommand.Up, CompanionKeyMap.commandFor(RemoteControl.Up))

@@ -47,7 +47,7 @@ fun AppleTvSelector(
 ) {
     if (tvs.isEmpty()) return
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (selected != null && !selected.pairedForWaking) {
+        if (selected != null && !selected.paired) {
             HintRow(
                 text = stringResource(R.string.remote_pair_network_hint, selected.name),
                 button = stringResource(R.string.remote_pair_network_button),
@@ -69,7 +69,7 @@ fun AppleTvSelector(
                 }
             }
         }
-        if (selected != null && selected.pairedForWaking && !connected) {
+        if (selected != null && selected.paired && !connected) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,

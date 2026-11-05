@@ -2,13 +2,13 @@ package org.ghostsinthelab.app.ringomote.network
 
 /**
  * An Apple TV the phone knows, merged by its user-given name, which is the key Bonjour and
- * the stored pairings share. [pairedForWaking] means a Companion Link pairing is stored;
+ * the stored pairings share. [paired] means a Companion Link pairing is stored on the phone;
  * [onNetwork] that Bonjour saw it during the latest browse.
  */
 data class KnownAppleTv(
     val name: String,
     val model: String? = null,
-    val pairedForWaking: Boolean = false,
+    val paired: Boolean = false,
     val onNetwork: Boolean = false,
 ) {
     val modelName: String? get() = model?.let(AppleTvModels::nameOf)
@@ -26,7 +26,7 @@ fun mergeKnownAppleTvs(pairedNames: Set<String>, discovered: List<AppleTv>): Lis
         KnownAppleTv(
             name = name,
             model = discovered.firstOrNull { it.name == name }?.model,
-            pairedForWaking = name in pairedNames,
+            paired = name in pairedNames,
             onNetwork = discovered.any { it.name == name },
         )
     }.sortedBy { it.name }

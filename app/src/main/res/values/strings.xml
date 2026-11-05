@@ -62,7 +62,7 @@
     <string name="remote_wake_sending">Waking %1$s…</string>
     <string name="remote_wake_sent">Wake-up sent to %1$s. It should connect in a moment.</string>
     <string name="remote_wake_failed">Could not reach %1$s over the network.</string>
-    <string name="remote_wake_rejected">%1$s rejected the pairing. Pair again under Settings › Network.</string>
+    <string name="remote_wake_rejected">%1$s no longer knows this pairing. Pair again under Settings.</string>
     <string name="remote_wifi_connected">Controlling %1$s over Wi-Fi.</string>
     <string name="remote_wifi_connecting">Connecting to %1$s over Wi-Fi…</string>
     <string name="remote_wifi_unreachable">Could not reach %1$s over Wi-Fi. Trying again.</string>

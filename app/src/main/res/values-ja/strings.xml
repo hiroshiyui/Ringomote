@@ -62,7 +62,7 @@
     <string name="remote_wake_sending">%1$s を起動しています…</string>
     <string name="remote_wake_sent">%1$s に起動要求を送りました。まもなく接続されるはずです。</string>
     <string name="remote_wake_failed">ネットワーク経由で %1$s に届きませんでした。</string>
-    <string name="remote_wake_rejected">%1$s がペアリングを拒否しました。「設定 › ネットワーク」でペアリングし直してください。</string>
+    <string name="remote_wake_rejected">%1$s はこのペアリングを認識しなくなりました。「設定」でペアリングし直してください。</string>
     <string name="remote_wifi_connected">Wi-Fi 経由で %1$s を操作しています。</string>
     <string name="remote_wifi_connecting">Wi-Fi 経由で %1$s に接続しています…</string>
     <string name="remote_wifi_unreachable">Wi-Fi 経由で %1$s に届きませんでした。再試行しています。</string>

@@ -16,6 +16,13 @@ import org.ghostsinthelab.app.ringomote.bluetooth.HostDevice
 import org.ghostsinthelab.app.ringomote.bluetooth.TransportState
 import org.ghostsinthelab.app.ringomote.hid.HidReport
 import org.ghostsinthelab.app.ringomote.history.ConnectionHistory
+import org.ghostsinthelab.app.ringomote.network.NetworkSettings
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentials
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentialsStore
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionSession
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionState
+import org.ghostsinthelab.app.ringomote.network.companion.PairingException
+import org.ghostsinthelab.app.ringomote.remote.RemoteRouter
 import org.ghostsinthelab.app.ringomote.hid.HidReports
 import org.ghostsinthelab.app.ringomote.hid.KeyboardUsage
 import org.ghostsinthelab.app.ringomote.remote.RemoteControl
@@ -56,7 +63,17 @@ class RemoteViewModelTest {
 
     private val history = FakeHistory()
 
-    private fun newViewModel() = RemoteViewModel(transport, session, history, dispatcher, scope)
+    private val networkSettings = FakeNetworkSettings()
+    private val credentials = FakeCredentialsStore()
+    private val companion = CompanionSession({ throw PairingException("none") }, scope.backgroundScope, dispatcher)
+    private val router = RemoteRouter(
+        session, companion,
+        bluetoothConnected = { transport.state.value is TransportState.Connected },
+        companionConnected = { companion.state.value is CompanionState.Connected },
+    )
+
+    private fun newViewModel() =
+        RemoteViewModel(transport, router, companion, networkSettings, credentials, history, dispatcher, scope)
 
     /** Clears [vm] the way the framework does when its screen is finished. */
     private fun clear(vm: RemoteViewModel) = ViewModelStore().run {
@@ -181,6 +198,24 @@ class RemoteViewModelTest {
         transport.state.value = TransportState.Ready
         runCurrent()
         assertTrue("history never resets", vm.hasConnectedBefore.value)
+    }
+
+    /** Network off, nothing selected: the Wi-Fi session stays [CompanionState.Off]. */
+    private class FakeNetworkSettings : NetworkSettings {
+        override val enabled = MutableStateFlow(false)
+        override fun setEnabled(enabled: Boolean) { this.enabled.value = enabled }
+        override val selectedAppleTv = MutableStateFlow<String?>(null)
+        override fun setSelectedAppleTv(name: String?) { selectedAppleTv.value = name }
+    }
+
+    /** No pairings. */
+    private class FakeCredentialsStore : CompanionCredentialsStore {
+        override val credentials = MutableStateFlow<Map<String, CompanionCredentials>>(emptyMap())
+        override fun put(appleTvId: String, credentials: CompanionCredentials) = Unit
+        override fun remove(appleTvId: String) = Unit
+        override val deviceId = "AA:BB:CC:DD:EE:FF"
+        override fun endpoint(appleTvId: String): CompanionCredentialsStore.Endpoint? = null
+        override fun putEndpoint(appleTvId: String, endpoint: CompanionCredentialsStore.Endpoint) = Unit
     }
 
     /** In-memory [ConnectionHistory]. */

@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.launchIn
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionClient
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionCommand
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentials
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentialsStore
 import org.ghostsinthelab.app.ringomote.network.companion.PairSetup
@@ -189,7 +190,7 @@ class AppleTvViewModel(
             client.connect()
             client.verify(credentials)
             client.startSession(credentials, name = DISPLAY_NAME, model = Build.MODEL, deviceId = store.deviceId)
-            client.hidPress(CompanionClient.Hid.WAKE)
+            client.hidPress(CompanionCommand.Wake)
         }
     }
 

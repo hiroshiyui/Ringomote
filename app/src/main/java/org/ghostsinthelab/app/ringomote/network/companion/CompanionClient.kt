@@ -38,9 +38,12 @@ class CompanionClient(
     private var inCounter = 0L
     private var nextXid = Random.nextInt(0, 0x10000).toLong()
 
-    /** Session id from `_sessionStart`, 0 until then. */
+    /** Session id from `_sessionStart`, 0 until then and after [stopSession]. */
     var sessionId: Long = 0
         private set
+
+    /** Whether the socket is still open on this side; a peer close shows only on the next read. */
+    val isOpen: Boolean get() = socket.isConnected && !socket.isClosed
 
     object FrameType {
         const val PS_START = 0x03
@@ -48,15 +51,6 @@ class CompanionClient(
         const val PV_START = 0x05
         const val PV_NEXT = 0x06
         const val E_OPACK = 0x08
-    }
-
-    /** HID commands for `_hidC`; the Siri Remote buttons plus power. */
-    object Hid {
-        const val MENU = 5
-        const val SELECT = 6
-        const val HOME = 7
-        const val SLEEP = 12
-        const val WAKE = 13
     }
 
     fun connect(timeoutMs: Int = 5000) {
@@ -143,15 +137,25 @@ class CompanionClient(
         }
     }
 
-    /** Presses and releases a HID button ([Hid]); `Wake` turns a sleeping Apple TV on. */
-    fun hidPress(command: Int) {
-        request("_hidC", mapOf("_hBtS" to 1L, "_hidC" to command.toLong()))
-        request("_hidC", mapOf("_hBtS" to 2L, "_hidC" to command.toLong()))
+    /** Presses and releases a HID button; [CompanionCommand.Wake] turns a sleeping Apple TV on. */
+    fun hidPress(command: CompanionCommand) {
+        hid(command, down = true)
+        hid(command, down = false)
     }
 
     /** Sends one `_hidC` message with the given button state; `Wake` needs only the release. */
-    fun hid(command: Int, down: Boolean) {
-        request("_hidC", mapOf("_hBtS" to (if (down) 1L else 2L), "_hidC" to command.toLong()))
+    fun hid(command: CompanionCommand, down: Boolean) {
+        request("_hidC", mapOf("_hBtS" to (if (down) 1L else 2L), "_hidC" to command.code.toLong()))
+    }
+
+    /**
+     * Ends the remote session opened by [startSession], as the reference client does before
+     * closing. Best effort: the Apple TV also cleans up when the socket closes.
+     */
+    fun stopSession() {
+        if (sessionId == 0L) return
+        request("_sessionStop", mapOf("_srvT" to "com.apple.tvremoteservices", "_sid" to sessionId))
+        sessionId = 0
     }
 
     /** Sends a request (`_t` = 2) and returns the matching response dictionary. */

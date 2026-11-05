@@ -2,6 +2,7 @@ package org.ghostsinthelab.app.ringomote
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -13,6 +14,7 @@ import org.ghostsinthelab.app.ringomote.diagnostics.DiagnosticsReport
 import org.ghostsinthelab.app.ringomote.diagnostics.EventLog
 import org.ghostsinthelab.app.ringomote.history.ConnectionHistory
 import org.ghostsinthelab.app.ringomote.history.SharedPreferencesConnectionHistory
+import org.ghostsinthelab.app.ringomote.remote.RemoteRouter
 import org.ghostsinthelab.app.ringomote.remote.RemoteSession
 import org.ghostsinthelab.app.ringomote.settings.AppearanceSettings
 import org.ghostsinthelab.app.ringomote.settings.SharedPreferencesAppearanceSettings
@@ -22,6 +24,10 @@ import org.ghostsinthelab.app.ringomote.network.NetworkSettings
 import org.ghostsinthelab.app.ringomote.network.NsdAppleTvDiscovery
 import org.ghostsinthelab.app.ringomote.network.SharedPreferencesNetworkSettings
 import org.ghostsinthelab.app.ringomote.network.companion.CompanionCredentialsStore
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionSession
+import org.ghostsinthelab.app.ringomote.network.companion.CompanionState
+import org.ghostsinthelab.app.ringomote.bluetooth.TransportState
+import org.ghostsinthelab.app.ringomote.ui.settings.AppleTvViewModel
 import org.ghostsinthelab.app.ringomote.network.companion.SharedPreferencesCompanionCredentialsStore
 
 /**
@@ -43,6 +49,25 @@ class AppContainer(context: Context) {
     val appleTvDiscovery: AppleTvDiscovery by lazy { NsdAppleTvDiscovery(context) }
     val localNetwork: LocalNetwork by lazy { LocalNetwork(context) }
     val companionCredentials: CompanionCredentialsStore by lazy { SharedPreferencesCompanionCredentialsStore(context) }
+
+    /** The Wi-Fi remote session; process lifetime like the transport, held only while wanted. */
+    val companionSession: CompanionSession by lazy {
+        CompanionSession(
+            CompanionSession.ClientPort(companionCredentials, appleTvDiscovery, localNetwork::bind, AppleTvViewModel.DISPLAY_NAME, Build.MODEL),
+            applicationScope,
+            Dispatchers.IO,
+        )
+    }
+
+    /** Sends input over Bluetooth while the host is subscribed, else over the Wi-Fi session. */
+    val remoteRouter: RemoteRouter by lazy {
+        RemoteRouter(
+            session,
+            companionSession,
+            bluetoothConnected = { transport.state.value is TransportState.Connected },
+            companionConnected = { companionSession.state.value is CompanionState.Connected },
+        )
+    }
 
     /**
      * The one serial dispatcher for everything that talks to the transport: input, connect,

@@ -10,11 +10,7 @@ An Android app that turns your phone into a remote for Apple TV, compatible with
 
 Ringomote is ready for everyday use. Pairing with a real Apple TV over the network, reconnection after the app restarts or the Apple TV wakes, waking a sleeping Apple TV, and every control (touch surface, Menu, TV/Home, Play/Pause, Volume) have been verified on hardware, including holding the TV button to open Control Center. Siri voice input is not reproduced, and there is no Mute button, because the protocol has none.
 
-Earlier versions (up to 0.5.0) worked as a Bluetooth keyboard instead; that code lives on in the `bluetooth-archive` branch.
-
 Ringomote 已可供日常使用。透過網路與實際的 Apple TV 配對、App 重新啟動或 Apple TV 喚醒後的重新連線、喚醒睡眠中的 Apple TV，以及所有操作（觸控表面、Menu、TV／主畫面、播放／暫停、音量）都已在實機上驗證可行，包括長按 TV 鍵開啟控制中心。Siri 語音輸入無法重現；也沒有靜音鍵，因為該協定沒有這個指令。
-
-較早的版本（至 0.5.0 為止）是以藍牙鍵盤的方式運作；那些程式碼保留在 `bluetooth-archive` 分支。
 
 ## Screenshots 螢幕截圖
 
@@ -31,13 +27,13 @@ Left to right: the remote in the compact and spread-out layouts and in the dark 
 
 ## How it works 運作方式
 
-The phone talks to the Apple TV over your Wi-Fi network with Apple's Companion Link protocol, the same link the iPhone and iPad Remote use. Ringomote finds Apple TVs on the local network with Bonjour, pairs with one by typing the 4-digit code the Apple TV shows (a HomeKit-style pairing that leaves a key pair on each side), and from then on opens an encrypted session with it whenever the remote is on screen. Every control is sent as a button-down and button-up on that session, so a hold works as it does on the Siri Remote: holding TV opens Control Center. The same session wakes a sleeping Apple TV, which neither Bluetooth nor Wake-on-LAN can do. No Apple account, bridge device or server is involved, and the app never contacts anything beyond the local network.
+The phone talks to the Apple TV over your Wi-Fi network with Apple's Companion Link protocol, the same link the iPhone and iPad Remote use. Ringomote finds Apple TVs on the local network with Bonjour, pairs with one by typing the 4-digit code the Apple TV shows (a HomeKit-style pairing that leaves a key pair on each side), and from then on opens an encrypted session with it whenever the remote is on screen. Every control is sent as a button-down and button-up on that session, so a hold works as it does on the Siri Remote: holding TV opens Control Center. The same session wakes a sleeping Apple TV, which Wake-on-LAN cannot do. No Apple account, bridge device or server is involved, and the app never contacts anything beyond the local network.
 
 The session is held only while the remote is on screen and the app is in front; it lingers ten seconds after that so a tab switch is free, backs off while the Apple TV cannot be reached, and stops retrying after a refused pairing until you pair again.
 
 Siri voice input is not reproduced, and there is no Mute button: Companion Link has no mute command, only an absolute volume level.
 
-手機透過您的 Wi-Fi 網路，以 Apple 的 Companion Link 協定與 Apple TV 通訊，也就是 iPhone 與 iPad 的「遙控器」所用的同一條連線。Ringomote 會以 Bonjour 在區域網路上尋找 Apple TV，輸入 Apple TV 顯示的 4 位數代碼完成配對（類似 HomeKit 的配對，雙方各留下一組金鑰），之後只要遙控器在畫面上，就會與它建立加密連線。每個操作都以按下與放開的形式經由這條連線送出，因此長按的行為與 Siri Remote 相同：長按 TV 鍵會開啟控制中心。同一條連線也能喚醒睡眠中的 Apple TV，這是藍牙與 Wake-on-LAN 都做不到的。過程不需要 Apple 帳號、橋接裝置或伺服器，本程式也絕不會連線到區域網路以外的任何地方。
+手機透過您的 Wi-Fi 網路，以 Apple 的 Companion Link 協定與 Apple TV 通訊，也就是 iPhone 與 iPad 的「遙控器」所用的同一條連線。Ringomote 會以 Bonjour 在區域網路上尋找 Apple TV，輸入 Apple TV 顯示的 4 位數代碼完成配對（類似 HomeKit 的配對，雙方各留下一組金鑰），之後只要遙控器在畫面上，就會與它建立加密連線。每個操作都以按下與放開的形式經由這條連線送出，因此長按的行為與 Siri Remote 相同：長按 TV 鍵會開啟控制中心。同一條連線也能喚醒睡眠中的 Apple TV，這是 Wake-on-LAN 做不到的。過程不需要 Apple 帳號、橋接裝置或伺服器，本程式也絕不會連線到區域網路以外的任何地方。
 
 連線只在遙控器顯示於畫面且程式在前景時保持；離開後會再維持十秒，讓切換分頁不必重新連線；連不上 Apple TV 時會逐步拉長重試間隔；配對被拒絕後則停止重試，直到您重新配對。
 

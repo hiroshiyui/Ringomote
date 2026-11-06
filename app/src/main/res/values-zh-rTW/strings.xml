@@ -81,7 +81,7 @@
     <string name="about_license_link">閱讀授權條款</string>
     <string name="about_source_link">GitHub 上的原始碼</string>
     <string name="about_oss_title">開放原始碼軟體</string>
-    <string name="about_oss_body">Ringomote 使用 AndroidX、Jetpack Compose、Material 3、Kotlin 與 kotlinx.coroutines 建置，皆以 Apache License 2.0 授權。Wi-Fi 狀態圖示與 Menu、TV 按鍵圖示使用 Google 的 Material Icons（Apache License 2.0）。透過網路與 Apple TV 通訊的功能使用 Bouncy Castle 密碼學函式庫（MIT 式的 Bouncy Castle License），通訊協定參考 pyatv 專案的筆記。</string>
+    <string name="about_oss_body">Ringomote 使用 AndroidX、Jetpack Compose、Material 3、Kotlin 與 kotlinx.coroutines 建置，皆以 Apache License 2.0 授權。Wi-Fi 狀態圖示與 Menu、TV 按鍵圖示使用 Google 的 Material Icons（Apache License 2.0）。透過網路與 Apple TV 通訊的功能使用 Bouncy Castle 密碼學函式庫（MIT 式的 Bouncy Castle License），通訊協定參考 pyatv 專案的筆記，其 SRP 登入以 srptools（BSD 3-Clause 授權）的測試向量驗證；兩者的程式碼皆未包含在本程式中。</string>
     <string name="about_notices_link">完整第三方聲明</string>
     <string name="about_trademarks_title">商標</string>
     <string name="about_trademarks_body">Apple、Apple TV、Siri 與 Siri Remote 為 Apple Inc. 在美國及其他國家註冊的商標。Android 為 Google LLC 的商標。Ringomote 為獨立專案，與上述公司並無關聯，亦未獲其贊助或認可；這些名稱僅用於說明相容性及本程式使用的技術。</string>

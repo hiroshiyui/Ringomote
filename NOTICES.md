@@ -37,9 +37,9 @@ The Companion Link pairing (Ed25519, X25519, HKDF, ChaCha20-Poly1305) uses the [
 
 Companion Link 配對（Ed25519、X25519、HKDF、ChaCha20-Poly1305）使用 [Bouncy Castle](https://www.bouncycastle.org/) 的輕量級密碼學 API（`org.bouncycastle:bcprov-jdk18on` 1.79），以 [Bouncy Castle License](https://www.bouncycastle.org/licence.html)（MIT 式授權）釋出，全文如上。
 
-The protocol itself was worked out from the [pyatv](https://pyatv.dev/) project's documentation (MIT License); no pyatv code is included.
+The protocol itself was worked out from the [pyatv](https://pyatv.dev/) project's documentation (MIT License); no pyatv code is included. The SRP-6a client's byte conventions were checked against test vectors from [srptools](https://github.com/idlesign/srptools) (BSD 3-Clause License); no srptools code is included either.
 
-通訊協定內容參考自 [pyatv](https://pyatv.dev/) 專案的文件（MIT 授權）；本程式不包含 pyatv 的程式碼。
+通訊協定內容參考自 [pyatv](https://pyatv.dev/) 專案的文件（MIT 授權）；本程式不包含 pyatv 的程式碼。SRP-6a 用戶端的位元組慣例以 [srptools](https://github.com/idlesign/srptools)（BSD 3-Clause 授權）的測試向量驗證；本程式亦不包含 srptools 的程式碼。
 
 ### Build and test tools 建置與測試工具
 

@@ -30,6 +30,14 @@ Service `_companion-link._tcp.local.` TXT keys: `rpMd` model (`AppleTV14,1`), `r
 HomeKit/Bonjour tags. Only `rpMd`, `rpVr`, `rpFl` are stable. Apple TVs, iPhones, Macs and
 HomePods all advertise it; filter on `rpMd` starting with `AppleTV`.
 
+Other devices on the list are not remote-controllable. iPhones, iPads, Macs and HomePods use
+the same service for Continuity (Handoff, Universal Control, Sidecar), but only tvOS
+implements the remote half: there is no `_hidC` handler and no Remotes and Devices pairing
+flow, so a pair-setup is never offered and button messages would go nowhere. An iPad (`rpMd`
+`iPad13,x`) also comes and goes from a Bonjour browser because iPadOS advertises only while
+the device is awake. That is why `isAppleTv` filters on the model before a service reaches
+the Settings list or the Remote tab selector.
+
 ## Framing
 
 `type (1 byte) | length (3 bytes, big endian) | payload`. Types: 0x03 PS_Start, 0x04 PS_Next,
